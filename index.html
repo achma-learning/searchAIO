@@ -800,12 +800,12 @@
     border-radius: 12px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.35);
     padding: 24px;
-    z-index: 2005;               /* Plus haut que l'overlay */
+    z-index: 2005;               /* Higher than overlay (2000) */
     display: none;
 }
 
 #keyboardShortcutsPopup.show {
-    display: block !important;
+    display: block !important;   /* Force display when .show class is added */
 }
 
 .dark-mode #keyboardShortcutsPopup {
@@ -823,10 +823,15 @@
     color: #888;
     background: none;
     border: none;
+    padding: 0;
+    width: auto;
+    height: auto;
 }
 
 #keyboardShortcutsPopup .close-btn:hover {
     color: #333;
+    transform: none;
+    box-shadow: none;
 }
 
 .dark-mode #keyboardShortcutsPopup .close-btn:hover {
@@ -1404,6 +1409,7 @@
   </div>
 
 <script>
+  let operatorHandlersInitialized = false;
   const filetypesWiki = {
       "📄 Documents & Text": [
           { ext: 'pdf', name: 'Adobe Portable Document Format' },
@@ -1586,6 +1592,7 @@
       function openShortcutsPopup() {
         keyboardShortcutsPopup.classList.add('show');
         popupOverlay.classList.add('show');
+        
         const shortcutsContent = document.getElementById('shortcuts-content');
         shortcutsContent.innerHTML = ''; // Clear previous content
 
@@ -1624,11 +1631,23 @@
         table.appendChild(thead);
         table.appendChild(tbody);
         shortcutsContent.appendChild(table);
+        
+        // Optional: Improve accessibility
+        keyboardShortcutsPopup.setAttribute('aria-hidden', 'false');
       }
 
       function closeShortcutsPopup() {
         keyboardShortcutsPopup.classList.remove('show');
-        popupOverlay.classList.remove('show');
+        
+        // Only close overlay if NO other popups are open
+        if (!filetypesPopup.classList.contains('show') &&
+            !googleWikiPopup.classList.contains('show') &&
+            !bingWikiPopup.classList.contains('show')) {
+          popupOverlay.classList.remove('show');
+        }
+        
+        // Optional: Improve accessibility
+        keyboardShortcutsPopup.setAttribute('aria-hidden', 'true');
       }
 
       keyboardShortcutsBtn.addEventListener('click', openShortcutsPopup);
@@ -1656,39 +1675,50 @@
     
   let yandexTranslationTimeout;
 
-  function scheduleYandexTranslation() { // Removed 'text' parameter
+  function scheduleYandexTranslation() {
     clearTimeout(yandexTranslationTimeout);
+    
+    // ADD THESE SAFETY CHECKS
+    if (!yandexSourceLang || !yandexSourceText || !yandexTargetText) {
+      console.warn('Yandex translation elements not ready');
+      return;
+    }
+    
     const sourceLang = yandexSourceLang.value;
     const textToTranslate = yandexSourceText.value; // Get text from new input
     const targetLang = 'ru'; // Always translate to Russian
 
     if (!textToTranslate.trim()) {
       yandexTargetText.value = '';
-      yandexTranslateStatus.textContent = '';
-      yandexTranslateStatus.className = '';
+      if (yandexTranslateStatus) yandexTranslateStatus.textContent = '';
       return;
     }
 
-    yandexTranslateStatus.textContent = 'Translating...';
-    yandexTranslateStatus.className = 'loading';
+    if (yandexTranslateStatus) {
+      yandexTranslateStatus.textContent = 'Translating...';
+      yandexTranslateStatus.className = 'loading';
+    }
 
     yandexTranslationTimeout = setTimeout(async () => {
       try {
         const translated = await translateText(textToTranslate, sourceLang, targetLang);
         yandexTargetText.value = translated;
-        yandexTranslateStatus.textContent = 'Translation complete';
-        yandexTranslateStatus.className = 'success';
-        
-        setTimeout(() => {
-          if (yandexTranslateStatus.textContent === 'Translation complete') {
-            yandexTranslateStatus.textContent = '';
-          }
-        }, 2000);
-
+        if (yandexTranslateStatus) {
+          yandexTranslateStatus.textContent = 'Translation complete';
+          yandexTranslateStatus.className = 'success';
+          
+          setTimeout(() => {
+            if (yandexTranslateStatus && yandexTranslateStatus.textContent === 'Translation complete') {
+              yandexTranslateStatus.textContent = '';
+            }
+          }, 2000);
+        }
       } catch (error) {
         yandexTargetText.value = '';
-        yandexTranslateStatus.textContent = 'Translation failed. Please try again.';
-        yandexTranslateStatus.className = 'error';
+        if (yandexTranslateStatus) {
+          yandexTranslateStatus.textContent = 'Translation failed. Please try again.';
+          yandexTranslateStatus.className = 'error';
+        }
       }
     }, 500); // Debounce time
   }
@@ -2130,27 +2160,23 @@
   closeFiletypes.addEventListener('click', closeFiletypesPopup);
   popupOverlay.addEventListener('click', () => {
     closeFiletypesPopup();
-    if (!keepGoogleWikiOpenCheckbox.checked) {
+    
+    if (keepGoogleWikiOpenCheckbox && !keepGoogleWikiOpenCheckbox.checked) {
       closeGoogleWikiPopup();
     }
-    if (!keepBingWikiOpenCheckbox.checked) {
+    
+    if (keepBingWikiOpenCheckbox && !keepBingWikiOpenCheckbox.checked) {
       closeBingWikiPopup();
     }
-    closeShortcutsPopup();
+    
+    closeShortcutsPopup(); // Always close shortcuts on overlay click
   });
-
   document.addEventListener('click', (e) => {
-    if (!wikiContent.contains(e.target) && e.target !== wikiToggleBtn) {
-      if (wikiContent.style.display === 'block' && !keepWikiOpenCheckbox.checked) {
-        wikiContent.style.display = 'none';
-      }
-    }
-    if (!keyboardShortcutsPopup.contains(e.target) && e.target !== keyboardShortcutsBtn) {
-      if (keyboardShortcutsPopup.style.display === 'block' && !keepShortcutsOpenCheckbox.checked) {
-        keyboardShortcutsPopup.style.display = 'none';
-      }
-    }
-  });
+      if (!wikiContent.contains(e.target) && e.target !== wikiToggleBtn) {
+        if (wikiContent.style.display === 'block' && !keepWikiOpenCheckbox.checked) {
+          wikiContent.style.display = 'none';
+        }
+      }  });
 
   document.addEventListener('keydown', (e) => {
     // Ctrl+K : Focus sur la recherche
@@ -2216,10 +2242,9 @@
       if (wikiContent.style.display === 'block' && !keepWikiOpenCheckbox.checked) {
         wikiContent.style.display = 'none';
       }
-      if (keyboardShortcutsPopup.style.display === 'block' && !keepShortcutsOpenCheckbox.checked) {
-        keyboardShortcutsPopup.style.display = 'none';
-      }
-    }
+        if (keyboardShortcutsPopup.classList.contains('show')) {
+          closeShortcutsPopup();
+        }    }
   });
 
   // Event listener for main search input to trigger Yandex translation
@@ -2374,27 +2399,29 @@
         if (input.value.trim() && !input.value.endsWith(' ')) {
             input.value += ' ';
         }
-
         let textToInsert = operator;
         let cursorOffset = 0;
 
         if (operator === '" "') {
-            textToInsert = '""';
-            cursorOffset = -1;
+          textToInsert = '""';
+          cursorOffset = -1; // Place cursor inside quotes
+        } else if (operator === 'NOT' || operator === 'OR') {
+          textToInsert = operator + ' ';
+        } else if (operator.endsWith(':')) {
+          textToInsert = operator; // Operator with colon, like site:
         }
 
-        const selectionStart = input.selectionStart;
-        const textBefore = input.value.substring(0, selectionStart);
-        const textAfter = input.value.substring(input.selectionEnd);
-        
-        input.value = textBefore + textToInsert + textAfter;
-        
-        const finalCursorPos = selectionStart + textToInsert.length + cursorOffset;
-        
         input.focus();
-        input.setSelectionRange(finalCursorPos, finalCursorPos);
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+
+        input.value = input.value.substring(0, start) + textToInsert + input.value.substring(end);
+        input.selectionStart = start + textToInsert.length + cursorOffset;
+        input.selectionEnd = start + textToInsert.length + cursorOffset;
     }
   });
+  
+
 
   // AI-Assisted Comment: This constant stores a reference to the dark mode toggle button.
   const darkModeToggleBtn = document.getElementById('darkModeToggleBtn');
@@ -2510,6 +2537,7 @@
   });
 
 
+
   googleOperatorFilters.addEventListener('click', function(e) {
     if (e.target.classList.contains('operator-btn')) {
         const operator = e.target.dataset.operator;
@@ -2523,26 +2551,29 @@
         let cursorOffset = 0;
 
         if (operator === '" "') {
-            textToInsert = '""';
-            cursorOffset = -1;
+          textToInsert = '""';
+          cursorOffset = -1; // Place cursor inside quotes
         } else if (operator === '( )') {
-            textToInsert = '()';
-            cursorOffset = -1;
+          textToInsert = '()';
+          cursorOffset = -1;
+        } else if (operator === 'in') {
+          // 'in' operator needs special handling, often used as 'X in Y'
+          // For now, just insert 'in '
+          textToInsert = 'in ';
+        } else if (operator.endsWith(':')) {
+          textToInsert = operator; // Operator with colon, like site:
         } else if (operator === 'AROUND()') {
-            textToInsert = 'AROUND()';
-            cursorOffset = -1;
+          textToInsert = 'AROUND(n)';
+          cursorOffset = -2; // Place cursor inside parentheses
         }
 
-        const selectionStart = input.selectionStart;
-        const textBefore = input.value.substring(0, selectionStart);
-        const textAfter = input.value.substring(input.selectionEnd);
-        
-        input.value = textBefore + textToInsert + textAfter;
-        
-        const finalCursorPos = selectionStart + textToInsert.length + cursorOffset;
-        
         input.focus();
-        input.setSelectionRange(finalCursorPos, finalCursorPos);
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+
+        input.value = input.value.substring(0, start) + textToInsert + input.value.substring(end);
+        input.selectionStart = start + textToInsert.length + cursorOffset;
+        input.selectionEnd = start + textToInsert.length + cursorOffset;
     }
   });
 
