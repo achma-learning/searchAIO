@@ -35,3 +35,16 @@ Future updates will likely focus on:
 - **Expanding filtering capabilities:** More advanced filtering and search operators could be added to refine search results further.
 
 This `GEMINI.md` file will be automatically updated to reflect the latest changes and features as the project progresses.
+
+---
+
+## Latest Project Description (from User)
+
+**Advanced Multi-Engine Search Portal** - A sophisticated web application featuring:
+
+*   35+ search engines across general, academic, medical, and AI categories
+*   Prefix-based routing (g:, yt:, scholar:) with autocomplete
+*   Engine-specific filters (YouTube sorting, CISMeF medical docs, Google/Bing operators)
+*   Advanced features: Filetype selector, dark mode, keyboard shortcuts, contextual wikis
+*   Smart UI: Dynamic favicon loading, tooltip system, responsive design with starfield animation
+*   Optimised mainly for desktop and laptop screens

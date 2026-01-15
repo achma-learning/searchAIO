@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation Features - Yandex & Baidu</title>
+    <style>
+        /* ============= TRANSLATION POPUP STYLES ============= */
+        .translation-popup {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 380px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            padding: 20px;
+            display: none;
+            z-index: 2001;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .translation-popup.show {
+            display: block;
+        }
+
+        /* Yandex theme - Red */
+        .translation-popup.yandex {
+            border: 2px solid #ff0000;
+        }
+
+        /* Baidu theme - Blue */
+        .translation-popup.baidu {
+            border: 2px solid #2932e1;
+        }
+
+        .dark-mode .translation-popup {
+            background: #1a2332;
+            color: #b0bec5;
+        }
+
+        .dark-mode .translation-popup.yandex {
+            border-color: #ff4444;
+        }
+
+        .dark-mode .translation-popup.baidu {
+            border-color: #5865f2;
+        }
+
+        .translation-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .dark-mode .translation-header {
+            border-bottom-color: #2d3e52;
+        }
+
+        .translation-header h4 {
+            margin: 0;
+            font-size: 1.1em;
+            flex: 1;
+        }
+
+        .translation-popup.yandex .translation-header h4 {
+            color: #ff0000;
+        }
+
+        .translation-popup.baidu .translation-header h4 {
+            color: #2932e1;
+        }
+
+        .dark-mode .translation-popup.yandex .translation-header h4 {
+            color: #ff4444;
+        }
+
+        .dark-mode .translation-popup.baidu .translation-header h4 {
+            color: #5865f2;
+        }
+
+        .translation-close {
+            cursor: pointer;
+            font-size: 24px;
+            color: #999;
+            background: none;
+            border: none;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .translation-close:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .dark-mode .translation-close:hover {
+            background: #2d3e52;
+            color: #fff;
+        }
+
+        .translation-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+
+        .translation-row label {
+            min-width: 50px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .translation-row select {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .dark-mode .translation-row select {
+            background: #243447;
+            border-color: #2d3e52;
+            color: #b0bec5;
+        }
+
+        .translation-output {
+            width: 100%;
+            min-height: 90px;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 8px;
+            resize: vertical;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+        }
+
+        .translation-popup.yandex .translation-output {
+            border-color: #ff0000;
+        }
+
+        .translation-popup.baidu .translation-output {
+            border-color: #2932e1;
+        }
+
+        .dark-mode .translation-output {
+            background: #243447;
+            color: #b0bec5;
+            border-color: #2d3e52;
+        }
+
+        .translation-status {
+            font-size: 12px;
+            color: #666;
+            min-height: 18px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .dark-mode .translation-status {
+            color: #999;
+        }
+
+        .translation-status.success {
+            color: #4CAF50;
+        }
+
+        .translation-status.error {
+            color: #ff0000;
+        }
+
+        .translation-status.loading::before {
+            content: "⏳";
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .translation-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .translation-buttons button {
+            flex: 1;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .translation-buttons button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn-copy {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-insert {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+
+        .translation-popup.yandex .btn-copy {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+        }
+
+        .translation-popup.baidu .btn-copy {
+            background: linear-gradient(135deg, #2932e1, #1e26a8);
+        }
+
+        /* Auto-translate toggle */
+        .auto-translate-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #f5f5f5;
+            border-radius: 6px;
+        }
+
+        .dark-mode .auto-translate-toggle {
+            background: #243447;
+        }
+
+        .auto-translate-toggle input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        .auto-translate-toggle label {
+            cursor: pointer;
+            font-size: 13px;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div style="padding: 40px; max-width: 900px; margin: 0 auto;">
+        <h1>🌐 Translation Features Demo</h1>
+        <p>Select <strong>Yandex</strong> or <strong>Baidu</strong> to see translation popups. Type in English and watch auto-translation work.</p>
+        
+        <div style="margin: 30px 0; padding: 20px; background: #f5f5f5; border-radius: 8px;">
+            <h3>Search Engine Selection:</h3>
+            <label style="display: block; margin: 10px 0;">
+                <input type="radio" name="demoEngine" value="g:" checked>
+                Google (no popup)
+            </label>
+            <label style="display: block; margin: 10px 0;">
+                <input type="radio" name="demoEngine" value="yan:">
+                Yandex (Russian translation)
+            </label>
+            <label style="display: block; margin: 10px 0;">
+                <input type="radio" name="demoEngine" value="baidu:">
+                Baidu (Chinese translation)
+            </label>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <input type="text" id="demoSearch" placeholder="Type something in English..." 
+                   style="width: 100%; padding: 15px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px;">
+        </div>
+
+        <div style="margin-top: 30px; padding: 20px; background: #e3f2fd; border-radius: 8px;">
+            <h3>📝 Integration Instructions:</h3>
+            <ol style="line-height: 1.8;">
+                <li>Add <code>baidu:</code> to <code>searchEngines</code> object</li>
+                <li>Copy CSS to your stylesheet</li>
+                <li>Copy JavaScript to your script section</li>
+                <li>Popups appear automatically when Yandex/Baidu selected</li>
+                <li>Install MyMemory Translation API (free, no key needed)</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Yandex Translation Popup -->
+    <div id="yandexTranslationPopup" class="translation-popup yandex">
+        <div class="translation-header">
+            <span style="font-size: 24px;">🇷🇺</span>
+            <h4>Translate to Russian</h4>
+            <button class="translation-close" onclick="closeTranslationPopup('yandex')">&times;</button>
+        </div>
+        
+        <div class="auto-translate-toggle">
+            <input type="checkbox" id="yandexAutoTranslate" checked>
+            <label for="yandexAutoTranslate">Auto-translate while typing</label>
+        </div>
+        
+        <div class="translation-row">
+            <label>From:</label>
+            <select id="yandexSourceLang">
+                <option value="en" selected>English</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="es">Spanish</option>
+                <option value="ar">Arabic</option>
+                <option value="zh">Chinese</option>
+            </select>
+        </div>
+        
+        <textarea id="yandexTranslatedText" class="translation-output" readonly 
+                  placeholder="Russian translation will appear here..."></textarea>
+        
+        <div id="yandexStatus" class="translation-status"></div>
+        
+        <div class="translation-buttons">
+            <button class="btn-copy" onclick="copyTranslation('yandex')">📋 Copy</button>
+            <button class="btn-insert" onclick="insertTranslation('yandex')">✏️ Insert</button>
+        </div>
+    </div>
+
+    <!-- Baidu Translation Popup -->
+    <div id="baiduTranslationPopup" class="translation-popup baidu">
+        <div class="translation-header">
+            <span style="font-size: 24px;">🇨🇳</span>
+            <h4>Translate to Chinese</h4>
+            <button class="translation-close" onclick="closeTranslationPopup('baidu')">&times;</button>
+        </div>
+        
+        <div class="auto-translate-toggle">
+            <input type="checkbox" id="baiduAutoTranslate" checked>
+            <label for="baiduAutoTranslate">Auto-translate while typing</label>
+        </div>
+        
+        <div class="translation-row">
+            <label>From:</label>
+            <select id="baiduSourceLang">
+                <option value="en" selected>English</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="es">Spanish</option>
+                <option value="ar">Arabic</option>
+                <option value="ru">Russian</option>
+            </select>
+        </div>
+        
+        <textarea id="baiduTranslatedText" class="translation-output" readonly 
+                  placeholder="Chinese translation will appear here..."></textarea>
+        
+        <div id="baiduStatus" class="translation-status"></div>
+        
+        <div class="translation-buttons">
+            <button class="btn-copy" onclick="copyTranslation('baidu')">📋 Copy</button>
+            <button class="btn-insert" onclick="insertTranslation('baidu')">✏️ Insert</button>
+        </div>
+    </div>
+
+    <script>
+        // ============= TRANSLATION SYSTEM =============
+        
+        const demoSearch = document.getElementById('demoSearch');
+        let currentEngine = 'g:';
+        let translationTimeout = {};
+
+        // Update engine selection
+        document.querySelectorAll('input[name="demoEngine"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                currentEngine = e.target.value;
+                updateTranslationPopups();
+            });
+        });
+
+        // Translation API function (using MyMemory - free, no key required)
+        async function translateText(text, sourceLang, targetLang) {
+            if (!text.trim()) return '';
+            
+            try {
+                const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.responseStatus === 200) {
+                    return data.responseData.translatedText;
+                } else {
+                    throw new Error('Translation failed');
+                }
+            } catch (error) {
+                console.error('Translation error:', error);
+                throw error;
+            }
+        }
+
+        // Debounced translation function
+        function scheduleTranslation(engine, text) {
+            const autoCheckbox = document.getElementById(`${engine}AutoTranslate`);
+            if (!autoCheckbox.checked) return;
+
+            const sourceLang = document.getElementById(`${engine}SourceLang`).value;
+            const targetLang = engine === 'yandex' ? 'ru' : 'zh-CN';
+            const statusDiv = document.getElementById(`${engine}Status`);
+            const outputArea = document.getElementById(`${engine}TranslatedText`);
+
+            // Clear previous timeout
+            clearTimeout(translationTimeout[engine]);
+
+            if (!text.trim()) {
+                outputArea.value = '';
+                statusDiv.textContent = '';
+                statusDiv.className = 'translation-status';
+                return;
+            }
+
+            statusDiv.textContent = 'Translating...';
+            statusDiv.className = 'translation-status loading';
+
+            // Debounce: wait 800ms after last keystroke
+            translationTimeout[engine] = setTimeout(async () => {
+                try {
+                    const translated = await translateText(text, sourceLang, targetLang);
+                    outputArea.value = translated;
+                    statusDiv.textContent = '✓ Translation complete';
+                    statusDiv.className = 'translation-status success';
+                    
+                    // Clear success message after 2 seconds
+                    setTimeout(() => {
+                        if (statusDiv.textContent === '✓ Translation complete') {
+                            statusDiv.textContent = '';
+                        }
+                    }, 2000);
+                } catch (error) {
+                    statusDiv.textContent = '✗ Translation failed. Please try again.';
+                    statusDiv.className = 'translation-status error';
+                }
+            }, 800);
+        }
+
+        // Update popup visibility based on engine
+        function updateTranslationPopups() {
+            const yandexPopup = document.getElementById('yandexTranslationPopup');
+            const baiduPopup = document.getElementById('baiduTranslationPopup');
+
+            yandexPopup.classList.toggle('show', currentEngine === 'yan:');
+            baiduPopup.classList.toggle('show', currentEngine === 'baidu:');
+
+            // Trigger translation if popup is shown
+            if (currentEngine === 'yan:' || currentEngine === 'baidu:') {
+                const engine = currentEngine === 'yan:' ? 'yandex' : 'baidu';
+                scheduleTranslation(engine, demoSearch.value);
+            }
+        }
+
+        // Close popup
+        function closeTranslationPopup(engine) {
+            document.getElementById(`${engine}TranslationPopup`).classList.remove('show');
+            // Reset engine to Google
+            document.querySelector('input[name="demoEngine"][value="g:"]').checked = true;
+            currentEngine = 'g:';
+        }
+
+        // Copy translation to clipboard
+        function copyTranslation(engine) {
+            const textArea = document.getElementById(`${engine}TranslatedText`);
+            const statusDiv = document.getElementById(`${engine}Status`);
+            
+            if (!textArea.value.trim()) {
+                statusDiv.textContent = '✗ Nothing to copy';
+                statusDiv.className = 'translation-status error';
+                return;
+            }
+
+            navigator.clipboard.writeText(textArea.value).then(() => {
+                statusDiv.textContent = '✓ Copied to clipboard!';
+                statusDiv.className = 'translation-status success';
+                setTimeout(() => {
+                    statusDiv.textContent = '';
+                }, 2000);
+            }).catch(err => {
+                statusDiv.textContent = '✗ Copy failed';
+                statusDiv.className = 'translation-status error';
+            });
+        }
+
+        // Insert translation at cursor position
+        function insertTranslation(engine) {
+            const textArea = document.getElementById(`${engine}TranslatedText`);
+            const statusDiv = document.getElementById(`${engine}Status`);
+            const translation = textArea.value.trim();
+            
+            if (!translation) {
+                statusDiv.textContent = '✗ Nothing to insert';
+                statusDiv.className = 'translation-status error';
+                return;
+            }
+
+            const input = demoSearch;
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const before = input.value.substring(0, start);
+            const after = input.value.substring(end);
+            
+            // Insert translation at cursor
+            input.value = before + translation + after;
+            
+            // Move cursor after inserted text
+            const newPos = start + translation.length;
+            input.setSelectionRange(newPos, newPos);
+            input.focus();
+
+            statusDiv.textContent = '✓ Inserted into search bar';
+            statusDiv.className = 'translation-status success';
+            setTimeout(() => {
+                statusDiv.textContent = '';
+            }, 2000);
+        }
+
+        // Listen to input changes
+        demoSearch.addEventListener('input', (e) => {
+            if (currentEngine === 'yan:') {
+                scheduleTranslation('yandex', e.target.value);
+            } else if (currentEngine === 'baidu:') {
+                scheduleTranslation('baidu', e.target.value);
+            }
+        });
+
+        // Listen to source language changes
+        ['yandex', 'baidu'].forEach(engine => {
+            document.getElementById(`${engine}SourceLang`).addEventListener('change', () => {
+                scheduleTranslation(engine, demoSearch.value);
+            });
+        });
+
+        // Listen to auto-translate checkbox changes
+        ['yandex', 'baidu'].forEach(engine => {
+            document.getElementById(`${engine}AutoTranslate`).addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    scheduleTranslation(engine, demoSearch.value);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
