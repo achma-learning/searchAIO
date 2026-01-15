@@ -1391,41 +1391,8 @@
     <div id="keyboardShortcutsPopup" style="display: none;">
       <button class="close-btn" id="closeShortcutsBtn">&times;</button>
       <h3>⌨️ Keyboard Shortcuts</h3>
-      <div style="max-height: 50vh; overflow-y: auto;">
-        <table class="wiki-table">
-            <thead>
-                <tr>
-                    <th>Shortcut</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><code>Ctrl + K</code></td>
-                    <td>Focus on the search bar</td>
-                </tr>
-                <tr>
-                    <td><code>Ctrl + Shift + K</code></td>
-                    <td>Clear the search bar</td>
-                </tr>
-                <tr>
-                    <td><code>Alt + ↑/↓</code></td>
-                    <td>Cycle through search engines</td>
-                </tr>
-                <tr>
-                    <td><code>Alt + 1-4</code></td>
-                    <td>Switch search engine category</td>
-                </tr>
-                <tr>
-                    <td><code>Ctrl + Shift + C</code></td>
-                    <td>Copy the current search query</td>
-                </tr>
-                <tr>
-                    <td><code>Esc</code></td>
-                    <td>Close any open pop-up</td>
-                </tr>
-            </tbody>
-        </table>
+      <div id="shortcuts-content" style="max-height: 50vh; overflow-y: auto;">
+        <!-- Shortcuts will be loaded here -->
       </div>
     </div>
 
@@ -1622,6 +1589,45 @@
       function openShortcutsPopup() {
         keyboardShortcutsPopup.classList.add('show');
         popupOverlay.classList.add('show');
+
+        const shortcuts = [
+            { keys: 'Ctrl + K', description: 'Focus on the search bar' },
+            { keys: 'Ctrl + Shift + K', description: 'Clear the search bar' },
+            { keys: 'Alt + ↑/↓', description: 'Cycle through search engines' },
+            { keys: 'Alt + 1-4', description: 'Switch search engine category' },
+            { keys: 'Ctrl + Shift + C', description: 'Copy the current search query' },
+            { keys: 'Esc', description: 'Close any open pop-up' }
+        ];
+
+        const shortcutsContent = document.getElementById('shortcuts-content');
+        shortcutsContent.innerHTML = ''; // Clear previous content
+
+        const table = document.createElement('table');
+        table.className = 'wiki-table';
+        
+        const thead = document.createElement('thead');
+        thead.innerHTML = `
+            <tr>
+                <th>Shortcut</th>
+                <th>Action</th>
+            </tr>
+        `;
+
+        const tbody = document.createElement('tbody');
+        shortcuts.forEach(shortcut => {
+            const row = document.createElement('tr');
+            const keysCell = document.createElement('td');
+            const descCell = document.createElement('td');
+            keysCell.innerHTML = `<code>${shortcut.keys}</code>`;
+            descCell.textContent = shortcut.description;
+            row.appendChild(keysCell);
+            row.appendChild(descCell);
+            tbody.appendChild(row);
+        });
+
+        table.appendChild(thead);
+        table.appendChild(tbody);
+        shortcutsContent.appendChild(table);
       }
 
       function closeShortcutsPopup() {
