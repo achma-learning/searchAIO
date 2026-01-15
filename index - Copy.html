@@ -788,50 +788,69 @@
             border-bottom-color: #64b5f6;
         }
 
-#keyboardShortcutsPopup {
-    position: fixed !important;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 720px;
-    background: white;
-    border: 2px solid #e0e0e0;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
-    padding: 24px;
-    z-index: 2005;               /* Plus haut que l'overlay */
-    display: none;
-}
+        #keyboardShortcutsPopup {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            font-size: 14px;
+            color: #333;
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+        }
+        .dark-mode #keyboardShortcutsPopup {
+            background: #1a2332;
+            border-color: #2d3e52;
+            color: #b0bec5;
+        }
+        #keyboardShortcutsPopup .close-btn {
+            display: none; /* Hide the old close button as we will use a different closing mechanism */
+        }
 
-#keyboardShortcutsPopup.show {
-    display: block !important;
-}
+        #keyboardShortcutsPopup h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .dark-mode #keyboardShortcutsPopup h3 {
+            color: #64b5f6;
+            border-bottom-color: #64b5f6;
+        }
 
-.dark-mode #keyboardShortcutsPopup {
-    background: #1a2332;
-    border-color: #2d3e52;
-    color: #d0d8e0;
-}
-
-#keyboardShortcutsPopup .close-btn {
-    position: absolute;
-    top: 12px;
-    right: 16px;
-    font-size: 32px;
-    cursor: pointer;
-    color: #888;
-    background: none;
-    border: none;
-}
-
-#keyboardShortcutsPopup .close-btn:hover {
-    color: #333;
-}
-
-.dark-mode #keyboardShortcutsPopup .close-btn:hover {
-    color: #eee;
-}
+        .shortcuts-toggle {
+            display: flex;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .shortcuts-toggle .toggle-btn {
+            flex: 1;
+            padding: 8px 12px;
+            background: #f0f0f0;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .shortcuts-toggle .toggle-btn.active {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+        .dark-mode .shortcuts-toggle {
+            border-color: #455a64;
+        }
+        .dark-mode .shortcuts-toggle .toggle-btn {
+            background: #243447;
+            color: #b0bec5;
+        }
+        .dark-mode .shortcuts-toggle .toggle-btn.active {
+            background: #1e3c72;
+            color: white;
+        }
 
         #googleWikiPopup h3 {
             margin-top: 0;
