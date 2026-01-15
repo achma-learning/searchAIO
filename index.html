@@ -789,41 +789,25 @@
         }
 
         #keyboardShortcutsPopup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 90%;
-            max-width: 700px;
             background: white;
             border: 2px solid #e0e0e0;
             border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            padding: 24px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
             font-size: 14px;
             color: #333;
+            max-height: 400px;
+            overflow-y: auto;
             display: none;
-            z-index: 2000;
         }
-        #keyboardShortcutsPopup.show { display: block; }
         .dark-mode #keyboardShortcutsPopup {
             background: #1a2332;
             border-color: #2d3e52;
             color: #b0bec5;
         }
         #keyboardShortcutsPopup .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 28px;
-            cursor: pointer;
-            color: #999;
-            background: none;
-            border: none;
-            padding: 0;
+            display: none; /* Hide the old close button as we will use a different closing mechanism */
         }
-        #keyboardShortcutsPopup .close-btn:hover { color: #333; }
-        .dark-mode #keyboardShortcutsPopup .close-btn:hover { color: #fff; }
 
         #keyboardShortcutsPopup h3 {
             margin-top: 0;
@@ -1421,8 +1405,10 @@
     </div>
     
     <div id="keyboardShortcutsPopup" style="display: none;">
-      <button class="close-btn" id="closeShortcutsBtn">&times;</button>
-      <h3>⌨️ Keyboard Shortcuts</h3>
+      <div class="checkbox-container">
+        <input type="checkbox" id="keepShortcutsOpenCheckbox" />
+        <label for="keepShortcutsOpenCheckbox">Garder le wiki ouvert</label>
+      </div>
       <div class="shortcuts-toggle">
         <button id="appShortcutsBtn" class="toggle-btn active">App</button>
         <button id="chromeShortcutsBtn" class="toggle-btn">Chrome</button>
@@ -1595,6 +1581,8 @@
       const keyboardShortcutsBtn = document.getElementById('keyboardShortcutsBtn'); // New button
       const keyboardShortcutsPopup = document.getElementById('keyboardShortcutsPopup');
       const closeShortcutsBtn = document.getElementById('closeShortcutsBtn');
+      const appShortcutsBtn = document.getElementById('appShortcutsBtn');
+      const chromeShortcutsBtn = document.getElementById('chromeShortcutsBtn');
     
       // Yandex Translation elements
         const yandexTranslationBox = document.getElementById('yandexTranslationBox');
@@ -1854,23 +1842,7 @@
       function openShortcutsPopup() {
         keyboardShortcutsPopup.classList.add('show');
         popupOverlay.classList.add('show');
-        
         renderAppShortcuts();
-
-        const appShortcutsBtn = document.getElementById('appShortcutsBtn');
-        const chromeShortcutsBtn = document.getElementById('chromeShortcutsBtn');
-
-        appShortcutsBtn.addEventListener('click', () => {
-            appShortcutsBtn.classList.add('active');
-            chromeShortcutsBtn.classList.remove('active');
-            renderAppShortcuts();
-        });
-
-        chromeShortcutsBtn.addEventListener('click', () => {
-            chromeShortcutsBtn.classList.add('active');
-            appShortcutsBtn.classList.remove('active');
-            renderChromeShortcuts();
-        });
       }
 
       function closeShortcutsPopup() {
@@ -1882,6 +1854,18 @@
 
       keyboardShortcutsBtn.addEventListener('click', openShortcutsPopup);
       closeShortcutsBtn.addEventListener('click', closeShortcutsPopup);
+
+      appShortcutsBtn.addEventListener('click', () => {
+        appShortcutsBtn.classList.add('active');
+        chromeShortcutsBtn.classList.remove('active');
+        renderAppShortcuts();
+      });
+
+      chromeShortcutsBtn.addEventListener('click', () => {
+        chromeShortcutsBtn.classList.add('active');
+        appShortcutsBtn.classList.remove('active');
+        renderChromeShortcuts();
+      });
     
       // Translation API function (using MyMemory - free, no key required)
       async function translateText(text, sourceLang, targetLang) {
@@ -2394,6 +2378,11 @@
         wikiContent.style.display = 'none';
       }
     }
+    if (!keyboardShortcutsPopup.contains(e.target) && e.target !== keyboardShortcutsBtn) {
+      if (keyboardShortcutsPopup.style.display === 'block' && !keepShortcutsOpenCheckbox.checked) {
+        keyboardShortcutsPopup.style.display = 'none';
+      }
+    }
   });
 
   document.addEventListener('keydown', (e) => {
@@ -2457,11 +2446,11 @@
       if (bingWikiPopup.classList.contains('show') && !keepBingWikiOpenCheckbox.checked) {
         closeBingWikiPopup();
       }
-      if (keyboardShortcutsPopup.classList.contains('show')) {
-        closeShortcutsPopup();
-      }
       if (wikiContent.style.display === 'block' && !keepWikiOpenCheckbox.checked) {
         wikiContent.style.display = 'none';
+      }
+      if (keyboardShortcutsPopup.style.display === 'block' && !keepShortcutsOpenCheckbox.checked) {
+        keyboardShortcutsPopup.style.display = 'none';
       }
     }
   });
