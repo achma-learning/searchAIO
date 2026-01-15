@@ -15,7 +15,9 @@ The file `promo.html` is a sophisticated, single-page web application designed a
 - **Filetype Filtering:** The interface includes a feature to filter searches by filetype (e.g., PDF, DOCX), which is particularly useful for finding specific documents.
 - **Dark Mode:** A toggle for dark mode is available for user comfort.
 - **Interactive Wiki:** A built-in "Wiki" feature explains the available search prefixes and operators.
-- **Responsive Design:** The page is designed to be usable across different screen sizes.
+- **Privacy-first:** No external dependencies except for the favicon service.
+- **Smooth Animations:** Enhances user experience with fade-in effects and other subtle transitions.
+- **Responsive Design:** Adapts to various screen sizes, featuring a single-column layout on mobile devices and a two-column layout on desktops.
 
 ## Technical Details
 

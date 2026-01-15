@@ -1694,12 +1694,15 @@
 
     // Toggle Yandex Translation Box visibility
     const isYandex = (effectivePrefix === 'yan:');
+    const yandexBoxIsVisible = yandexTranslationBox.style.display !== 'none';
+
     yandexTranslationBox.style.display = isYandex ? 'grid' : 'none';
-    if (isYandex) {
+
+    if (isYandex && !yandexBoxIsVisible) { // Just switched TO yandex
         yandexSourceText.value = ''; // Clear the input field when Yandex is selected
         yandexSourceText.focus(); // Focus on the new input field
         scheduleYandexTranslation(); // Trigger translation from the new input field
-    } else {
+    } else if (!isYandex && yandexBoxIsVisible) { // Just switched AWAY from yandex
         // Clear translation when not Yandex
         yandexSourceText.value = '';
         yandexTargetText.value = '';
