@@ -1,8 +1,8 @@
-# Gemini Code Companion Report: promo.html
+# Gemini Code Companion Report: index.html
 
 ## Overview
 
-The file `promo.html` is a sophisticated, single-page web application designed as a powerful multi-search interface. It consolidates numerous search engines and online resources into a single, efficient, and user-friendly dashboard. The primary goal of this tool is to streamline the research process for users, particularly in academic and medical fields, by providing quick access to a categorized and curated list of search providers.
+The file `index.html` is a sophisticated, single-page web application designed as a powerful multi-search interface. It consolidates numerous search engines and online resources into a single, efficient, and user-friendly dashboard. The primary goal of this tool is to streamline the research process for users, particularly in academic and medical fields, by providing quick access to a categorized and curated list of search providers.
 
 ## Key Features
 
@@ -18,6 +18,7 @@ The file `promo.html` is a sophisticated, single-page web application designed a
 - **Privacy-first:** No external dependencies except for the favicon service.
 - **Smooth Animations:** Enhances user experience with fade-in effects and other subtle transitions.
 - **Responsive Design:** Adapts to various screen sizes, featuring a single-column layout on mobile devices and a two-column layout on desktops.
+- **Keyboard Shortcuts:** A dedicated pop-up displays available keyboard shortcuts for power users (e.g., `Ctrl+K` to focus search, `Alt+↑/↓` to cycle engines). This list is automatically updated from the source code.
 
 ## Technical Details
 
@@ -29,24 +30,13 @@ The file `promo.html` is a sophisticated, single-page web application designed a
 
 ## Goals & Evolution
 
-The primary goal of `promo.html` is to be an all-in-one search solution that evolves with the user's needs. The structure of the code and the presence of various experimental files in the `search` directory suggest that this is an active project with ongoing development.
+The primary goal of `index.html` is to be an all-in-one search solution that evolves with the user's needs. The structure of the code and the presence of various experimental files in the `search` directory suggest that this is an active project with ongoing development.
 
 Future updates will likely focus on:
 - **Adding more search sources:** The flexible, categorized structure makes it easy to integrate new search engines.
 - **Enhancing user experience:** Further improvements to the UI/UX are expected, potentially including more customization options.
 - **Expanding filtering capabilities:** More advanced filtering and search operators could be added to refine search results further.
+- **Add Yandex search operator above search bar:** Implement a dedicated display or input field for Yandex-specific search operators, positioned prominently near the main search bar to enhance Yandex search customization.
+- **Add Baidu search engine with similar functionality to Yandex:** Integrate Baidu as a new search engine option, ensuring it supports features like translation and operator filtering, comparable to the existing Yandex functionality.
 
 This `GEMINI.md` file will be automatically updated to reflect the latest changes and features as the project progresses.
-
----
-
-## Latest Project Description (from User)
-
-**Advanced Multi-Engine Search Portal** - A sophisticated web application featuring:
-
-*   35+ search engines across general, academic, medical, and AI categories
-*   Prefix-based routing (g:, yt:, scholar:) with autocomplete
-*   Engine-specific filters (YouTube sorting, CISMeF medical docs, Google/Bing operators)
-*   Advanced features: Filetype selector, dark mode, keyboard shortcuts, contextual wikis
-*   Smart UI: Dynamic favicon loading, tooltip system, responsive design with starfield animation
-*   Optimised mainly for desktop and laptop screens

@@ -1,0 +1,6 @@
+Ctrl + K: Focus on the search bar
+Ctrl + Shift + K: Clear the search bar
+Alt + ↑/↓: Cycle through search engines
+Alt + 1-4: Switch search engine category
+Ctrl + Shift + C: Copy the current search query
+Esc: Close any open pop-up
