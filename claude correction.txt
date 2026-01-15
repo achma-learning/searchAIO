@@ -1,0 +1,719 @@
+# Comprehensive Error Report and Fix Guide for Search Hub HTML
+
+## Overview
+This document provides a detailed analysis of all errors found in the search hub HTML code and step-by-step instructions to fix them.
+
+---
+
+## 🔴 CRITICAL ERRORS
+
+### 1. Missing Variable Declaration - `keepShortcutsOpenCheckbox`
+
+**Location:** Multiple places in JavaScript
+- Line ~583: Inside `document.addEventListener('click', ...)`
+- Line ~627: Inside `document.addEventListener('keydown', ...)`
+
+**Problem:**
+```javascript
+// This variable is referenced but NEVER declared
+if (!keepShortcutsOpenCheckbox.checked) { ... }
+```
+
+**Error Message in Console:**
+```
+Uncaught ReferenceError: keepShortcutsOpenCheckbox is not defined
+```
+
+**Fix:**
+
+**Step 1:** Find this code block around line 583:
+```javascript
+document.addEventListener('click', (e) => {
+  if (!wikiContent.contains(e.target) && e.target !== wikiToggleBtn) {
+    if (wikiContent.style.display === 'block' && !keepWikiOpenCheckbox.checked) {
+      wikiContent.style.display = 'none';
+    }
+  }
+  if (!keyboardShortcutsPopup.contains(e.target) && e.target !== keyboardShortcutsBtn) {
+    if (keyboardShortcutsPopup.style.display === 'block' && !keepShortcutsOpenCheckbox.checked) {
+      keyboardShortcutsPopup.style.display = 'none';
+    }
+  }
+});
+```
+
+**REMOVE the entire second `if` block** (the one about keyboardShortcutsPopup). It should become:
+```javascript
+document.addEventListener('click', (e) => {
+  if (!wikiContent.contains(e.target) && e.target !== wikiToggleBtn) {
+    if (wikiContent.style.display === 'block' && !keepWikiOpenCheckbox.checked) {
+      wikiContent.style.display = 'none';
+    }
+  }
+  // REMOVED THE BROKEN CODE - shortcuts popup is handled in popupOverlay click handler
+});
+```
+
+**Step 2:** Find this code block around line 627 (in the keydown event listener):
+```javascript
+if (e.key === 'Escape') {
+  if (filetypesPopup.classList.contains('show')) {
+    closeFiletypesPopup();
+  }
+  if (googleWikiPopup.classList.contains('show') && !keepGoogleWikiOpenCheckbox.checked) {
+    closeGoogleWikiPopup();
+  }
+  if (bingWikiPopup.classList.contains('show') && !keepBingWikiOpenCheckbox.checked) {
+    closeBingWikiPopup();
+  }
+  if (wikiContent.style.display === 'block' && !keepWikiOpenCheckbox.checked) {
+    wikiContent.style.display = 'none';
+  }
+  if (keyboardShortcutsPopup.style.display === 'block' && !keepShortcutsOpenCheckbox.checked) {
+    keyboardShortcutsPopup.style.display = 'none';
+  }
+}
+```
+
+**REPLACE the last `if` statement** with:
+```javascript
+if (e.key === 'Escape') {
+  if (filetypesPopup.classList.contains('show')) {
+    closeFiletypesPopup();
+  }
+  if (googleWikiPopup.classList.contains('show') && !keepGoogleWikiOpenCheckbox.checked) {
+    closeGoogleWikiPopup();
+  }
+  if (bingWikiPopup.classList.contains('show') && !keepBingWikiOpenCheckbox.checked) {
+    closeBingWikiPopup();
+  }
+  if (wikiContent.style.display === 'block' && !keepWikiOpenCheckbox.checked) {
+    wikiContent.style.display = 'none';
+  }
+  if (keyboardShortcutsPopup.classList.contains('show')) {
+    closeShortcutsPopup();
+  }
+}
+```
+
+---
+
+### 2. Keyboard Shortcuts Popup CSS Issues
+
+**Location:** CSS `<style>` section, around line 467
+
+**Problems:**
+1. Missing `position: fixed` - popup doesn't center properly
+2. Missing `.show` class definition - popup won't display correctly
+3. `z-index` too low or missing - popup appears behind overlay
+4. Inconsistent display toggling (`style.display` vs `.show` class)
+
+**Fix:**
+
+Find this CSS block:
+```css
+#keyboardShortcutsPopup {
+  /* existing styles */
+}
+```
+
+**REPLACE IT ENTIRELY** with:
+```css
+#keyboardShortcutsPopup {
+    position: fixed !important;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 720px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    padding: 24px;
+    z-index: 2005;               /* Higher than overlay (2000) */
+    display: none;
+}
+
+#keyboardShortcutsPopup.show {
+    display: block !important;   /* Force display when .show class is added */
+}
+
+.dark-mode #keyboardShortcutsPopup {
+    background: #1a2332;
+    border-color: #2d3e52;
+    color: #d0d8e0;
+}
+
+#keyboardShortcutsPopup .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 32px;
+    cursor: pointer;
+    color: #888;
+    background: none;
+    border: none;
+    padding: 0;
+    width: auto;
+    height: auto;
+}
+
+#keyboardShortcutsPopup .close-btn:hover {
+    color: #333;
+    transform: none;
+    box-shadow: none;
+}
+
+.dark-mode #keyboardShortcutsPopup .close-btn:hover {
+    color: #eee;
+}
+```
+
+---
+
+### 3. Inconsistent Popup Management
+
+**Location:** JavaScript functions for opening/closing shortcuts popup
+
+**Problem:**
+The current `openShortcutsPopup()` and `closeShortcutsPopup()` functions use inconsistent methods:
+- Sometimes using `.style.display`
+- Sometimes using `.classList`
+- Not properly managing overlay state
+
+**Current Code (around line 289):**
+```javascript
+function openShortcutsPopup() {
+  keyboardShortcutsPopup.classList.add('show');
+  popupOverlay.classList.add('show');
+  const shortcutsContent = document.getElementById('shortcuts-content');
+  shortcutsContent.innerHTML = ''; // Clear previous content
+  // ... rest of code
+}
+
+function closeShortcutsPopup() {
+  keyboardShortcutsPopup.classList.remove('show');
+  popupOverlay.classList.remove('show');
+}
+```
+
+**Fix - REPLACE with:**
+```javascript
+function openShortcutsPopup() {
+  keyboardShortcutsPopup.classList.add('show');
+  popupOverlay.classList.add('show');
+  
+  const shortcutsContent = document.getElementById('shortcuts-content');
+  shortcutsContent.innerHTML = ''; // Clear previous content
+
+  const shortcuts = [
+    { keys: 'Ctrl + K', description: 'Focus on the search bar' },
+    { keys: 'Ctrl + Shift + K', description: 'Clear the search bar' },
+    { keys: 'Alt + ↑/↓', description: 'Cycle through search engines' },
+    { keys: 'Alt + 1-4', description: 'Switch search engine category' },
+    { keys: 'Ctrl + Shift + C', description: 'Copy the current search query' },
+    { keys: 'Esc', description: 'Close any open pop-up' }
+  ];
+
+  const table = document.createElement('table');
+  table.className = 'wiki-table';
+  
+  const thead = document.createElement('thead');
+  thead.innerHTML = `
+    <tr>
+      <th>Shortcut</th>
+      <th>Action</th>
+    </tr>
+  `;
+
+  const tbody = document.createElement('tbody');
+  shortcuts.forEach(shortcut => {
+    const row = document.createElement('tr');
+    const keysCell = document.createElement('td');
+    const descCell = document.createElement('td');
+    keysCell.innerHTML = `<code>${shortcut.keys}</code>`;
+    descCell.textContent = shortcut.description;
+    row.appendChild(keysCell);
+    row.appendChild(descCell);
+    tbody.appendChild(row);
+  });
+
+  table.appendChild(thead);
+  table.appendChild(tbody);
+  shortcutsContent.appendChild(table);
+  
+  // Optional: Improve accessibility
+  keyboardShortcutsPopup.setAttribute('aria-hidden', 'false');
+}
+
+function closeShortcutsPopup() {
+  keyboardShortcutsPopup.classList.remove('show');
+  
+  // Only close overlay if NO other popups are open
+  if (!filetypesPopup.classList.contains('show') &&
+      !googleWikiPopup.classList.contains('show') &&
+      !bingWikiPopup.classList.contains('show')) {
+    popupOverlay.classList.remove('show');
+  }
+  
+  // Optional: Improve accessibility
+  keyboardShortcutsPopup.setAttribute('aria-hidden', 'true');
+}
+```
+
+---
+
+### 4. Popup Overlay Click Handler Incomplete
+
+**Location:** Around line 553
+
+**Current Code:**
+```javascript
+popupOverlay.addEventListener('click', () => {
+  closeFiletypesPopup();
+  if (!keepGoogleWikiOpenCheckbox.checked) {
+    closeGoogleWikiPopup();
+  }
+  if (!keepBingWikiOpenCheckbox.checked) {
+    closeBingWikiPopup();
+  }
+  closeShortcutsPopup();
+});
+```
+
+**Problem:** Missing safety checks (optional checkboxes)
+
+**Fix - REPLACE with:**
+```javascript
+popupOverlay.addEventListener('click', () => {
+  closeFiletypesPopup();
+  
+  if (keepGoogleWikiOpenCheckbox && !keepGoogleWikiOpenCheckbox.checked) {
+    closeGoogleWikiPopup();
+  }
+  
+  if (keepBingWikiOpenCheckbox && !keepBingWikiOpenCheckbox.checked) {
+    closeBingWikiPopup();
+  }
+  
+  closeShortcutsPopup(); // Always close shortcuts on overlay click
+});
+```
+
+---
+
+## 🟡 MEDIUM PRIORITY ERRORS
+
+### 5. Yandex Translation Initialization Race Condition
+
+**Location:** Around line 344
+
+**Problem:**
+`scheduleYandexTranslation()` is called in `updateSearchSource()` before checking if Yandex elements exist, causing potential errors on page load.
+
+**Current Code:**
+```javascript
+if (isYandex && !yandexBoxIsVisible) {
+  yandexSourceText.value = '';
+  yandexSourceText.focus();
+  scheduleYandexTranslation(); // Might fail if elements aren't ready
+}
+```
+
+**Fix - ADD NULL CHECKS:**
+```javascript
+function scheduleYandexTranslation() {
+  clearTimeout(yandexTranslationTimeout);
+  
+  // ADD THESE SAFETY CHECKS
+  if (!yandexSourceLang || !yandexSourceText || !yandexTargetText) {
+    console.warn('Yandex translation elements not ready');
+    return;
+  }
+  
+  const sourceLang = yandexSourceLang.value;
+  const textToTranslate = yandexSourceText.value;
+  const targetLang = 'ru';
+
+  if (!textToTranslate.trim()) {
+    yandexTargetText.value = '';
+    if (yandexTranslateStatus) yandexTranslateStatus.textContent = '';
+    return;
+  }
+
+  if (yandexTranslateStatus) {
+    yandexTranslateStatus.textContent = 'Translating...';
+    yandexTranslateStatus.className = 'loading';
+  }
+
+  yandexTranslationTimeout = setTimeout(async () => {
+    try {
+      const translated = await translateText(textToTranslate, sourceLang, targetLang);
+      yandexTargetText.value = translated;
+      if (yandexTranslateStatus) {
+        yandexTranslateStatus.textContent = 'Translation complete';
+        yandexTranslateStatus.className = 'success';
+        
+        setTimeout(() => {
+          if (yandexTranslateStatus && yandexTranslateStatus.textContent === 'Translation complete') {
+            yandexTranslateStatus.textContent = '';
+          }
+        }, 2000);
+      }
+    } catch (error) {
+      yandexTargetText.value = '';
+      if (yandexTranslateStatus) {
+        yandexTranslateStatus.textContent = 'Translation failed. Please try again.';
+        yandexTranslateStatus.className = 'error';
+      }
+    }
+  }, 500);
+}
+```
+
+---
+
+### 6. Memory Leak - Event Listeners Not Cleaned Up
+
+**Location:** Multiple places where event listeners are added
+
+**Problem:**
+Event listeners on operator buttons are added every time filters are displayed, but never removed.
+
+**Current Code (around line 841):**
+```javascript
+googleOperatorFilters.addEventListener('click', function(e) {
+  if (e.target.classList.contains('operator-btn')) {
+    // ... handler code
+  }
+});
+```
+
+**Fix:**
+This is actually OK because the listener is on the container (event delegation). But we should add a flag to prevent duplicate listeners:
+
+```javascript
+// ADD THIS AT THE TOP OF YOUR SCRIPT
+let operatorHandlersInitialized = false;
+
+// THEN WRAP THE LISTENER REGISTRATION
+if (!operatorHandlersInitialized) {
+  googleOperatorFilters.addEventListener('click', function(e) {
+    if (e.target.classList.contains('operator-btn')) {
+      const operator = e.target.dataset.operator;
+      const input = document.getElementById('searchInput');
+      // ... rest of handler
+    }
+  });
+  
+  // Do the same for bingOperatorFilters
+  bingOperatorFilters.addEventListener('click', function(e) {
+    // ... handler code
+  });
+  
+  operatorHandlersInitialized = true;
+}
+```
+
+---
+
+### 7. Tooltip Not Properly Cleaned Up
+
+**Location:** Around line 808
+
+**Problem:**
+`tooltipTimeout` can accumulate if user rapidly hovers over buttons.
+
+**Current Code:**
+```javascript
+googleOperatorFilters.addEventListener('mouseover', function(e) {
+  if (e.target.classList.contains('operator-btn')) {
+    const operator = e.target.dataset.operator;
+    const description = operatorDescriptions[operator];
+    
+    if (description) {
+      tooltipTimeout = setTimeout(() => {
+        // ... show tooltip
+      }, 300);
+    }
+  }
+});
+```
+
+**Fix - ADD CLEANUP:**
+```javascript
+googleOperatorFilters.addEventListener('mouseover', function(e) {
+  if (e.target.classList.contains('operator-btn')) {
+    const operator = e.target.dataset.operator;
+    const description = operatorDescriptions[operator];
+    
+    if (description) {
+      clearTimeout(tooltipTimeout); // CLEAR ANY EXISTING TIMEOUT
+      tooltipTimeout = setTimeout(() => {
+        operatorTooltip.innerHTML = description;
+        operatorTooltip.style.display = 'block';
+        // ... rest of code
+      }, 300);
+    }
+  }
+});
+```
+
+**ALSO ADD to mouseout:**
+```javascript
+googleOperatorFilters.addEventListener('mouseout', function(e) {
+  if (e.target.classList.contains('operator-btn')) {
+    clearTimeout(tooltipTimeout); // ADD THIS
+    operatorTooltip.style.opacity = 0;
+    setTimeout(() => {
+      if (operatorTooltip.style.opacity === '0') {
+        operatorTooltip.style.display = 'none';
+      }
+    }, 200);
+  }
+});
+```
+
+---
+
+## 🟢 LOW PRIORITY ISSUES (Code Quality)
+
+### 8. Inconsistent Quote Style
+
+**Location:** Throughout JavaScript
+
+**Problem:**
+Mixed use of single quotes `'` and double quotes `"`
+
+**Example:**
+```javascript
+const searchInput = document.getElementById('searchInput'); // single
+const msg = "Hello world"; // double
+```
+
+**Fix:**
+Choose ONE style and stick with it. Recommended: **single quotes** for consistency with most of your code.
+
+**Find and Replace:**
+- Be careful with this - don't replace quotes inside HTML strings
+- Manually review each change
+
+---
+
+### 9. Magic Numbers Without Constants
+
+**Location:** Multiple timeouts throughout code
+
+**Problem:**
+```javascript
+setTimeout(() => { ... }, 300); // Why 300?
+setTimeout(() => { ... }, 500); // Why 500?
+setTimeout(() => { ... }, 2000); // Why 2000?
+```
+
+**Fix - ADD CONSTANTS at the top of your script:**
+```javascript
+// Configuration constants
+const CONFIG = {
+  TOOLTIP_DELAY: 300,        // ms to wait before showing tooltip
+  DEBOUNCE_DELAY: 500,       // ms to wait before triggering translation
+  TOAST_DURATION: 2000,      // ms to show success/error messages
+  AUTOCOMPLETE_LIMIT: 10     // max autocomplete suggestions
+};
+
+// Then use them:
+setTimeout(() => { ... }, CONFIG.TOOLTIP_DELAY);
+```
+
+---
+
+### 10. No Input Sanitization
+
+**Location:** Everywhere user input is used
+
+**Problem:**
+User input is encoded but not sanitized before use.
+
+**Example:**
+```javascript
+searchInput.value.trim(); // No sanitization
+```
+
+**Fix - ADD SANITIZATION FUNCTION:**
+```javascript
+function sanitizeInput(input) {
+  const temp = document.createElement('div');
+  temp.textContent = input;
+  return temp.innerHTML;
+}
+
+// Use it:
+const cleanQuery = sanitizeInput(searchInput.value.trim());
+```
+
+---
+
+### 11. Accessibility Issues
+
+**Location:** Multiple interactive elements
+
+**Problems:**
+1. No ARIA labels on autocomplete
+2. No `aria-live` regions for status messages
+3. Missing focus indicators
+
+**Fixes:**
+
+**For Autocomplete (around line 902):**
+```javascript
+const autocompleteDiv = document.createElement('div');
+autocompleteDiv.id = 'autocomplete';
+autocompleteDiv.setAttribute('role', 'listbox'); // ADD THIS
+autocompleteDiv.setAttribute('aria-label', 'Search engine suggestions'); // ADD THIS
+```
+
+**For each autocomplete item:**
+```javascript
+const item = document.createElement('div');
+item.className = 'autocomplete-item';
+item.setAttribute('role', 'option'); // ADD THIS
+item.setAttribute('aria-selected', 'false'); // ADD THIS
+```
+
+**For status messages (Yandex translation):**
+```javascript
+<div id="yandexTranslateStatus" 
+     style="..." 
+     role="status" 
+     aria-live="polite" 
+     aria-atomic="true"></div>
+```
+
+---
+
+### 12. No Error Boundaries
+
+**Location:** No global error handling
+
+**Problem:**
+If any JavaScript error occurs, the entire page might break.
+
+**Fix - ADD at the top of your script:**
+```javascript
+// Global error handler
+window.addEventListener('error', function(event) {
+  console.error('Global error caught:', event.error);
+  
+  // Optionally show user-friendly message
+  const errorDiv = document.createElement('div');
+  errorDiv.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #ff5252;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 10000;
+    font-size: 14px;
+  `;
+  errorDiv.textContent = 'An error occurred. Please refresh the page.';
+  document.body.appendChild(errorDiv);
+  
+  setTimeout(() => errorDiv.remove(), 5000);
+  
+  // Prevent default error handling
+  event.preventDefault();
+});
+
+// Unhandled promise rejection handler
+window.addEventListener('unhandledrejection', function(event) {
+  console.error('Unhandled promise rejection:', event.reason);
+  event.preventDefault();
+});
+```
+
+---
+
+## 📋 STEP-BY-STEP FIX CHECKLIST
+
+Follow these steps in order:
+
+### Phase 1: Critical Fixes (Do First)
+- [ ] Fix #1: Remove `keepShortcutsOpenCheckbox` references
+- [ ] Fix #2: Update keyboard shortcuts popup CSS
+- [ ] Fix #3: Update `openShortcutsPopup()` and `closeShortcutsPopup()` functions
+- [ ] Fix #4: Update popup overlay click handler
+- [ ] **Test:** Open and close keyboard shortcuts popup
+
+### Phase 2: Medium Priority
+- [ ] Fix #5: Add null checks to `scheduleYandexTranslation()`
+- [ ] Fix #6: Add flag to prevent duplicate event listeners
+- [ ] Fix #7: Add `clearTimeout()` to tooltip handlers
+- [ ] **Test:** Hover over operator buttons rapidly
+
+### Phase 3: Code Quality (Optional but Recommended)
+- [ ] Fix #8: Standardize quote style
+- [ ] Fix #9: Add configuration constants
+- [ ] Fix #10: Add input sanitization
+- [ ] Fix #11: Add ARIA attributes
+- [ ] Fix #12: Add global error handlers
+- [ ] **Test:** Full page functionality
+
+---
+
+## 🧪 TESTING CHECKLIST
+
+After applying fixes, test these scenarios:
+
+1. **Keyboard Shortcuts Popup**
+   - [ ] Click ⌨️ button - popup appears centered
+   - [ ] Popup is visible (not transparent)
+   - [ ] Click X button - popup closes
+   - [ ] Click outside (overlay) - popup closes
+   - [ ] Press Escape - popup closes
+
+2. **Search Functionality**
+   - [ ] Type search query - autocomplete appears
+   - [ ] Select search engine - source updates
+   - [ ] Submit search - opens correct URL in new tab
+
+3. **Yandex Translation**
+   - [ ] Select Yandex engine - translation box appears
+   - [ ] Type text - translation updates after delay
+   - [ ] Copy button - text copied to clipboard
+   - [ ] Insert button - text inserted into search
+
+4. **Dark Mode**
+   - [ ] Toggle dark mode - all popups styled correctly
+   - [ ] Refresh page - dark mode persists
+
+5. **Keyboard Shortcuts**
+   - [ ] Ctrl+K - focuses search bar
+   - [ ] Ctrl+Shift+K - clears search bar
+   - [ ] Alt+↑/↓ - cycles search engines
+   - [ ] Escape - closes all popups
+
+---
+
+## 🚀 RECOMMENDED IMPLEMENTATION ORDER
+
+1. **Start with Critical Fixes #1-4** (15 minutes)
+   - These fix the immediate breaking issues
+   - Test thoroughly before proceeding
+
+2. **Add Medium Priority Fixes #5-7** (15 minutes)
+   - These prevent future bugs
+   - Improve stability
+
+3. **Optionally add Code Quality improvements** (30 minutes)
+   - These make maintenance easier
+   - Improve accessibility
+
+Total estimated time: **1 hour** for all fixes.
+
+---
+
+Would you like me to provide a complete, corrected version of specific sections, or do you need clarification on any of these fixes?
