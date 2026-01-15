@@ -1077,9 +1077,9 @@
         <div class="category-section">
             <div class="category-title">🇷🇺 Translate to Russian</div>
             <div id="yandexTranslateContent">
-                <div class="yandex-translate-row" style="margin-bottom: 10px;">
-                    <label for="yandexSourceLang" style="margin-right: 10px; font-weight: 500;">From:</label>
-                    <select id="yandexSourceLang" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+                <div class="yandex-translate-row" style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+                    <label for="yandexSourceLang" style="font-weight: 500;">From:</label>
+                    <select id="yandexSourceLang" style="padding: 8px; border-radius: 6px; border: 1px solid #ddd; width: auto;">
                         <option value="en" selected>English</option>
                         <option value="fr">French</option>
                         <option value="de">German</option>
@@ -1087,6 +1087,7 @@
                         <option value="ar">Arabic</option>
                         <option value="zh">Chinese</option>
                     </select>
+                    <input type="text" id="yandexSourceText" placeholder="Enter text to translate..." style="flex-grow: 1; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
                 </div>
                 <textarea id="yandexTargetText" readonly placeholder="Russian translation..." style="width: 100%; min-height: 80px; padding: 8px; border-radius: 6px; border: 1px solid #ddd; resize: vertical; margin-bottom: 10px;"></textarea>
                 <div id="yandexTranslateButtons" style="display: flex; gap: 10px;">
@@ -1502,12 +1503,12 @@
       const keyboardShortcutsBtn = document.getElementById('keyboardShortcutsBtn'); // New button
     
       // Yandex Translation elements
-      const yandexTranslationBox = document.getElementById('yandexTranslationBox');
-      const yandexSourceLang = document.getElementById('yandexSourceLang');
-      const yandexTargetText = document.getElementById('yandexTargetText');
-      const yandexInsertBtn = document.getElementById('yandexInsertBtn');
-      const yandexCopyBtn = document.getElementById('yandexCopyBtn');
-      const yandexTranslateStatus = document.getElementById('yandexTranslateStatus');
+        const yandexTranslationBox = document.getElementById('yandexTranslationBox');
+        const yandexSourceLang = document.getElementById('yandexSourceLang');
+        const yandexSourceText = document.getElementById('yandexSourceText'); // New element
+        const yandexTargetText = document.getElementById('yandexTargetText');
+        const yandexInsertBtn = document.getElementById('yandexInsertBtn');
+        const yandexCopyBtn = document.getElementById('yandexCopyBtn');      const yandexTranslateStatus = document.getElementById('yandexTranslateStatus');
     
       // AI-Assisted Comment: This function dynamically adds favicon images next to each search engine radio button.
       // It fetches favicons from a public Google service using the domain specified in the searchEngines object.
@@ -1547,43 +1548,44 @@
         }
       }
     
-      let yandexTranslationTimeout;
-    
-      function scheduleYandexTranslation(text) {
-        clearTimeout(yandexTranslationTimeout);
-        const sourceLang = yandexSourceLang.value;
-        const targetLang = 'ru'; // Always translate to Russian
-    
-        if (!text.trim()) {
-          yandexTargetText.value = '';
-          yandexTranslateStatus.textContent = '';
-          yandexTranslateStatus.className = '';
-          return;
-        }
-    
-        yandexTranslateStatus.textContent = 'Translating...';
-        yandexTranslateStatus.className = 'loading';
-    
-        yandexTranslationTimeout = setTimeout(async () => {
-          try {
-            const translated = await translateText(text, sourceLang, targetLang);
-            yandexTargetText.value = translated;
-            yandexTranslateStatus.textContent = 'Translation complete';
-            yandexTranslateStatus.className = 'success';
-            
-            setTimeout(() => {
-              if (yandexTranslateStatus.textContent === 'Translation complete') {
-                yandexTranslateStatus.textContent = '';
-              }
-            }, 2000);
-    
-          } catch (error) {
-            yandexTargetText.value = '';
-            yandexTranslateStatus.textContent = 'Translation failed. Please try again.';
-            yandexTranslateStatus.className = 'error';
+  let yandexTranslationTimeout;
+
+  function scheduleYandexTranslation() { // Removed 'text' parameter
+    clearTimeout(yandexTranslationTimeout);
+    const sourceLang = yandexSourceLang.value;
+    const textToTranslate = yandexSourceText.value; // Get text from new input
+    const targetLang = 'ru'; // Always translate to Russian
+
+    if (!textToTranslate.trim()) {
+      yandexTargetText.value = '';
+      yandexTranslateStatus.textContent = '';
+      yandexTranslateStatus.className = '';
+      return;
+    }
+
+    yandexTranslateStatus.textContent = 'Translating...';
+    yandexTranslateStatus.className = 'loading';
+
+    yandexTranslationTimeout = setTimeout(async () => {
+      try {
+        const translated = await translateText(textToTranslate, sourceLang, targetLang);
+        yandexTargetText.value = translated;
+        yandexTranslateStatus.textContent = 'Translation complete';
+        yandexTranslateStatus.className = 'success';
+        
+        setTimeout(() => {
+          if (yandexTranslateStatus.textContent === 'Translation complete') {
+            yandexTranslateStatus.textContent = '';
           }
-        }, 500); // Debounce time
+        }, 2000);
+
+      } catch (error) {
+        yandexTargetText.value = '';
+        yandexTranslateStatus.textContent = 'Translation failed. Please try again.';
+        yandexTranslateStatus.className = 'error';
       }
+    }, 500); // Debounce time
+  }
     
       // AI-Assisted Comment: This function updates the UI to reflect the currently selected search engine.  // It reads the value of the search input, checks for a recognized prefix (like 'g:'),
   // and updates the 'searchSource' element with the name of the engine. It also synchronizes the radio button selection.
@@ -1694,14 +1696,12 @@
     const isYandex = (effectivePrefix === 'yan:');
     yandexTranslationBox.style.display = isYandex ? 'grid' : 'none';
     if (isYandex) {
-        // We get the query without the prefix to translate it
-        let queryToTranslate = value;
-        if (value.startsWith(effectivePrefix)) {
-            queryToTranslate = value.substring(effectivePrefix.length).trim();
-        }
-        scheduleYandexTranslation(queryToTranslate);
+        yandexSourceText.value = ''; // Clear the input field when Yandex is selected
+        yandexSourceText.focus(); // Focus on the new input field
+        scheduleYandexTranslation(); // Trigger translation from the new input field
     } else {
         // Clear translation when not Yandex
+        yandexSourceText.value = '';
         yandexTargetText.value = '';
         yandexTranslateStatus.textContent = '';
         yandexTranslateStatus.className = '';
@@ -2110,9 +2110,14 @@
     updateSearchSource();
   });
 
+  // Event listener for Yandex source input
+  yandexSourceText.addEventListener('input', () => {
+    scheduleYandexTranslation();
+  });
+
   // Event listener for Yandex source language change
   yandexSourceLang.addEventListener('change', () => {
-    updateSearchSource();
+    scheduleYandexTranslation();
   });
 
   // Event listener for Yandex Copy button
