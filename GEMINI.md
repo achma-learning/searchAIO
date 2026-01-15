@@ -36,6 +36,7 @@ Future updates will likely focus on:
 - **Adding more search sources:** The flexible, categorized structure makes it easy to integrate new search engines.
 - **Enhancing user experience:** Further improvements to the UI/UX are expected, potentially including more customization options.
 - **Expanding filtering capabilities:** More advanced filtering and search operators could be added to refine search results further.
+- **Fix shortcuts button:** Resolve the issue preventing the keyboard shortcuts pop-up from displaying correctly when its button is clicked.
 - **Add Yandex search operator above search bar:** Implement a dedicated display or input field for Yandex-specific search operators, positioned prominently near the main search bar to enhance Yandex search customization.
 - **Add Baidu search engine with similar functionality to Yandex:** Integrate Baidu as a new search engine option, ensuring it supports features like translation and operator filtering, comparable to the existing Yandex functionality.
 
