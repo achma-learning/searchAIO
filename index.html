@@ -788,6 +788,54 @@
             border-bottom-color: #64b5f6;
         }
 
+        #keyboardShortcutsPopup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 700px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            padding: 24px;
+            font-size: 14px;
+            color: #333;
+            display: none;
+            z-index: 2000;
+        }
+        #keyboardShortcutsPopup.show { display: block; }
+        .dark-mode #keyboardShortcutsPopup {
+            background: #1a2332;
+            border-color: #2d3e52;
+            color: #b0bec5;
+        }
+        #keyboardShortcutsPopup .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+        #keyboardShortcutsPopup .close-btn:hover { color: #333; }
+        .dark-mode #keyboardShortcutsPopup .close-btn:hover { color: #fff; }
+
+        #keyboardShortcutsPopup h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .dark-mode #keyboardShortcutsPopup h3 {
+            color: #64b5f6;
+            border-bottom-color: #64b5f6;
+        }
+
         #googleWikiPopup h3 {
             margin-top: 0;
             color: #2c3e50;
@@ -1340,6 +1388,47 @@
       </div>
     </div>
     
+    <div id="keyboardShortcutsPopup" style="display: none;">
+      <button class="close-btn" id="closeShortcutsBtn">&times;</button>
+      <h3>⌨️ Keyboard Shortcuts</h3>
+      <div style="max-height: 50vh; overflow-y: auto;">
+        <table class="wiki-table">
+            <thead>
+                <tr>
+                    <th>Shortcut</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>Ctrl + K</code></td>
+                    <td>Focus on the search bar</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + Shift + K</code></td>
+                    <td>Clear the search bar</td>
+                </tr>
+                <tr>
+                    <td><code>Alt + ↑/↓</code></td>
+                    <td>Cycle through search engines</td>
+                </tr>
+                <tr>
+                    <td><code>Alt + 1-4</code></td>
+                    <td>Switch search engine category</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + Shift + C</code></td>
+                    <td>Copy the current search query</td>
+                </tr>
+                <tr>
+                    <td><code>Esc</code></td>
+                    <td>Close any open pop-up</td>
+                </tr>
+            </tbody>
+        </table>
+      </div>
+    </div>
+
     <div class="bottom-buttons" style="text-align: center; margin-top: 24px;">
         <button type="button" id="wikiToggleBtn">📖 Wiki</button>
         <button type="button" id="keyboardShortcutsBtn">⌨️</button>
@@ -1501,6 +1590,8 @@
     const closeBingWikiBtn = document.getElementById('closeBingWikiBtn');
     const keepBingWikiOpenCheckbox = document.getElementById('keepBingWikiOpenCheckbox');
       const keyboardShortcutsBtn = document.getElementById('keyboardShortcutsBtn'); // New button
+      const keyboardShortcutsPopup = document.getElementById('keyboardShortcutsPopup');
+      const closeShortcutsBtn = document.getElementById('closeShortcutsBtn');
     
       // Yandex Translation elements
         const yandexTranslationBox = document.getElementById('yandexTranslationBox');
@@ -1527,6 +1618,21 @@
           }
         });
       }
+
+      function openShortcutsPopup() {
+        keyboardShortcutsPopup.classList.add('show');
+        popupOverlay.classList.add('show');
+      }
+
+      function closeShortcutsPopup() {
+        keyboardShortcutsPopup.classList.remove('show');
+        if (!filetypesPopup.classList.contains('show') && !googleWikiPopup.classList.contains('show') && !bingWikiPopup.classList.contains('show')) {
+          popupOverlay.classList.remove('show');
+        }
+      }
+
+      keyboardShortcutsBtn.addEventListener('click', openShortcutsPopup);
+      closeShortcutsBtn.addEventListener('click', closeShortcutsPopup);
     
       // Translation API function (using MyMemory - free, no key required)
       async function translateText(text, sourceLang, targetLang) {
@@ -2030,6 +2136,7 @@
     if (!keepBingWikiOpenCheckbox.checked) {
       closeBingWikiPopup();
     }
+    closeShortcutsPopup();
   });
 
   document.addEventListener('click', (e) => {
@@ -2100,6 +2207,9 @@
       }
       if (bingWikiPopup.classList.contains('show') && !keepBingWikiOpenCheckbox.checked) {
         closeBingWikiPopup();
+      }
+      if (keyboardShortcutsPopup.classList.contains('show')) {
+        closeShortcutsPopup();
       }
       if (wikiContent.style.display === 'block' && !keepWikiOpenCheckbox.checked) {
         wikiContent.style.display = 'none';
