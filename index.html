@@ -1575,8 +1575,6 @@
       const keyboardShortcutsBtn = document.getElementById('keyboardShortcutsBtn'); // New button
       const keyboardShortcutsPopup = document.getElementById('keyboardShortcutsPopup');
       const closeShortcutsBtn = document.getElementById('closeShortcutsBtn');
-      const appShortcutsBtn = document.getElementById('appShortcutsBtn');
-      const chromeShortcutsBtn = document.getElementById('chromeShortcutsBtn');
     
       // Yandex Translation elements
         const yandexTranslationBox = document.getElementById('yandexTranslationBox');
@@ -1604,150 +1602,12 @@
         });
       }
 
-      const chromeShortcuts = {
-        source: 'https://www.dca.ca.gov/about_us/kbs_chrome.shtml',
-        'Windows and Linux': {
-          'Tab and window shortcuts': [
-            { keys: 'Ctrl+N', description: 'Opens a new window.' },
-            { keys: 'Ctrl+T', description: 'Opens a new tab.' },
-            { keys: 'Ctrl+Shift+N', description: 'Opens a new window in incognito mode.' },
-            { keys: 'Ctrl+O', description: 'Opens a file from your computer in Google Chrome.' },
-            { keys: 'Ctrl and click a link', description: 'Opens the link in a new tab in the background.' },
-            { keys: 'Ctrl+Shift and click a link', description: 'Opens the link in a new tab and switches to the newly opened tab.' },
-            { keys: 'Shift and click a link', description: 'Opens the link in a new window.' },
-            { keys: 'Ctrl+Shift+T', description: 'Reopens the last tab you’ve closed.' },
-            { keys: 'Drag a link to a tab', description: 'Opens the link in the tab.' },
-            { keys: 'Drag a link to a blank area on the tab strip', description: 'Opens the link in a new tab.' },
-            { keys: 'Drag a tab out of the tab strip', description: 'Opens the tab in a new window.' },
-            { keys: 'Drag a tab out of the tab strip and into an existing window', description: 'Opens the tab in the existing window.' },
-            { keys: 'Esc while dragging a tab', description: 'Returns the tab to its original position.' },
-            { keys: 'Ctrl+1 through Ctrl+8', description: 'Switches to the tab at the specified position number on the tab strip.' },
-            { keys: 'Ctrl+9', description: 'Switches to the last tab.' },
-            { keys: 'Right-click, or click and hold either the Back or Forward arrow', description: 'Displays your browsing history in the tab.' },
-            { keys: 'Backspace, or Alt and the left arrow', description: 'Goes to the previous page in your browsing history for the tab.' },
-            { keys: 'Shift+Backspace, or Alt and the right arrow', description: 'Goes to the next page in your browsing history for the tab.' },
-            { keys: 'Double-click the blank area on the tab strip', description: 'Maximizes or minimizes the window.' }
-          ],
-          'Google Chrome feature shortcuts': [
-            { keys: 'Alt+F or Alt+E or F10', description: 'Opens the Chrome menu.' },
-            { keys: 'Ctrl+Shift+B', description: 'Toggles the bookmarks bar on and off.' },
-            { keys: 'Ctrl+H', description: 'Opens the History page.' },
-            { keys: 'Ctrl+J', description: 'Opens the Downloads page.' },
-            { keys: 'Shift+Esc', description: 'Opens the Task Manager.' },
-            { keys: 'Shift+Alt+T', description: 'Sets focus on the first tool in the browser toolbar.' },
-            { keys: 'F6 or Shift+F6', description: 'Switches focus to the next keyboard-accessible pane.' },
-            { keys: 'Ctrl+Shift+J', description: 'Opens Developer Tools.' },
-            { keys: 'Ctrl+Shift+Delete', description: 'Opens the Clear Browsing Data dialog.' },
-            { keys: 'F1', description: 'Opens the Help Center in a new tab.' },
-            { keys: 'Ctrl+Shift+M', description: 'Switch between multiple users.' }
-          ],
-          'Address bar shortcuts': [
-            { keys: 'Ctrl+Enter', description: 'Adds www. and .com to your input and open the resulting URL.' },
-            { keys: 'Alt+Enter', description: 'Opens the URL in a new tab.' },
-            { keys: 'Ctrl+L or Alt+D', description: 'Highlights the URL.' },
-            { keys: 'Ctrl+K or Ctrl+E', description: 'Places a ‘?’ in the address bar.' },
-            { keys: 'Ctrl + left arrow', description: 'Moves your cursor to the preceding key term.' },
-            { keys: 'Ctrl + right arrow', description: 'Moves your cursor to the next key term.' },
-            { keys: 'Ctrl+Backspace', description: 'Deletes the key term that precedes your cursor.' },
-            { keys: 'Shift+Delete', description: 'Deletes the entry from your browsing history.' },
-            { keys: 'Page Up or Page Down', description: 'Selects the first or last entry in the drop-down menu.' }
-          ],
-          'Webpage shortcuts': [
-            { keys: 'Ctrl+P', description: 'Prints your current page.' },
-            { keys: 'Ctrl+S', description: 'Saves your current page.' },
-            { keys: 'F5 or Ctrl+R', description: 'Reloads your current page.' },
-            { keys: 'Esc', description: 'Stops the loading of your current page.' },
-            { keys: 'Ctrl+F', description: 'Opens the find bar.' },
-            { keys: 'Ctrl+G or F3', description: 'Finds the next match for your input in the find bar.' },
-            { keys: 'Ctrl+Shift+G, Shift+F3, or Shift+Enter', description: 'Finds the previous match for your input in the find bar.' },
-            { keys: 'Ctrl+F5 or Shift+F5', description: 'Reloads your current page, ignoring cached content.' },
-            { keys: 'Alt and click a link', description: 'Downloads the target of the link.' },
-            { keys: 'Ctrl+U', description: 'Opens the source of your current page.' },
-            { keys: 'Ctrl+D', description: 'Saves your current webpage as a bookmark.' },
-            { keys: 'Ctrl+Shift+D', description: 'Saves all open pages as bookmarks in a new folder.' },
-            { keys: 'F11', description: 'Opens your page in full-screen mode.' },
-            { keys: 'Ctrl and +', description: 'Enlarges everything on the page.' },
-            { keys: 'Ctrl and –', description: 'Makes everything on the page smaller.' },
-            { keys: 'Ctrl+0', description: 'Returns everything on the page to normal size.' },
-            { keys: 'Space bar', description: 'Scrolls down the web page.' },
-            { keys: 'Home', description: 'Goes to the top of the page.' },
-            { keys: 'End', description: 'Goes to the bottom of the page.' },
-            { keys: 'Shift and scroll your mousewheel', description: 'Scrolls horizontally on the page.' }
-          ]
-        },
-        'Mac': {
-          'Tab and window shortcuts': [
-            { keys: '⌘+N', description: 'Opens a new window.' },
-            { keys: '⌘+T', description: 'Opens a new tab.' },
-            { keys: '⌘+Shift+N', description: 'Opens a new window in incognito mode.' },
-            { keys: '⌘+O', description: 'Opens a file from your computer in Google Chrome.' },
-            { keys: '⌘ and click a link', description: 'Opens the link in a new tab in the background.' },
-            { keys: '⌘+Shift and click a link', description: 'Opens the link in a new tab and switches to the newly opened tab.' },
-            { keys: 'Shift and click a link', description: 'Opens the link in a new window.' },
-            { keys: '⌘+Shift+T', description: 'Reopens the last tab you’ve closed.' },
-            { keys: 'Drag a tab out of the tab strip', description: 'Opens the tab in a new window.' },
-            { keys: 'Drag a tab out of the tab strip and into an existing window', description: 'Opens the tab in the existing window.' },
-            { keys: '⌘+Option and the right arrow', description: 'Switches to the next tab.' },
-            { keys: '⌘+Option and the left arrow', description: 'Switches to the previous tab.' },
-            { keys: '⌘+W', description: 'Closes the current tab or pop-up.' },
-            { keys: '⌘+Shift+W', description: 'Closes the current window.' },
-            { keys: 'Click and hold either the Back or Forward arrow', description: 'Displays your browsing history in the tab.' },
-            { keys: 'Delete or ⌘+[', description: 'Goes to the previous page in your browsing history for the tab.' },
-            { keys: 'Shift+Delete or ⌘+]', description: 'Goes to the next page in your browsing history for the tab.' },
-            { keys: 'Shift while clicking the + button', description: 'Maximizes the window.' },
-            { keys: '⌘+M', description: 'Minimizes the window.' },
-            { keys: '⌘+H', description: 'Hides Google Chrome.' },
-            { keys: '⌘+Option+H', description: 'Hides all other windows.' },
-            { keys: '⌘+Q', description: 'Closes Google Chrome.' }
-          ],
-          'Google Chrome feature shortcuts': [
-            { keys: '⌘+Shift+B', description: 'Toggles the bookmarks bar on and off.' },
-            { keys: '⌘+Option+B', description: 'Opens the bookmark manager.' },
-            { keys: '⌘+,', description: 'Opens the Settings page.' },
-            { keys: '⌘+Y', description: 'Opens the History page.' },
-            { keys: '⌘+Shift+J', description: 'Opens the Downloads page.' },
-            { keys: '⌘+Shift+Delete', description: 'Opens the Clear Browsing Data dialog.' },
-            { keys: '⌘+Shift+M', description: 'Switch between multiple users.' }
-          ],
-          'Address bar shortcuts': [
-            { keys: '⌘+Enter', description: 'Opens the URL in a new background tab.' },
-            { keys: '⌘+L', description: 'Highlights the URL.' },
-            { keys: 'Option and the left arrow', description: 'Moves your cursor to the preceding key term.' },
-            { keys: 'Option and the right arrow', description: 'Moves your cursor to the next key term.' },
-            { keys: 'Shift+Option and the left arrow', description: 'Highlights the preceding key term.' },
-            { keys: 'Shift+Option and the right arrow', description: 'Highlights the next key term.' },
-            { keys: '⌘+Delete', description: 'Deletes the key term that precedes your cursor.' },
-            { keys: 'Shift-Fn-Delete', description: 'Deletes the entry from your browsing history.' }
-          ],
-          'Webpage shortcuts': [
-            { keys: '⌘+P', description: 'Prints your current page.' },
-            { keys: '⌘+Shift+P', description: 'Opens the Page Setup dialog.' },
-            { keys: '⌘+S', description: 'Saves your current page.' },
-            { keys: '⌘+Shift+I', description: 'Emails your current page.' },
-            { keys: '⌘+R', description: 'Reloads your current page.' },
-            { keys: '⌘+F', description: 'Opens the find bar.' },
-            { keys: '⌘+G', description: 'Finds the next match for your input in the find bar.' },
-            { keys: '⌘+Shift+G or Shift+Enter', description: 'Finds the previous match for your input in the find bar.' },
-            { keys: '⌘+E', description: 'Uses selection for find.' },
-            { keys: '⌘+J', description: 'Jumps to selection.' },
-            { keys: '⌘+Option+I', description: 'Opens Developer Tools.' },
-            { keys: '⌘+Option+J', description: 'Opens the JavaScript Console.' },
-            { keys: '⌘+Option+U', description: 'Opens the source of your current page.' },
-            { keys: 'Option and click a link', description: 'Downloads the target of the link.' },
-            { keys: '⌘+D', description: 'Saves your current webpage as a bookmark.' },
-            { keys: '⌘+Shift+D', description: 'Saves all open tabs as bookmarks in a new folder.' },
-            { keys: '⌘+Shift+F', description: 'Opens your page in full-screen mode.' },
-            { keys: '⌘ + (+)', description: 'Enlarges everything on the page.' },
-            { keys: '⌘ + (-)', description: 'Makes everything on the page smaller.' },
-            { keys: '⌘+0', description: 'Returns everything on the page to normal size.' },
-            { keys: '⌘+Shift+H', description: 'Opens your home page in your current tab.' },
-            { keys: 'Space bar', description: 'Scrolls down the web page.' },
-            { keys: '⌘+Option+F', description: 'Searches the web.' }
-          ]
-        }
-      };
+      function openShortcutsPopup() {
+        keyboardShortcutsPopup.classList.add('show');
+        popupOverlay.classList.add('show');
+        const shortcutsContent = document.getElementById('shortcuts-content');
+        shortcutsContent.innerHTML = ''; // Clear previous content
 
-      function renderAppShortcuts() {
         const shortcuts = [
             { keys: 'Ctrl + K', description: 'Focus on the search bar' },
             { keys: 'Ctrl + Shift + K', description: 'Clear the search bar' },
@@ -1756,9 +1616,6 @@
             { keys: 'Ctrl + Shift + C', description: 'Copy the current search query' },
             { keys: 'Esc', description: 'Close any open pop-up' }
         ];
-
-        const shortcutsContent = document.getElementById('shortcuts-content');
-        shortcutsContent.innerHTML = ''; // Clear previous content
 
         const table = document.createElement('table');
         table.className = 'wiki-table';
@@ -1788,78 +1645,13 @@
         shortcutsContent.appendChild(table);
       }
 
-      function renderChromeShortcuts() {
-        const shortcutsContent = document.getElementById('shortcuts-content');
-        shortcutsContent.innerHTML = '';
-
-        const sourceLink = document.createElement('p');
-        sourceLink.innerHTML = `Source: <a href="${chromeShortcuts.source}" target="_blank" rel="noopener noreferrer">${chromeShortcuts.source}</a>`;
-        shortcutsContent.appendChild(sourceLink);
-
-        const platform = navigator.platform.includes('Mac') ? 'Mac' : 'Windows and Linux';
-        const platformShortcuts = chromeShortcuts[platform];
-
-        for (const category in platformShortcuts) {
-            const categoryTitle = document.createElement('h4');
-            categoryTitle.textContent = category;
-            shortcutsContent.appendChild(categoryTitle);
-
-            const table = document.createElement('table');
-            table.className = 'wiki-table';
-
-            const thead = document.createElement('thead');
-            thead.innerHTML = `
-                <tr>
-                    <th>To do this</th>
-                    <th>Press this</th>
-                </tr>
-            `;
-            
-            const tbody = document.createElement('tbody');
-            platformShortcuts[category].forEach(shortcut => {
-                const row = document.createElement('tr');
-                const descCell = document.createElement('td');
-                const keysCell = document.createElement('td');
-                descCell.textContent = shortcut.description;
-                keysCell.innerHTML = `<code>${shortcut.keys}</code>`;
-                row.appendChild(descCell);
-                row.appendChild(keysCell);
-                tbody.appendChild(row);
-            });
-
-            table.appendChild(thead);
-            table.appendChild(tbody);
-            shortcutsContent.appendChild(table);
-        }
-      }
-
-      function openShortcutsPopup() {
-        keyboardShortcutsPopup.classList.add('show');
-        popupOverlay.classList.add('show');
-        renderAppShortcuts();
-      }
-
       function closeShortcutsPopup() {
         keyboardShortcutsPopup.classList.remove('show');
-        if (!filetypesPopup.classList.contains('show') && !googleWikiPopup.classList.contains('show') && !bingWikiPopup.classList.contains('show')) {
-          popupOverlay.classList.remove('show');
-        }
+        popupOverlay.classList.remove('show');
       }
 
       keyboardShortcutsBtn.addEventListener('click', openShortcutsPopup);
       closeShortcutsBtn.addEventListener('click', closeShortcutsPopup);
-
-      appShortcutsBtn.addEventListener('click', () => {
-        appShortcutsBtn.classList.add('active');
-        chromeShortcutsBtn.classList.remove('active');
-        renderAppShortcuts();
-      });
-
-      chromeShortcutsBtn.addEventListener('click', () => {
-        chromeShortcutsBtn.classList.add('active');
-        appShortcutsBtn.classList.remove('active');
-        renderChromeShortcuts();
-      });
     
       // Translation API function (using MyMemory - free, no key required)
       async function translateText(text, sourceLang, targetLang) {
