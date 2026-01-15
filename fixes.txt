@@ -1,0 +1,144 @@
+Voici les **principaux problèmes** que je vois dans ton code actuel et les **corrections concrètes** à faire (principalement pour que le popup raccourcis clavier fonctionne correctement + quelques autres bugs visuels fréquents).
+
+### Problèmes principaux identifiés
+
+1. Le `#keyboardShortcutsPopup` n'a **pas de position fixed** ni de centrage → il apparaît mal placé ou transparent
+2. Il manque la classe `.show` dans le CSS pour forcer l'affichage
+3. Le `z-index` est absent ou trop bas → il passe derrière l'overlay ou d'autres éléments
+4. Gestion d'ouverture/fermeture incohérente entre overlay, Échap et clic extérieur
+
+### Corrections à faire (dans l'ordre le plus simple)
+
+#### 1. Corriger le style du popup raccourcis (dans `<style>`)
+
+Remplace **tout le bloc** concernant `#keyboardShortcutsPopup` par ceci :
+
+```css
+#keyboardShortcutsPopup {
+    position: fixed !important;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 720px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    padding: 24px;
+    z-index: 2005;               /* Plus haut que l'overlay */
+    display: none;
+}
+
+#keyboardShortcutsPopup.show {
+    display: block !important;
+}
+
+.dark-mode #keyboardShortcutsPopup {
+    background: #1a2332;
+    border-color: #2d3e52;
+    color: #d0d8e0;
+}
+
+#keyboardShortcutsPopup .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 32px;
+    cursor: pointer;
+    color: #888;
+    background: none;
+    border: none;
+}
+
+#keyboardShortcutsPopup .close-btn:hover {
+    color: #333;
+}
+
+.dark-mode #keyboardShortcutsPopup .close-btn:hover {
+    color: #eee;
+}
+```
+
+#### 2. Corriger la gestion d'affichage/fermeture dans le JavaScript
+
+Remplace la fonction `openShortcutsPopup` et `closeShortcutsPopup` et les listeners associés par ceci :
+
+```javascript
+function openShortcutsPopup() {
+    keyboardShortcutsPopup.classList.add('show');
+    popupOverlay.classList.add('show');
+    // Optionnel : focus sur la popup pour meilleure accessibilité
+    keyboardShortcutsPopup.focus();
+}
+
+function closeShortcutsPopup() {
+    keyboardShortcutsPopup.classList.remove('show');
+    // On ne ferme l'overlay que si aucun autre popup majeur n'est ouvert
+    if (!filetypesPopup.classList.contains('show') &&
+        !googleWikiPopup.classList.contains('show') &&
+        !bingWikiPopup.classList.contains('show')) {
+        popupOverlay.classList.remove('show');
+    }
+}
+
+// --- Listeners ---
+keyboardShortcutsBtn.addEventListener('click', openShortcutsPopup);
+closeShortcutsBtn.addEventListener('click', closeShortcutsPopup);
+
+// Dans le listener global Escape :
+if (e.key === 'Escape') {
+    if (filetypesPopup.classList.contains('show')) {
+        closeFiletypesPopup();
+    }
+    if (googleWikiPopup.classList.contains('show') && !keepGoogleWikiOpenCheckbox?.checked) {
+        closeGoogleWikiPopup();
+    }
+    if (bingWikiPopup.classList.contains('show') && !keepBingWikiOpenCheckbox?.checked) {
+        closeBingWikiPopup();
+    }
+    if (wikiContent.style.display === 'block' && !keepWikiOpenCheckbox?.checked) {
+        wikiContent.style.display = 'none';
+    }
+    if (keyboardShortcutsPopup.classList.contains('show')) {
+        closeShortcutsPopup();   // ← c'est ici qu'il faut vraiment fermer
+    }
+}
+```
+
+#### 3. Petites corrections bonus très utiles (optionnelles mais recommandées)
+
+- Ajoute ceci dans le CSS (pour éviter que le contenu saute quand les scrollbars apparaissent) :
+
+```css
+html {
+    overflow-y: scroll;   /* toujours afficher la scrollbar verticale */
+}
+```
+
+- Dans la fonction `popupOverlay.addEventListener('click', ...)` ajoute la fermeture du raccourcis :
+
+```javascript
+popupOverlay.addEventListener('click', () => {
+    closeFiletypesPopup();
+    if (!keepGoogleWikiOpenCheckbox?.checked) closeGoogleWikiPopup();
+    if (!keepBingWikiOpenCheckbox?.checked)   closeBingWikiPopup();
+    closeShortcutsPopup();               // ← très important
+});
+```
+
+### Résumé rapide – ce que tu dois faire dans Notepad++
+
+1. Cherche `#keyboardShortcutsPopup` dans le CSS → remplace tout le bloc par le nouveau style ci-dessus
+2. Cherche `function openShortcutsPopup()` → remplace les deux fonctions + les listeners par le nouveau code
+3. Dans le gros bloc `document.addEventListener('keydown', ...)` ajoute la fermeture du raccourcis dans la condition Escape
+4. Sauvegarde → recharge la page (Ctrl+F5 pour forcer le cache)
+
+Après ces changements, le popup raccourcis devrait :
+- être bien centré
+- être opaque
+- s'ouvrir et se fermer correctement
+- se fermer avec Échap, clic overlay et croix
+
+Bonne chance !  
+Si ça ne marche toujours pas après ça, dis-moi exactement ce que tu vois (transparent ? décalé ? ne s'ouvre pas ? reste ouvert ?) et je te donne la ligne exacte à modifier.
