@@ -1,0 +1,716 @@
+# Comprehensive Fix Guide for Search Engine Tool
+
+## 🔴 Critical Fixes (Implement Immediately)
+
+### Fix 1: Scope and Variable Declaration Issues
+
+**Problem:** Variables are used before declaration, causing potential undefined errors.
+
+**Location:** Lines ~900-950 in the original code
+
+**Solution:**
+```javascript
+// Move ALL variable declarations to the top of the script, right after searchEngines object
+let operatorHandlersInitialized = false;
+let tooltipTimeout = null;
+let currentTranslationRequest = null;
+let yandexTranslationTimeout = null;
+let selectedIndex = -1;
+let filetypesRendered = false;
+
+// Create tooltip element early
+const operatorTooltip = document.createElement('div');
+operatorTooltip.id = 'operatorTooltip';
+operatorTooltip.className = 'operator-tooltip';
+document.body.appendChild(operatorTooltip);
+```
+
+**Why:** JavaScript hoisting can cause confusion. Declaring variables at the top makes dependencies clear and prevents undefined errors.
+
+---
+
+### Fix 2: Yandex Translation Element Safety Checks
+
+**Problem:** Code assumes Yandex elements exist without checking.
+
+**Location:** Event listener attachments for Yandex translation (~line 850-900)
+
+**Solution:**
+```javascript
+// Wrap ALL Yandex-related code in existence checks
+function initializeYandexTranslation() {
+  if (!yandexSourceText || !yandexTargetText || !yandexSourceLang || 
+      !yandexInsertBtn || !yandexCopyBtn || !yandexTranslateStatus) {
+    console.warn('Yandex translation elements not found');
+    return;
+  }
+
+  // Now safely attach event listeners
+  yandexSourceText.addEventListener('input', () => {
+    scheduleYandexTranslation();
+  });
+
+  yandexSourceLang.addEventListener('change', () => {
+    scheduleYandexTranslation();
+  });
+
+  yandexCopyBtn.addEventListener('click', () => {
+    const textToCopy = yandexTargetText.value;
+    if (textToCopy.trim()) {
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        yandexTranslateStatus.textContent = 'Copied to clipboard!';
+        yandexTranslateStatus.className = 'success';
+        setTimeout(() => yandexTranslateStatus.textContent = '', STATUS_MESSAGE_DURATION);
+      }).catch(err => {
+        yandexTranslateStatus.textContent = 'Failed to copy.';
+        yandexTranslateStatus.className = 'error';
+      });
+    }
+  });
+
+  yandexInsertBtn.addEventListener('click', () => {
+    const translatedText = yandexTargetText.value;
+    if (translatedText.trim()) {
+      const currentInput = searchInput.value;
+      const start = searchInput.selectionStart;
+      const end = searchInput.selectionEnd;
+
+      searchInput.value = currentInput.substring(0, start) + translatedText + currentInput.substring(end);
+      searchInput.selectionStart = start + translatedText.length;
+      searchInput.selectionEnd = start + translatedText.length;
+      searchInput.focus();
+
+      yandexTranslateStatus.textContent = 'Inserted into search bar!';
+      yandexTranslateStatus.className = 'success';
+      setTimeout(() => yandexTranslateStatus.textContent = '', STATUS_MESSAGE_DURATION);
+    }
+  });
+}
+
+// Call this function after DOM is loaded
+window.addEventListener('load', () => {
+  initializeYandexTranslation();
+  // ... other initialization code
+});
+```
+
+**Why:** Prevents "Cannot read property of null" errors if elements are missing or HTML structure changes.
+
+---
+
+### Fix 3: Translation Race Condition Prevention
+
+**Problem:** Multiple simultaneous translations can overwrite each other.
+
+**Location:** `scheduleYandexTranslation()` function
+
+**Solution:**
+```javascript
+function scheduleYandexTranslation() {
+  clearTimeout(yandexTranslationTimeout);
+  
+  // Cancel previous request
+  if (currentTranslationRequest) {
+    currentTranslationRequest.cancelled = true;
+  }
+  
+  // Safety checks
+  if (!yandexSourceLang || !yandexSourceText || !yandexTargetText || !yandexTranslateStatus) {
+    console.warn('Yandex translation elements not ready');
+    return;
+  }
+  
+  const sourceLang = yandexSourceLang.value;
+  const textToTranslate = yandexSourceText.value;
+  const targetLang = 'ru';
+
+  if (!textToTranslate.trim()) {
+    yandexTargetText.value = '';
+    yandexTranslateStatus.textContent = '';
+    return;
+  }
+
+  yandexTranslateStatus.textContent = 'Translating...';
+  yandexTranslateStatus.className = 'loading';
+
+  // Create request token
+  const thisRequest = { cancelled: false };
+  currentTranslationRequest = thisRequest;
+
+  yandexTranslationTimeout = setTimeout(async () => {
+    // Check if this request was cancelled
+    if (thisRequest.cancelled) {
+      return;
+    }
+
+    try {
+      const translated = await translateText(textToTranslate, sourceLang, targetLang);
+      
+      // Double-check it wasn't cancelled during the async operation
+      if (thisRequest.cancelled) {
+        return;
+      }
+      
+      yandexTargetText.value = translated;
+      yandexTranslateStatus.textContent = 'Translation complete';
+      yandexTranslateStatus.className = 'success';
+      
+      setTimeout(() => {
+        if (yandexTranslateStatus.textContent === 'Translation complete') {
+          yandexTranslateStatus.textContent = '';
+        }
+      }, STATUS_MESSAGE_DURATION);
+    } catch (error) {
+      if (thisRequest.cancelled) {
+        return;
+      }
+      
+      yandexTargetText.value = '';
+      yandexTranslateStatus.textContent = 'Translation failed. Please try again.';
+      yandexTranslateStatus.className = 'error';
+    }
+  }, TRANSLATION_DEBOUNCE_TIME);
+}
+```
+
+**Why:** Prevents race conditions where old translations overwrite newer ones, improving UX.
+
+---
+
+## 🟡 High Priority Fixes
+
+### Fix 4: Use Named Constants Instead of Magic Numbers
+
+**Problem:** Timeouts and delays use unexplained numbers throughout the code.
+
+**Solution:**
+```javascript
+// Add at the top of script section
+const CONSTANTS = {
+  TOOLTIP_FADE_DELAY: 10,
+  TOOLTIP_SHOW_DELAY: 300,
+  TOOLTIP_HIDE_DELAY: 200,
+  STATUS_MESSAGE_DURATION: 2000,
+  TRANSLATION_DEBOUNCE_TIME: 500,
+  AUTOCOMPLETE_MAX_RESULTS: 10
+};
+
+// Then use throughout:
+setTimeout(() => { 
+  operatorTooltip.style.opacity = 1; 
+}, CONSTANTS.TOOLTIP_FADE_DELAY);
+
+setTimeout(() => {
+  yandexTranslateStatus.textContent = '';
+}, CONSTANTS.STATUS_MESSAGE_DURATION);
+
+tooltipTimeout = setTimeout(() => {
+  // ... tooltip code
+}, CONSTANTS.TOOLTIP_SHOW_DELAY);
+
+const matches = Object.keys(searchEngines)
+  .filter(prefix => prefix.toLowerCase().startsWith(value))
+  .map(prefix => ({ prefix, engine: searchEngines[prefix] }))
+  .slice(0, CONSTANTS.AUTOCOMPLETE_MAX_RESULTS);
+```
+
+**Why:** Makes code self-documenting and easier to maintain. Changing timing behavior becomes trivial.
+
+---
+
+### Fix 5: Cache DOM Queries for Performance
+
+**Problem:** Same DOM elements queried repeatedly.
+
+**Solution:**
+```javascript
+// Add to top of script, after element declarations
+const CACHED_SELECTORS = {
+  searchEngineRadios: null,
+  operatorButtons: null,
+  bingOperatorButtons: null,
+  filetypeCheckboxes: null
+};
+
+function cacheSelectors() {
+  CACHED_SELECTORS.searchEngineRadios = document.querySelectorAll('input[name="searchEngine"]');
+  CACHED_SELECTORS.operatorButtons = googleOperatorFilters.querySelectorAll('.operator-btn');
+  CACHED_SELECTORS.bingOperatorButtons = bingOperatorFilters.querySelectorAll('.operator-btn');
+}
+
+// Call after DOM loads
+window.addEventListener('load', () => {
+  cacheSelectors();
+  updateSearchSource();
+  searchInput.focus();
+  addFaviconsToSearchEngines();
+  initializeYandexTranslation();
+});
+
+// Then use cached versions:
+function updateSearchSource() {
+  // ... code ...
+  
+  // Instead of: document.querySelectorAll('input[name="searchEngine"]')
+  // Use:
+  CACHED_SELECTORS.searchEngineRadios.forEach(radio => {
+    const isEffective = radio.value === effectivePrefix;
+    if (radio.checked !== isEffective) radio.checked = isEffective;
+    radio.parentElement.classList.toggle('selected', isEffective);
+  });
+}
+```
+
+**Why:** Reduces DOM traversal overhead, especially important for frequently called functions like `updateSearchSource()`.
+
+---
+
+### Fix 6: Improved Autocomplete Positioning
+
+**Problem:** Autocomplete positioning doesn't account for scroll and viewport properly.
+
+**Solution:**
+```javascript
+function positionAutocomplete() {
+  const rect = searchInput.getBoundingClientRect();
+  const autocompleteRect = autocompleteDiv.getBoundingClientRect();
+  
+  // Calculate position relative to viewport
+  let top = rect.bottom + 5;
+  let left = rect.left;
+  
+  // Check if autocomplete would go off bottom of screen
+  if (top + autocompleteRect.height > window.innerHeight) {
+    // Position above input instead
+    top = rect.top - autocompleteRect.height - 5;
+  }
+  
+  // Check if autocomplete would go off right edge
+  if (left + autocompleteRect.width > window.innerWidth) {
+    left = window.innerWidth - autocompleteRect.width - 10;
+  }
+  
+  // Ensure it doesn't go off left edge
+  if (left < 10) {
+    left = 10;
+  }
+  
+  autocompleteDiv.style.position = 'fixed';
+  autocompleteDiv.style.top = `${top}px`;
+  autocompleteDiv.style.left = `${left}px`;
+  autocompleteDiv.style.maxWidth = `${rect.width}px`;
+}
+
+function showAutocomplete(matches) {
+  if (matches.length === 0) {
+    autocompleteDiv.style.display = 'none';
+    return;
+  }
+
+  autocompleteDiv.innerHTML = '';
+  matches.forEach((match, index) => {
+    // ... existing item creation code ...
+  });
+  
+  autocompleteDiv.style.display = 'block';
+  
+  // Position after display to get accurate measurements
+  requestAnimationFrame(() => {
+    positionAutocomplete();
+  });
+}
+
+// Also reposition on window resize
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    if (autocompleteDiv.style.display === 'block') {
+      positionAutocomplete();
+    }
+  }, 100);
+});
+```
+
+**Why:** Ensures autocomplete is always visible and properly positioned, even on small screens or when scrolling.
+
+---
+
+### Fix 7: Improved Filetype Regex for Edge Cases
+
+**Problem:** Filetype clearing doesn't handle all formats.
+
+**Solution:**
+```javascript
+function applyFiletypeFilter() {
+  const checkedBoxes = document.querySelectorAll('.filetype-checkbox:checked');
+  const allExtensions = [];
+  Array.from(checkedBoxes).forEach(cb => {
+    const exts = cb.value.split(',');
+    allExtensions.push(...exts);
+  });
+
+  let val = searchInput.value.trim();
+
+  // More comprehensive regex to handle:
+  // - Grouped filetypes: (filetype:pdf OR filetype:doc)
+  // - Single filetypes: filetype:pdf
+  // - Multiple ungrouped: filetype:pdf OR filetype:doc
+  const filetypeRegex = /\s*\((?:filetype:[^\s)]+(?:\s+OR\s+)?)+\)|\s*(?:filetype:[^\s)]+(?:\s+OR\s+)?)+/gi;
+  val = val.replace(filetypeRegex, '').trim();
+  
+  // Clean up multiple spaces
+  val = val.replace(/\s+/g, ' ');
+
+  if (allExtensions.length > 0) {
+    const filetypeQuery = allExtensions.map(ext => `filetype:${ext}`).join(' OR ');
+    if (val.length > 0) val += ' ';
+    val += allExtensions.length > 1 ? `(${filetypeQuery})` : filetypeQuery;
+  }
+
+  searchInput.value = val;
+  updateSearchSource();
+  closeFiletypesPopup();
+  searchInput.focus();
+}
+```
+
+**Why:** Handles more edge cases and complex filetype queries, preventing leftover fragments.
+
+---
+
+## 🟢 Medium Priority Improvements
+
+### Fix 8: Organize Event Listeners
+
+**Problem:** Event listeners scattered throughout code.
+
+**Solution:**
+```javascript
+// Create an initialization function
+function initializeEventListeners() {
+  // Form submission
+  searchForm.addEventListener('submit', handleFormSubmit);
+  
+  // Search input
+  searchInput.addEventListener('input', handleSearchInput);
+  searchInput.addEventListener('click', handleSearchClick);
+  searchInput.addEventListener('keydown', handleSearchKeydown);
+  
+  // Radio buttons
+  CACHED_SELECTORS.searchEngineRadios.forEach(radio => {
+    radio.addEventListener('change', handleRadioChange);
+  });
+  
+  // Buttons
+  wikiToggleBtn.addEventListener('click', handleWikiToggle);
+  bangsBtn.addEventListener('click', handleBangsClick);
+  filetypesBtn.addEventListener('click', handleFiletypesClick);
+  darkModeToggleBtn.addEventListener('click', handleDarkModeToggle);
+  googleWikiBtn.addEventListener('click', openGoogleWikiPopup);
+  bingWikiBtn.addEventListener('click', openBingWikiPopup);
+  keyboardShortcutsBtn.addEventListener('click', openShortcutsPopup);
+  
+  // Popup close buttons
+  closeFiletypes.addEventListener('click', closeFiletypesPopup);
+  closeGoogleWikiBtn.addEventListener('click', closeGoogleWikiPopup);
+  closeBingWikiBtn.addEventListener('click', closeBingWikiPopup);
+  closeShortcutsBtn.addEventListener('click', closeShortcutsPopup);
+  popupOverlay.addEventListener('click', handleOverlayClick);
+  
+  // Operator filters
+  googleOperatorFilters.addEventListener('mouseover', handleGoogleOperatorHover);
+  googleOperatorFilters.addEventListener('mouseout', handleGoogleOperatorOut);
+  googleOperatorFilters.addEventListener('click', handleGoogleOperatorClick);
+  
+  bingOperatorFilters.addEventListener('mouseover', handleBingOperatorHover);
+  bingOperatorFilters.addEventListener('mouseout', handleBingOperatorOut);
+  bingOperatorFilters.addEventListener('click', handleBingOperatorClick);
+  
+  // Global events
+  document.addEventListener('click', handleDocumentClick);
+  document.addEventListener('keydown', handleGlobalKeydown);
+  window.addEventListener('resize', handleWindowResize);
+  
+  // Yandex translation (if elements exist)
+  initializeYandexTranslation();
+}
+
+// Then define handler functions
+function handleFormSubmit(e) {
+  e.preventDefault();
+  // ... existing submit logic
+}
+
+function handleSearchInput(e) {
+  updateSearchSource();
+  // ... autocomplete logic
+}
+
+function handleRadioChange() {
+  // ... existing radio change logic
+}
+
+// ... etc for all handlers
+
+// Call on load
+window.addEventListener('load', () => {
+  cacheSelectors();
+  initializeEventListeners();
+  updateSearchSource();
+  searchInput.focus();
+  addFaviconsToSearchEngines();
+});
+```
+
+**Why:** Makes code more maintainable, easier to debug, and allows for easier removal/modification of listeners.
+
+---
+
+### Fix 9: Add ARIA Accessibility Attributes
+
+**Problem:** Autocomplete lacks proper accessibility.
+
+**Solution:**
+```javascript
+// Update autocomplete creation
+const autocompleteDiv = document.createElement('div');
+autocompleteDiv.id = 'autocomplete';
+autocompleteDiv.setAttribute('role', 'listbox');
+autocompleteDiv.setAttribute('aria-label', 'Search engine suggestions');
+searchInput.parentElement.appendChild(autocompleteDiv);
+
+// Update search input
+searchInput.setAttribute('role', 'combobox');
+searchInput.setAttribute('aria-autocomplete', 'list');
+searchInput.setAttribute('aria-controls', 'autocomplete');
+searchInput.setAttribute('aria-expanded', 'false');
+
+function showAutocomplete(matches) {
+  if (matches.length === 0) {
+    autocompleteDiv.style.display = 'none';
+    searchInput.setAttribute('aria-expanded', 'false');
+    return;
+  }
+
+  autocompleteDiv.innerHTML = '';
+  matches.forEach((match, index) => {
+    const item = document.createElement('div');
+    item.className = 'autocomplete-item';
+    item.setAttribute('role', 'option');
+    item.setAttribute('id', `autocomplete-option-${index}`);
+    item.setAttribute('aria-selected', index === selectedIndex ? 'true' : 'false');
+    
+    if (index === selectedIndex) {
+      item.classList.add('selected');
+      searchInput.setAttribute('aria-activedescendant', `autocomplete-option-${index}`);
+    }
+    
+    // ... rest of item creation
+  });
+  
+  autocompleteDiv.style.display = 'block';
+  searchInput.setAttribute('aria-expanded', 'true');
+  
+  requestAnimationFrame(() => {
+    positionAutocomplete();
+  });
+}
+
+// Update keyboard navigation to update ARIA attributes
+searchInput.addEventListener('keydown', function(e) {
+  const items = autocompleteDiv.querySelectorAll('.autocomplete-item');
+  
+  if (autocompleteDiv.style.display === 'none' || items.length === 0) return;
+  
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+    items.forEach((item, i) => {
+      const isSelected = i === selectedIndex;
+      item.classList.toggle('selected', isSelected);
+      item.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+    });
+    searchInput.setAttribute('aria-activedescendant', `autocomplete-option-${selectedIndex}`);
+    items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    selectedIndex = Math.max(selectedIndex - 1, 0);
+    items.forEach((item, i) => {
+      const isSelected = i === selectedIndex;
+      item.classList.toggle('selected', isSelected);
+      item.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+    });
+    searchInput.setAttribute('aria-activedescendant', `autocomplete-option-${selectedIndex}`);
+    items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'Enter' && selectedIndex >= 0) {
+    e.preventDefault();
+    items[selectedIndex]?.click();
+  } else if (e.key === 'Escape') {
+    autocompleteDiv.style.display = 'none';
+    searchInput.setAttribute('aria-expanded', 'false');
+    searchInput.removeAttribute('aria-activedescendant');
+  }
+});
+```
+
+**Why:** Makes the interface usable with screen readers and improves accessibility compliance.
+
+---
+
+### Fix 10: Optimize Filetype Rendering
+
+**Problem:** Checkboxes recreated every time popup opens.
+
+**Solution:**
+```javascript
+let filetypesRendered = false;
+
+function renderFiletypesCheckboxes() {
+  const grid = document.getElementById('filetype-grid');
+  
+  // Only render once
+  if (!filetypesRendered) {
+    grid.innerHTML = '';
+    
+    for (const [category, filetypes] of Object.entries(filetypesWiki)) {
+      const categoryDiv = document.createElement('div');
+      categoryDiv.className = 'filetype-category';
+      
+      const title = document.createElement('h4');
+      title.textContent = category;
+      categoryDiv.appendChild(title);
+
+      const itemsContainer = document.createElement('div');
+      itemsContainer.className = 'filetype-items-container';
+
+      filetypes.forEach(filetype => {
+        let id, value, name, labelText;
+
+        if (Array.isArray(filetype.ext)) {
+          id = `ft-checkbox-${filetype.ext.join('-')}`;
+          value = filetype.ext.join(',');
+          name = filetype.name;
+          labelText = `${name} (.${filetype.ext.join(', .')})`;
+        } else {
+          id = `ft-checkbox-${filetype.ext}`;
+          value = filetype.ext;
+          name = filetype.name;
+          labelText = `${name} (.${filetype.ext})`;
+        }
+
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'filetype-item';
+        
+        const label = document.createElement('label');
+        label.setAttribute('for', id);
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = id;
+        checkbox.value = value;
+        checkbox.className = 'filetype-checkbox';
+        
+        label.appendChild(checkbox);
+        label.append(` ${labelText}`);
+        
+        itemDiv.appendChild(label);
+        itemsContainer.appendChild(itemDiv);
+      });
+      
+      categoryDiv.appendChild(itemsContainer);
+      grid.appendChild(categoryDiv);
+    }
+    
+    filetypesRendered = true;
+  }
+  
+  // Update checkbox states based on current search
+  updateFiletypeCheckboxStates();
+}
+
+function updateFiletypeCheckboxStates() {
+  const currentFiletypes = getCurrentlySelectedFiletypes();
+  
+  document.querySelectorAll('.filetype-checkbox').forEach(checkbox => {
+    const extensionsInValue = checkbox.value.split(',');
+    checkbox.checked = extensionsInValue.some(ext => currentFiletypes.includes(ext));
+  });
+}
+```
+
+**Why:** Dramatically improves performance by only creating DOM elements once, then updating states.
+
+---
+
+## 📋 Implementation Checklist
+
+Apply fixes in this order:
+
+### Phase 1 - Critical (Do First)
+- [ ] Fix 1: Move variable declarations to top
+- [ ] Fix 2: Add Yandex element safety checks
+- [ ] Fix 3: Fix translation race conditions
+- [ ] Fix 4: Add named constants
+
+### Phase 2 - High Priority
+- [ ] Fix 5: Cache DOM queries
+- [ ] Fix 6: Fix autocomplete positioning
+- [ ] Fix 7: Improve filetype regex
+
+### Phase 3 - Medium Priority
+- [ ] Fix 8: Organize event listeners
+- [ ] Fix 9: Add ARIA accessibility
+- [ ] Fix 10: Optimize filetype rendering
+
+### Testing After Each Phase
+1. Test all search engines work correctly
+2. Test autocomplete appears and navigates properly
+3. Test Yandex translation (if applicable)
+4. Test keyboard shortcuts
+5. Test dark mode toggle
+6. Test on mobile viewport
+7. Test with screen reader (for accessibility fixes)
+
+---
+
+## 🔧 Additional Recommendations
+
+### Error Logging
+Add comprehensive error logging:
+
+```javascript
+function logError(context, error) {
+  console.error(`[Search Tool Error - ${context}]:`, error);
+  // Could send to analytics service here
+}
+
+// Use throughout:
+try {
+  const translated = await translateText(textToTranslate, sourceLang, targetLang);
+  // ...
+} catch (error) {
+  logError('Yandex Translation', error);
+  // ... error handling
+}
+```
+
+### Performance Monitoring
+Add basic performance tracking:
+
+```javascript
+function measurePerformance(label, fn) {
+  const start = performance.now();
+  const result = fn();
+  const end = performance.now();
+  console.log(`[Performance] ${label}: ${(end - start).toFixed(2)}ms`);
+  return result;
+}
+
+// Use for expensive operations:
+measurePerformance('Render Filetypes', () => {
+  renderFiletypesCheckboxes();
+});
+```
+
+This comprehensive guide should resolve all major issues and significantly improve the code quality!
