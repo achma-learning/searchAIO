@@ -8,6 +8,7 @@ https://www.dca.ca.gov/accessibility.shtml
 # + claude-AI to analyse for errors and suggestions
 
 https://github.com/cipher387/Advanced-search-operators-list
+https://mosermichael.github.io/duckduckbang/html/all_cats.html
 https://seosly.com/blog/youtube-search-operators/
 
 this is a poor readme:
