@@ -7,7 +7,7 @@ https://www.dca.ca.gov/accessibility.shtml
 # with github desktop
 # + claude-AI to analyse for errors and suggestions
 
-
+https://seosly.com/blog/youtube-search-operators/
 
 this is a poor readme:
 to chose search engin either chose with mouse the radio button or type "prefix:" , or use keyboard shortcuts
