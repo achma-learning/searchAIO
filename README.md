@@ -14,6 +14,7 @@ to chose search engin either chose with mouse the radio button or type "prefix:"
 
 # you can use duckduckgo bang inside google
 # i tried to name search "prefix:" same or close to duckduckgo !bang
+here a good website about duckduckgo !bangs : https://mosermichael.github.io/duckduckbang/html/main.html
 and i think of adding search operator to main search engin
 and in yandex and baidu ... , add a translation for those who doesn't speek the language, where at top of search bar you have search translation like now in yandex , and i think of adding a small button at right of this popout to open a google translate or deepl translate page, and at buttom you have search operator
 
@@ -29,3 +30,6 @@ and in yandex and baidu ... , add a translation for those who doesn't speek the 
 # i am a noob at coding but using gemini-cli , and claude AI and some other ai helped me, there is some error as of now 2026-01-19 reported by claude ai , but i can't fixe them yet without breaking functionnality
 # this help me supercharge my moves : https://www.youtube.com/watch?v=MsQACpcuTkU , since i can copy all of gemini or grok (website AI) discurssion and past them in a .txt folder and tell gemini-cli in prompt : to read the @grok-test.txt and try to fix/update/correct errors 
 ### feel free to fork it and improved it
+
+
+# to do's : try to add something from here : https://github.com/cipher387/Advanced-search-operators-list
