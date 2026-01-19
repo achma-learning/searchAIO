@@ -5,16 +5,16 @@
 # good working version : https://web.archive.org/web/20260119190354/https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/index.html
 #
 the one page search
-https://www.dca.ca.gov/about_us/kbs_chrome.shtml
-https://www.dca.ca.gov/accessibility.shtml
+### https://www.dca.ca.gov/about_us/kbs_chrome.shtml
+### https://www.dca.ca.gov/accessibility.shtml
 
 # used gemini-cli : https://github.com/google-gemini/gemini-cli   \ inside wsl-ubuntu
 # with github desktop
 # + claude-AI to analyse for errors and suggestions
 
-https://github.com/cipher387/Advanced-search-operators-list
-https://mosermichael.github.io/duckduckbang/html/all_cats.html
-https://seosly.com/blog/youtube-search-operators/
+### https://github.com/cipher387/Advanced-search-operators-list
+### https://mosermichael.github.io/duckduckbang/html/all_cats.html
+### https://seosly.com/blog/youtube-search-operators/
 
 this is a poor readme:
 to chose search engin either chose with mouse the radio button or type "prefix:" , or use keyboard shortcuts
@@ -22,8 +22,8 @@ to chose search engin either chose with mouse the radio button or type "prefix:"
 # you can use duckduckgo bang inside google
 # i tried to name search "prefix:" same or close to duckduckgo !bang
 here a good website about duckduckgo !bangs : https://mosermichael.github.io/duckduckbang/html/main.html
-and i think of adding search operator to main search engin
-and in yandex and baidu ... , add a translation for those who doesn't speek the language, where at top of search bar you have search translation like now in yandex , and i think of adding a small button at right of this popout to open a google translate or deepl translate page, and at buttom you have search operator
+ and i think of adding search operator to main search engin
+ and in yandex and baidu ... , add a translation for those who doesn't speek the language, where at top of search bar you have search translation like now in yandex , and i  think of adding a small button at right of this popout to open a google translate or deepl translate page, and at buttom you have search operator
 
 
 # next is to list some good user script : use at your risk
