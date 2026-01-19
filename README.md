@@ -1,4 +1,9 @@
+
+
 # searchAIO
+#
+# good working version : https://web.archive.org/web/20260119190354/https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/index.html
+#
 the one page search
 https://www.dca.ca.gov/about_us/kbs_chrome.shtml
 https://www.dca.ca.gov/accessibility.shtml
