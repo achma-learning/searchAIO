@@ -7,6 +7,7 @@ https://www.dca.ca.gov/accessibility.shtml
 # with github desktop
 # + claude-AI to analyse for errors and suggestions
 
+https://github.com/cipher387/Advanced-search-operators-list
 https://seosly.com/blog/youtube-search-operators/
 
 this is a poor readme:
