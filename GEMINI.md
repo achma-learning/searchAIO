@@ -45,3 +45,8 @@ Future updates will likely focus on:
 - **Fix shortcuts button:** Resolve the issue preventing the keyboard shortcuts pop-up from displaying correctly when its button is clicked.
 
 This `GEMINI.md` file will be automatically updated to reflect the latest changes and features as the project progresses.
+
+## Development Guidelines
+
+- **Preservation of `stable.html`:** The file `stable.html` must never be deleted. It serves as a stable reference point for the project.
+- **Git Push Policy:** After each code update, changes must be pushed to the GitHub repository to ensure that the codebase remains current and synchronized.
