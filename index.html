@@ -160,6 +160,11 @@
             color: white;
         }
         
+        #duckBangBtn {
+            background: linear-gradient(135deg, #DE5833 0%, #F7931E 100%);
+            color: white;
+        }
+        
         .checkbox-label {
             display: flex;
             align-items: center;
@@ -995,6 +1000,7 @@
         </label>
 
         <button type="button" id="filetypesBtn">📁 Filetypes</button>
+        <button type="button" id="duckBangBtn" style="display: none;">🦆 !bang</button>
       </form>
     </div>
 
@@ -1816,6 +1822,10 @@
     bingOperatorFilters.style.display = isBing ? 'grid' : 'none';
     bingWikiBtn.style.display = isBing ? 'inline-block' : 'none';
 
+    // Toggle DuckDuckGo !bang button visibility
+    const isDuckDuckGo = (effectivePrefix === 'ddg:');
+    duckBangBtn.style.display = isDuckDuckGo ? 'inline-block' : 'none';
+
     // Toggle CISMeF filters visibility and select correct filter from alias
     if (effectivePrefix === 'cismef:') {
       cismefFilters.style.display = 'grid';
@@ -2004,10 +2014,16 @@
   });
 
   bangsBtn.addEventListener('click', () => {
-    const query = searchInput.value.trim();
-    const url = 'https://duckduckgo.com/bangs?q=' + encodeURIComponent(query);
-    window.open(url, 'bangsWindow', 'width=800,height=600,scrollbars=yes,resizable=yes');
+    // Reference external resource for DuckDuckGo !bangs
+    window.open('https://mosermichael.github.io/duckduckbang/html/main.html', '_blank');
   });
+
+// DuckDuckGo !bang button functionality
+const duckBangBtn = document.getElementById('duckBangBtn');
+
+duckBangBtn.addEventListener('click', () => {
+  window.open('https://mosermichael.github.io/duckduckbang/html/main.html', 'duckBangWindow', 'width=800,height=600,scrollbars=yes,resizable=yes');
+});
 
   function renderFiletypesCheckboxes() {
     const grid = document.getElementById('filetype-grid');
