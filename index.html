@@ -989,7 +989,7 @@
     <div class="search-bar">
       <form id="searchForm">
         <div id="searchSource">Entrez une requête pour afficher la source</div>
-        <img id="search-prefix-favicon" class="favicon-icon" src="" alt="favicon" style="display: none; margin-right: 5px;">
+        <img id="search-prefix-favicon" class="favicon-icon" src="" alt="favicon" style="display: none;">
         <div class="autocomplete-container">
           <input type="text" id="searchInput" autocomplete="off" placeholder="Commencez votre recherche ici..." />
         </div>
@@ -1415,7 +1415,8 @@
   </div>
 
 <script>
-  let operatorHandlersInitialized = false;
+
+  let yandexTranslationTimeout = null;
   const filetypesWiki = {
       "📄 Documents & Text": [
           { ext: 'pdf', name: 'Adobe Portable Document Format' },
@@ -2133,22 +2134,28 @@ duckBangBtn.addEventListener('click', () => {
   }
 
   function closeFiletypesPopup() {
-    filetypesPopup.classList.remove('show');
-    popupOverlay.classList.remove('show');
+      filetypesPopup.classList.remove('show');
+      // Only close overlay if no other popups are open
+      if (!googleWikiPopup.classList.contains('show') && 
+          !bingWikiPopup.classList.contains('show') &&
+          !keyboardShortcutsPopup.classList.contains('show')) {
+        popupOverlay.classList.remove('show');
+      }
   }
-
   function openGoogleWikiPopup() {
     googleWikiPopup.classList.add('show');
     popupOverlay.classList.add('show');
   }
 
   function closeGoogleWikiPopup() {
-    googleWikiPopup.classList.remove('show');
-    if (!filetypesPopup.classList.contains('show')) {
-      popupOverlay.classList.remove('show');
-    }
+      googleWikiPopup.classList.remove('show');
+      // Only close overlay if no other popups are open
+      if (!filetypesPopup.classList.contains('show') && 
+          !bingWikiPopup.classList.contains('show') &&
+          !keyboardShortcutsPopup.classList.contains('show')) {
+        popupOverlay.classList.remove('show');
+      }
   }
-
   googleWikiBtn.addEventListener('click', openGoogleWikiPopup);
   closeGoogleWikiBtn.addEventListener('click', closeGoogleWikiPopup);
 
@@ -2158,12 +2165,14 @@ duckBangBtn.addEventListener('click', () => {
   }
 
   function closeBingWikiPopup() {
-    bingWikiPopup.classList.remove('show');
-    if (!filetypesPopup.classList.contains('show') && !googleWikiPopup.classList.contains('show')) {
-      popupOverlay.classList.remove('show');
-    }
+      bingWikiPopup.classList.remove('show');
+      // Only close overlay if no other popups are open
+      if (!filetypesPopup.classList.contains('show') && 
+          !googleWikiPopup.classList.contains('show') &&
+          !keyboardShortcutsPopup.classList.contains('show')) {
+        popupOverlay.classList.remove('show');
+      }
   }
-
   bingWikiBtn.addEventListener('click', openBingWikiPopup);
   closeBingWikiBtn.addEventListener('click', closeBingWikiPopup);
 
@@ -2366,7 +2375,7 @@ duckBangBtn.addEventListener('click', () => {
           
           if (description) {
               tooltipTimeout = setTimeout(() => {
-                  operatorTooltip.innerHTML = description;
+                  operatorTooltip.textContent = description;
                   operatorTooltip.style.display = 'block';
 
                   const rect = e.target.getBoundingClientRect();
@@ -2505,12 +2514,7 @@ duckBangBtn.addEventListener('click', () => {
   googleOperatorFilters.addEventListener('mouseover', function(e) {
       if (e.target.classList.contains('operator-btn')) {
           const operator = e.target.dataset.operator;
-          const description = operatorDescriptions[operator];
-          
-          if (description) {
-              tooltipTimeout = setTimeout(() => {
-                  operatorTooltip.innerHTML = description;
-                  operatorTooltip.style.display = 'block';
+                  operatorTooltip.textContent = description;
 
                   const rect = e.target.getBoundingClientRect();
                   const tooltipRect = operatorTooltip.getBoundingClientRect();
