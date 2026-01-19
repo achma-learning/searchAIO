@@ -2688,6 +2688,155 @@ function handleGlobalKeydown(e) {
     }
   }
 }
+// ============================================
+// ADD THIS AT THE VERY END OF YOUR SCRIPT
+// Right before the closing </script> tag
+// ============================================
+
+// Missing popup close functions
+function openBingWikiPopup() {
+  bingWikiPopup.classList.add('show');
+  popupOverlay.classList.add('show');
+}
+
+function closeBingWikiPopup() {
+  bingWikiPopup.classList.remove('show');
+  if (!filetypesPopup.classList.contains('show') && 
+      !googleWikiPopup.classList.contains('show') &&
+      !keyboardShortcutsPopup.classList.contains('show')) {
+    popupOverlay.classList.remove('show');
+  }
+}
+
+// Yandex Translation Initialization
+function initializeYandexTranslation() {
+  if (!yandexSourceText || !yandexTargetText || !yandexSourceLang || 
+      !yandexInsertBtn || !yandexCopyBtn || !yandexTranslateStatus) {
+    console.warn('Yandex translation elements not found');
+    return;
+  }
+
+  yandexSourceText.addEventListener('input', () => {
+    scheduleYandexTranslation();
+  });
+
+  yandexSourceLang.addEventListener('change', () => {
+    scheduleYandexTranslation();
+  });
+
+  yandexCopyBtn.addEventListener('click', () => {
+    const textToCopy = yandexTargetText.value;
+    if (textToCopy.trim()) {
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        yandexTranslateStatus.textContent = 'Copied to clipboard!';
+        yandexTranslateStatus.className = 'success';
+        setTimeout(() => yandexTranslateStatus.textContent = '', CONSTANTS.STATUS_MESSAGE_DURATION);
+      }).catch(err => {
+        yandexTranslateStatus.textContent = 'Failed to copy.';
+        yandexTranslateStatus.className = 'error';
+      });
+    }
+  });
+
+  yandexInsertBtn.addEventListener('click', () => {
+    const translatedText = yandexTargetText.value;
+    if (translatedText.trim()) {
+      const currentInput = searchInput.value;
+      const start = searchInput.selectionStart;
+      const end = searchInput.selectionEnd;
+
+      searchInput.value = currentInput.substring(0, start) + translatedText + currentInput.substring(end);
+      searchInput.selectionStart = start + translatedText.length;
+      searchInput.selectionEnd = start + translatedText.length;
+      searchInput.focus();
+
+      yandexTranslateStatus.textContent = 'Inserted into search bar!';
+      yandexTranslateStatus.className = 'success';
+      setTimeout(() => yandexTranslateStatus.textContent = '', CONSTANTS.STATUS_MESSAGE_DURATION);
+    }
+  });
+}
+
+// Window resize handler
+let resizeTimeout;
+function handleWindowResize() {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    if (autocompleteDiv.style.display === 'block') {
+      positionAutocomplete();
+    }
+  }, 100);
+}
+
+// ============================================
+// COMPLETE EVENT LISTENERS INITIALIZATION
+// ============================================
+function initializeEventListeners() {
+  // Buttons
+  wikiToggleBtn.addEventListener('click', handleWikiToggle);
+  bangsBtn.addEventListener('click', handleBangsClick);
+  filetypesBtn.addEventListener('click', handleFiletypesClick);
+  
+  const darkModeToggleBtn = document.getElementById('darkModeToggleBtn');
+  if (darkModeToggleBtn) {
+    darkModeToggleBtn.addEventListener('click', handleDarkModeToggle);
+  }
+  
+  googleWikiBtn.addEventListener('click', openGoogleWikiPopup);
+  bingWikiBtn.addEventListener('click', openBingWikiPopup);
+  keyboardShortcutsBtn.addEventListener('click', openShortcutsPopup);
+  
+  // Popup close buttons
+  closeFiletypes.addEventListener('click', handleCloseFiletypes);
+  closeGoogleWikiBtn.addEventListener('click', closeGoogleWikiPopup);
+  closeBingWikiBtn.addEventListener('click', closeBingWikiPopup);
+  closeShortcutsBtn.addEventListener('click', closeShortcutsPopup);
+  popupOverlay.addEventListener('click', handleOverlayClick);
+  
+  // Operator filters
+  googleOperatorFilters.addEventListener('mouseover', handleGoogleOperatorHover);
+  googleOperatorFilters.addEventListener('mouseout', handleGoogleOperatorOut);
+  googleOperatorFilters.addEventListener('click', handleGoogleOperatorClick);
+  
+  bingOperatorFilters.addEventListener('mouseover', handleBingOperatorHover);
+  bingOperatorFilters.addEventListener('mouseout', handleBingOperatorOut);
+  bingOperatorFilters.addEventListener('click', handleBingOperatorClick);
+  
+  // Global events
+  document.addEventListener('click', handleDocumentClick);
+  document.addEventListener('keydown', handleGlobalKeydown);
+  window.addEventListener('resize', handleWindowResize);
+  
+  // Search input events
+  searchInput.addEventListener('input', handleSearchInput);
+  searchInput.addEventListener('keydown', handleSearchKeydown);
+  
+  // Yandex translation (if elements exist)
+  initializeYandexTranslation();
+}
+
+// ============================================
+// MAIN INITIALIZATION - RUNS WHEN PAGE LOADS
+// ============================================
+window.addEventListener('load', () => {
+  // Cache selectors
+  cacheSelectors();
+  
+  // Initialize all event listeners
+  initializeEventListeners();
+  
+  // Update UI
+  updateSearchSource();
+  searchInput.focus();
+  
+  // Add favicons to search engines
+  addFaviconsToSearchEngines();
+  
+  // Apply dark mode if previously enabled
+  if (localStorage.getItem('darkMode') === 'enabled') {
+    document.body.classList.add('dark-mode');
+  }
+});
 </script>
 </body>
 </html>

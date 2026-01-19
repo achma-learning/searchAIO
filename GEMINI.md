@@ -33,6 +33,7 @@ The file `index.html` is a sophisticated, single-page web application designed a
 The primary goal of `index.html` is to be an all-in-one search solution that evolves with the user's needs. The structure of the code and the presence of various experimental files in the `search` directory suggest that this is an active project with ongoing development.
 
 Future updates will likely focus on:
+- **Reference external resource for search operators:** Utilize the GitHub repository `https://github.com/cipher387/Advanced-search-operators-list` as a main resource for search operators, and consider integrating functionality to open it in a web browser when the user interacts with "search operators" related features.
 - **Adding more search sources:** The flexible, categorized structure makes it easy to integrate new search engines.
 - **Enhancing user experience:** Further improvements to the UI/UX are expected, potentially including more customization options.
 - **Expanding filtering capabilities:** More advanced filtering and search operators could be added to refine search results further.
