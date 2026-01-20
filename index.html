@@ -2014,9 +2014,11 @@
   });
 
   bangsBtn.addEventListener('click', () => {
-    // Reference external resource for DuckDuckGo !bangs
-    window.open('https://mosermichael.github.io/duckduckbang/html/main.html', '_blank');
-  });
+    // Reference official resource for DuckDuckGo !bangs
+  const query = searchInput.value.trim();
+  const url = 'https://duckduckgo.com/bangs?q=' + encodeURIComponent(query);
+  window.open(url, 'bangsWindow', 'width=800,height=600,scrollbars=yes,resizable=yes');
+});
 
 // DuckDuckGo !bang button functionality
 const duckBangBtn = document.getElementById('duckBangBtn');
