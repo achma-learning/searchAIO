@@ -1210,6 +1210,7 @@
       <div class="category-section">
         <div class="category-title">🤖 IA / Avancé</div>
         <div class="radio-group" id="group4">
+          <label><input type="radio" name="searchEngine" value="bk:">local Bookmarks</label>
           <label><input type="radio" name="searchEngine" value="wolf:">Wolfram Alpha</label>
           <label><input type="radio" name="searchEngine" value="chatgpt:">ChatGPT</label>
           <label><input type="radio" name="searchEngine" value="claude:">Claude AI</label>
@@ -1278,6 +1279,7 @@
       
       <h4>🤖 IA / Avancé</h4>
       <ul>
+        <li><b>bk:</b> your Bookmarks</li>
         <li><b>wolf:</b> Wolfram Alpha</li>
         <li><b>chatgpt:</b> ChatGPT</li>
         <li><b>claude:</b> Claude AI</li>
@@ -1531,6 +1533,7 @@
     'openmd:': { name: 'OpenMD', url: 'https://openmd.com/search?q=', domain: 'openmd.com' },
     'mesh:': { name: 'MeSH Browser', url: 'https://meshb.nlm.nih.gov/search?searchInField=allTerms&searchString=', domain: 'nlm.nih.gov' },
     'dd:': { name: 'Diseases Database', url: 'http://www.diseasesdatabase.com/item_choice.asp?strUserInput=', domain: 'diseasesdatabase.com' },
+    'bk:': { name: 'your Bookmarks', url: 'chrome://bookmarks/?q=', domain: 'chrome.google.com' },
     'wolf:': { name: 'Wolfram Alpha', url: 'https://www.wolframalpha.com/input?i=', domain: 'wolframalpha.com' },
     'chatgpt:': { name: 'ChatGPT', url: 'https://chatgpt.com/?prompt=', domain: 'chatgpt.com' },
     'claude:': { name: 'Claude AI', url: 'https://claude.ai/new?q=', domain: 'claude.ai' },
@@ -1992,6 +1995,13 @@
       } else if (prefix === 'proinserm:') {
         const encodedQuery = encodeURIComponent(query).replace(/%20/g, '+');
         finalUrl = baseUrl + encodedQuery;
+      } else if (prefix === 'bk:') {
+        let q = query.replace(/\s+/g, '+');
+        if (!q) q = prompt('Search bookmarks for:', '')?.trim().replace(/\s+/g, '+') || '';
+        if (q) {
+          window.open('chrome://bookmarks/?q=' + q, '_blank');
+        }
+        return;
       } else {
         finalUrl = baseUrl + encodeURIComponent(query);
       }

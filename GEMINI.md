@@ -42,7 +42,11 @@ Future updates will likely focus on:
 - **Add Yandex search operator above search bar:** Implement a dedicated display or input field for Yandex-specific search operators, positioned prominently near the main search bar to enhance Yandex search customization.
 - **Add Baidu search engine with similar functionality to Yandex:** Integrate Baidu as a new search engine option, ensuring it supports features like translation and operator filtering, comparable to the existing Yandex functionality.
 - **Fix shortcuts button:** Resolve the issue preventing the keyboard shortcuts pop-up from displaying correctly when its button is clicked.
-- **Fix shortcuts button:** Resolve the issue preventing the keyboard shortcuts pop-up from displaying correctly when its button is clicked.
+- **Integrate bookmarklets:** Add functionality to use bookmarklets for various web development tasks. Resources:
+    - https://dev.to/best_codes/11-amazing-bookmarklets-for-web-devs-what-are-they-anyways--3pk6
+    - https://caiorss.github.io/bookmarklets.html
+    - https://vansandick.com/web/bookmarklet/all.php
+- **Add 'your Bookmarks' search engine:** Integrated a new search engine "your Bookmarks" (`bk:`) allowing users to search their Chrome bookmarks directly. This includes a feature to prompt for a query if none is provided and correctly formats spaces in the query to '+' for the `chrome://bookmarks/?q=` URL.
 
 This `GEMINI.md` file will be automatically updated to reflect the latest changes and features as the project progresses.
 
