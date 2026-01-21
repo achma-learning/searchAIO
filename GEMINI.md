@@ -46,7 +46,7 @@ Future updates will likely focus on:
     - https://dev.to/best_codes/11-amazing-bookmarklets-for-web-devs-what-are-they-anyways--3pk6
     - https://caiorss.github.io/bookmarklets.html
     - https://vansandick.com/web/bookmarklet/all.php
-- **Add 'your Bookmarks' search engine:** Integrated a new search engine "your Bookmarks" (`bk:`) allowing users to search their Chrome bookmarks directly. This includes a feature to prompt for a query if none is provided and correctly formats spaces in the query to '+' for the `chrome://bookmarks/?q=` URL.
+
 
 This `GEMINI.md` file will be automatically updated to reflect the latest changes and features as the project progresses.
 
