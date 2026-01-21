@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Local Tools - Open Bookmarks Search",
+  "version": "1.0",
+  "description": "Allows your local search page to open chrome://bookmarks in new tab",
+  "permissions": ["tabs"],
+  "background": {
+    "service_worker": "bg.js"
+  },
+  "externally_connectable": {
+    "matches": ["file://*/*"]
+  }
+}
