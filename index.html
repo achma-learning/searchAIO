@@ -1210,7 +1210,6 @@
       <div class="category-section">
         <div class="category-title">🤖 IA / Avancé</div>
         <div class="radio-group" id="group4">
-
           <label><input type="radio" name="searchEngine" value="wolf:">Wolfram Alpha</label>
           <label><input type="radio" name="searchEngine" value="chatgpt:">ChatGPT</label>
           <label><input type="radio" name="searchEngine" value="claude:">Claude AI</label>
@@ -1279,7 +1278,6 @@
       
       <h4>🤖 IA / Avancé</h4>
       <ul>
-
         <li><b>wolf:</b> Wolfram Alpha</li>
         <li><b>chatgpt:</b> ChatGPT</li>
         <li><b>claude:</b> Claude AI</li>
@@ -1994,7 +1992,7 @@
       } else if (prefix === 'proinserm:') {
         const encodedQuery = encodeURIComponent(query).replace(/%20/g, '+');
         finalUrl = baseUrl + encodedQuery;
- else {
+      } else {
         finalUrl = baseUrl + encodeURIComponent(query);
       }
 
