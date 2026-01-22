@@ -1,8 +1,8 @@
-WebMD + (openMD* exsite)
-NIH +
-Medscape -
-Drugs.com +
-CDC +
+WebMD+ (openMD* exsite) | 
+NIH+ | 
+Medscape- | 
+Drugs.com+ | 
+CDC+
 
 # searchAIO
 #
