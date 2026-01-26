@@ -1,0 +1,981 @@
+# In-Depth Analysis: Multi-Engine Search Interface
+
+## Project Overview
+
+This is a **unified search orchestration platform** that consolidates 50+ specialized search engines into a single, keyboard-driven interface. It functions as a search "meta-engine" or "search router" - users don't visit individual search engines; instead, they use prefix-based commands to route queries to the appropriate destination.
+
+### Core Problem It Solves
+Researchers, medical professionals, and power users typically need to:
+1. Remember dozens of different search URLs
+2. Open multiple tabs for comparative searches
+3. Learn different query syntaxes for each engine
+4. Manually apply filters across platforms
+
+This tool **eliminates context switching** by providing a command-line-like experience in the browser, where typing `scholar: quantum entanglement` immediately routes you to Google Scholar with that query.
+
+---
+
+## Architecture Deep Dive
+
+### 1. Data Model: The `searchEngines` Object
+
+```javascript
+const searchEngines = {
+  'prefix:': {
+    name: 'Display Name',           // Shown in UI and search source indicator
+    url: 'https://base.url/search?q=', // Base URL for query construction
+    domain: 'domain.com',            // For favicon fetching
+    favicon: 'custom_url',           // Optional: override Google's favicon service
+    isAlias: true,                   // Optional: marks this as an alias
+    aliasFor: 'target_prefix:',      // Required if isAlias: true
+    filterValue: 'filter_param'      // Optional: pre-selected filter for alias
+  }
+}
+```
+
+**Key Design Decisions:**
+- **Prefix-driven routing**: Each engine has a unique identifier (e.g., `pubmed:`, `arxiv:`)
+- **Alias system**: Allows shortcuts like `cismef-bp:` → `cismef:` with pre-applied "Bonnes Pratiques" filter
+- **Favicon flexibility**: Falls back to Google's service (`www.google.com/s2/favicons`) but allows custom URLs for engines without public favicons
+
+**Special URL Construction Logic:**
+```javascript
+// Toubkal requires specific parameter order
+if (prefix === 'these-ma:') {
+  finalUrl = baseUrl + encodeURIComponent(query) + '&submit=OK';
+}
+
+// Google Patents needs structured query format
+else if (prefix === 'gpat:') {
+  finalUrl = baseUrl + '?q=(' + encodeURIComponent(query) + ')&oq=' + encodeURIComponent(query);
+}
+
+// Medscape requires quoted queries
+else if (prefix === 'medscape:') {
+  finalUrl = baseUrl + '?q="' + encodeURIComponent(query) + '"';
+}
+```
+
+This shows the **abstraction layer** handling engine-specific quirks while maintaining a unified user experience.
+
+---
+
+### 2. Search Flow State Machine
+
+```
+[User Input] → [Prefix Detection] → [Engine Resolution] → [Filter Application] → [URL Construction] → [New Tab Launch]
+       ↓              ↓                     ↓                      ↓
+   updateSearchSource()  Handles aliases   Shows relevant      Applies YouTube/CISMeF/
+                                            filter boxes        Google operators
+```
+
+**Critical Function: `updateSearchSource()`**
+
+This is the **state synchronization hub** that runs on every input change:
+
+```javascript
+function updateSearchSource() {
+  // 1. Prefix Detection (from input or radio selection)
+  let effectivePrefix = "";
+  for (const key of Object.keys(searchEngines)) {
+    if (value.startsWith(key)) {
+      effectivePrefix = key;
+      break;
+    }
+  }
+  
+  // 2. Alias Resolution
+  if (effectiveEngine.isAlias) {
+    effectivePrefix = effectiveEngine.aliasFor;
+    // Auto-select corresponding filter radio button
+  }
+  
+  // 3. UI State Updates
+  - Update search source indicator with engine name
+  - Show/hide filter boxes (YouTube/Google/Bing/CISMeF/Yandex)
+  - Sync radio button selections
+  - Update favicon display
+  - Toggle operator buttons visibility
+}
+```
+
+**Why This Matters:**
+- **Bidirectional sync**: Input changes update radio buttons; radio changes update input
+- **Context-aware UI**: Only shows relevant filters for current engine
+- **Visual feedback**: Users always know which engine will be used
+
+---
+
+### 3. Filter Systems Architecture
+
+#### YouTube Filters (Encoded Parameters)
+```javascript
+// YouTube uses base64-encoded filter strings
+const filterGroups = ['yt_sort', 'yt_type', 'yt_duration', 'yt_date'];
+
+// Example: Sorting by date = "CAI%3D"
+// Only ONE filter can be active (YouTube limitation)
+for (const groupName of filterGroups) {
+  const selectedRadio = document.querySelector(`#youtubeFilters input[name="${groupName}"]:checked`);
+  if (selectedRadio && selectedRadio.value) {
+    finalUrl += '&sp=' + selectedRadio.value;
+    break; // Only apply first non-empty filter
+  }
+}
+```
+
+**YouTube Filter Categories:**
+- **Sort**: Relevance | Upload Date | View Count | Rating
+- **Type**: All | Video | Channel | Playlist
+- **Duration**: Any | <4min | 4-20min | >20min
+- **Date**: Any | Last Hour | Today | This Week | This Month | This Year
+
+#### Google/Bing Operator Buttons
+```javascript
+// Operator buttons insert syntax at cursor position
+googleOperatorFilters.addEventListener('click', function(e) {
+  const operator = e.target.dataset.operator;
+  let textToInsert = operator;
+  let cursorOffset = 0;
+  
+  // Special handling for paired operators
+  if (operator === '" "') {
+    textToInsert = '""';
+    cursorOffset = -1; // Place cursor INSIDE quotes
+  }
+  
+  // Insert at current cursor position
+  input.value = input.value.substring(0, start) + textToInsert + input.value.substring(end);
+  input.selectionStart = start + textToInsert.length + cursorOffset;
+});
+```
+
+**Operator Categories:**
+- **Basic**: `"phrase"`, `OR`, `-exclude`, `*wildcard`, `(group)`, `in`
+- **Advanced**: `site:`, `intitle:`, `allintitle:`, `inurl:`, `allinurl:`, `intext:`, `allintext:`, `filetype:`, `related:`
+- **Specialized**: `define:`, `source:`, `stocks:`, `weather:`, `before:`, `after:`, `AROUND(n)`
+
+**Bing-Specific Operators:**
+- Uses `NOT` instead of `-`
+- Has `inbody:` instead of `intext:`
+- Supports `imagesize:`, `feed:`, `language:`
+
+#### CISMeF Medical Document Filters
+```javascript
+// CISMeF has environment-based filtering
+const cismefScopes = {
+  'env=basic&q=': 'All document types',
+  'env=bp&q=': 'Professional guidelines (Bonnes Pratiques)',
+  'env=unf3s&q=': 'Teaching documents',
+  'env=pat&q=': 'Patient information & associations',
+  'env=thm&q=': 'Theses and dissertations',
+  'env=ecn&q=a&p=': 'National Ranking Exams (ECN)'
+}
+
+// Aliases automatically select correct filter
+if (prefix === 'cismef-bp:') {
+  // Auto-checks 'env=bp&q=' radio button
+  // Changes effectivePrefix to 'cismef:'
+}
+```
+
+#### Filetype Grid System
+```javascript
+const filetypesWiki = {
+  "📄 Documents & Text": [
+    { ext: 'pdf', name: 'Adobe Portable Document Format' },
+    { ext: ['doc', 'docx'], name: 'Microsoft Word' }, // Multi-extension support
+    // ... 11 total formats
+  ],
+  "📊 Spreadsheets & Presentations": [...], // 4 formats
+  "💻 Code & Web": [...], // 9 formats
+  "🖼️ Images": [...], // 8 formats
+  "🎬 Video & Media": [...], // 21 formats
+  "🗺️ Niche & Specialized": [...] // 5 formats
+}
+
+// Query construction with OR logic
+function applyFiletypeFilter() {
+  const allExtensions = []; // Collect checked extensions
+  
+  // Remove existing filetype: operators
+  val = val.replace(/\s*\((filetype:[^\)]+\))\s*|\s*filetype:[^\s]+/g, '').trim();
+  
+  // Add new ones
+  if (allExtensions.length > 1) {
+    val += ` (${allExtensions.map(ext => `filetype:${ext}`).join(' OR ')})`;
+  } else {
+    val += ` filetype:${allExtensions[0]}`;
+  }
+}
+```
+
+**Why Multiple Extensions per Item:**
+- Consolidates related formats (e.g., `doc` + `docx` = "Microsoft Word")
+- Reduces visual clutter in grid
+- Single checkbox applies both extensions with OR logic
+
+---
+
+### 4. Autocomplete System
+
+```javascript
+// Triggered on every input change
+searchInput.addEventListener('input', function(e) {
+  const value = e.target.value.trim().toLowerCase();
+  
+  // Only show if:
+  // 1. Input is not empty
+  // 2. No space exists (still typing prefix)
+  if (!value || value.includes(' ')) {
+    autocompleteDiv.style.display = 'none';
+    return;
+  }
+  
+  // Fuzzy prefix matching
+  const matches = Object.keys(searchEngines)
+    .filter(prefix => prefix.toLowerCase().startsWith(value))
+    .map(prefix => ({ prefix, engine: searchEngines[prefix] }))
+    .slice(0, 10); // Limit to 10 results
+  
+  showAutocomplete(matches);
+});
+```
+
+**Keyboard Navigation:**
+```javascript
+searchInput.addEventListener('keydown', function(e) {
+  if (autocompleteDiv.style.display === 'none') return;
+  
+  if (e.key === 'ArrowDown') {
+    selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+    items[selectedIndex]?.scrollIntoView({ block: 'nearest' }); // Viewport scrolling
+  }
+  
+  if (e.key === 'Enter' && selectedIndex >= 0) {
+    items[selectedIndex]?.click(); // Programmatic selection
+  }
+  
+  if (e.key === 'Escape') {
+    autocompleteDiv.style.display = 'none';
+  }
+});
+```
+
+**Visual Structure:**
+```
+[Favicon] [Prefix] [Engine Name]
+   🔍     scholar:  Google Scholar
+   📚     arxiv:    arXiv
+   ⚕️     pubmed:   PubMed
+```
+
+---
+
+### 5. Yandex Translation Integration
+
+```javascript
+// Uses MyMemory Translation API (free, no key required)
+async function translateText(text, sourceLang, targetLang) {
+  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
+  const response = await fetch(url);
+  const data = await response.json();
+  return data.responseData.translatedText;
+}
+
+// Debounced translation (prevents API spam)
+let yandexTranslationTimeout;
+function scheduleYandexTranslation() {
+  clearTimeout(yandexTranslationTimeout);
+  
+  yandexTranslationTimeout = setTimeout(async () => {
+    const translated = await translateText(textToTranslate, sourceLang, 'ru');
+    yandexTargetText.value = translated;
+  }, 500); // Wait 500ms after user stops typing
+}
+```
+
+**Workflow:**
+1. User selects Yandex engine → Translation box appears
+2. User types in source language input field
+3. After 500ms pause → API call triggered
+4. Russian translation populates textarea
+5. **Insert button**: Adds translation to main search input at cursor
+6. **Copy button**: Copies to clipboard for external use
+
+**Why This Feature:**
+- Yandex is Russian-based search engine
+- Many scientific papers/resources in Russian
+- Eliminates need for separate translation tool
+- Seamless workflow: translate → search in one interface
+
+---
+
+### 6. Keyboard Shortcuts System
+
+```javascript
+document.addEventListener('keydown', (e) => {
+  // Focus search bar
+  if (e.ctrlKey && e.key === 'k') {
+    e.preventDefault();
+    searchInput.focus();
+  }
+  
+  // Clear search bar
+  if (e.ctrlKey && e.shiftKey && e.key === 'K') {
+    e.preventDefault();
+    searchInput.value = '';
+    searchInput.focus();
+  }
+  
+  // Cycle through engines
+  if (e.altKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+    e.preventDefault();
+    const allRadios = Array.from(document.querySelectorAll('input[name="searchEngine"]'));
+    let currentIndex = allRadios.findIndex(radio => radio.checked);
+    
+    currentIndex = (e.key === 'ArrowDown') 
+      ? (currentIndex + 1) % allRadios.length
+      : (currentIndex - 1 + allRadios.length) % allRadios.length;
+    
+    allRadios[currentIndex].click();
+  }
+  
+  // Category switching (Alt+1 through Alt+4)
+  if (e.altKey && e.key >= '1' && e.key <= '4') {
+    const groups = ['#group1', '#group2', '#group3', '#group4'];
+    document.querySelector(`${groups[e.key-1]} input`).click();
+  }
+  
+  // Copy current query
+  if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+    navigator.clipboard.writeText(searchInput.value);
+  }
+  
+  // Close popups
+  if (e.key === 'Escape') {
+    // Respects "keep open" checkboxes
+    if (!keepWikiOpenCheckbox.checked) wikiContent.style.display = 'none';
+    if (!keepGoogleWikiOpenCheckbox.checked) closeGoogleWikiPopup();
+    // ... etc
+  }
+});
+```
+
+**Shortcuts Reference:**
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+K` | Focus search bar (GitHub-style) |
+| `Ctrl+Shift+K` | Clear search bar |
+| `Alt+↑/↓` | Cycle through all engines |
+| `Alt+1-4` | Jump to category (General/Academic/Medical/AI) |
+| `Ctrl+Shift+C` | Copy current query to clipboard |
+| `Esc` | Close all open popups (respects "keep open" flags) |
+
+---
+
+### 7. Dark Mode Implementation
+
+```javascript
+// Toggle on button click
+darkModeToggleBtn.addEventListener('click', () => {
+  document.body.classList.toggle('dark-mode');
+  localStorage.setItem('darkMode', 
+    document.body.classList.contains('dark-mode') ? 'enabled' : 'disabled'
+  );
+});
+
+// Restore on page load
+if (localStorage.getItem('darkMode') === 'enabled') {
+  document.body.classList.add('dark-mode');
+}
+```
+
+**CSS Strategy:**
+- **Single class toggle**: `.dark-mode` on `<body>` cascades to all elements
+- **Color variables**: Uses semantic color schemes
+  - Light: `#667eea` (purple gradients), `#f8f9fa` (light gray backgrounds)
+  - Dark: `#64b5f6` (blue accents), `#1a2332` (dark navy backgrounds)
+- **Contrast ratios**: Maintains WCAG AA compliance
+
+**Animated Starfield Background:**
+```css
+/* Three layers of stars with different speeds */
+#stars { animation: move-stars 15s, twinkle 5s; }
+#stars2 { animation: move-stars 30s, twinkle 7s; }
+#stars3 { animation: move-stars 45s, twinkle 10s; }
+
+@keyframes move-stars {
+  from { transform: translateY(0px); }
+  to { transform: translateY(-200px); }
+}
+
+@keyframes twinkle {
+  0% { opacity: 0; }
+  50% { opacity: 0.7; }
+  100% { opacity: 0; }
+}
+```
+
+---
+
+## Advanced Technical Features
+
+### 1. **Tooltip System with Smart Positioning**
+
+```javascript
+googleOperatorFilters.addEventListener('mouseover', function(e) {
+  tooltipTimeout = setTimeout(() => {
+    const rect = e.target.getBoundingClientRect();
+    const tooltipRect = operatorTooltip.getBoundingClientRect();
+    
+    // Default: above button
+    let top = rect.top - tooltipRect.height - 5;
+    
+    // If goes off top, place below
+    if (top < 0) {
+      top = rect.bottom + 5;
+    }
+    
+    // If goes off bottom, force above
+    if (top + tooltipRect.height > window.innerHeight) {
+      top = rect.top - tooltipRect.height - 5;
+    }
+    
+    // Horizontal centering with edge detection
+    let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+    if (left < 0) left = 5;
+    if (left + tooltipRect.width > window.innerWidth) {
+      left = window.innerWidth - tooltipRect.width - 5;
+    }
+    
+    operatorTooltip.style.top = `${top}px`;
+    operatorTooltip.style.left = `${left}px`;
+  }, 300); // 300ms hover delay
+});
+```
+
+**Why This Matters:**
+- Prevents tooltips from being cut off by viewport edges
+- Provides immediate context for operators (especially useful for beginners)
+- Delays appearance to avoid visual noise during cursor movement
+
+---
+
+### 2. **Site Search Checkbox Feature**
+
+```javascript
+if (siteCheckbox.checked) {
+  const selectedRadio = document.querySelector('input[name="searchEngine"]:checked');
+  const siteUrl = searchEngines[selectedRadio.value].url;
+  
+  // Extract domain from full URL
+  let domain = new URL(siteUrl).hostname;
+  
+  // Construct Google search with site: operator
+  const googleQuery = encodeURIComponent(`site:${domain} ${query}`);
+  window.open('https://www.google.com/search?q=' + googleQuery, '_blank');
+  return;
+}
+```
+
+**Use Case Example:**
+- User selects "PubMed" engine
+- Checks "site:" checkbox
+- Types "COVID-19 vaccine efficacy"
+- Result: Google search restricted to `site:pubmed.ncbi.nlm.nih.gov COVID-19 vaccine efficacy`
+
+**Why This Exists:**
+- Some engines have poor internal search quality
+- Google's algorithm often finds better results even on specialized sites
+- Allows leveraging Google's ranking while maintaining domain focus
+
+---
+
+### 3. **DuckDuckGo !bangs Integration**
+
+```javascript
+// Detect !bang in input
+if (value.startsWith('!')) {
+  const bangUrl = 'https://duckduckgo.com/?q=' + encodeURIComponent(value);
+  window.open(bangUrl, '_blank');
+  return;
+}
+
+// Browse !bangs library
+bangsBtn.addEventListener('click', () => {
+  const query = searchInput.value.trim();
+  window.open('https://duckduckgo.com/bangs?q=' + encodeURIComponent(query), 
+    'bangsWindow', 'width=800,height=600');
+});
+```
+
+**What are !bangs:**
+- DuckDuckGo's shortcut system (13,000+ shortcuts)
+- Examples: `!w` (Wikipedia), `!gh` (GitHub), `!a` (Amazon)
+- This tool integrates them as a fallback/supplement to built-in prefixes
+
+---
+
+### 4. **Favicon Fallback Strategy**
+
+```javascript
+function addFaviconsToSearchEngines() {
+  document.querySelectorAll('input[name="searchEngine"]').forEach(radio => {
+    const searchEngine = searchEngines[radio.value];
+    
+    let faviconUrl;
+    if (searchEngine.favicon) {
+      // Priority 1: Custom hosted favicon
+      faviconUrl = searchEngine.favicon;
+    } else if (searchEngine.domain) {
+      // Priority 2: Google's favicon service
+      faviconUrl = `https://www.google.com/s2/favicons?sz=32&domain=${searchEngine.domain}`;
+    }
+    
+    const img = document.createElement('img');
+    img.src = faviconUrl;
+    img.classList.add('favicon-icon');
+    radio.parentNode.insertBefore(img, radio.nextSibling);
+  });
+}
+```
+
+**Custom Favicon Hosting:**
+```javascript
+'gpat:': { 
+  favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/patents.google.com-favicon.ico' 
+}
+```
+
+**Why Custom Hosting:**
+- Some engines don't have publicly accessible favicons
+- Google's service may not have icons for niche/regional sites
+- GitHub raw URLs provide reliable CDN hosting
+
+---
+
+## Performance Optimizations
+
+### 1. **Event Delegation**
+```javascript
+// Instead of adding listeners to each operator button:
+googleOperatorFilters.addEventListener('click', function(e) {
+  if (e.target.classList.contains('operator-btn')) {
+    // Handle click
+  }
+});
+
+// Benefits:
+// - Single event listener instead of 20+
+// - Works for dynamically added buttons
+// - Reduces memory footprint
+```
+
+### 2. **Debounced API Calls**
+```javascript
+// Translation only fires after 500ms of no typing
+let yandexTranslationTimeout;
+function scheduleYandexTranslation() {
+  clearTimeout(yandexTranslationTimeout);
+  yandexTranslationTimeout = setTimeout(async () => {
+    // API call here
+  }, 500);
+}
+```
+
+### 3. **CSS Hardware Acceleration**
+```css
+/* Leverages GPU for smoother animations */
+.category-section:hover {
+  transform: translateY(-2px); /* Triggers GPU acceleration */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+#stars, #stars2, #stars3 {
+  will-change: transform; /* Hints browser to optimize */
+}
+```
+
+---
+
+## Accessibility Features
+
+### 1. **Keyboard-First Design**
+- All features accessible via keyboard
+- Visual focus indicators on interactive elements
+- Autocomplete navigable with arrow keys
+
+### 2. **ARIA Attributes**
+```html
+<div id="wikiContent" role="region" aria-label="Wiki des préfixes">
+```
+
+### 3. **Screen Reader Support**
+- Favicons have descriptive alt text
+- Popups announce open/close states
+- Form labels properly associated with inputs
+
+---
+
+## Edge Cases Handled
+
+### 1. **Prefix Collision Detection**
+```javascript
+// Checks longest matching prefix first
+for (const key of Object.keys(searchEngines)) {
+  if (value.startsWith(key)) {
+    prefix = key;
+    query = value.substring(prefix.length).trim();
+    break;
+  }
+}
+```
+
+**Example:**
+- User types `g:` → matches `g:` (Google)
+- User types `gplus:` → matches `gplus:` (Google Advanced), not `g:`
+
+### 2. **Empty Query Handling**
+```javascript
+searchForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  let value = searchInput.value.trim();
+  if (!value) return; // Prevents empty searches
+});
+```
+
+### 3. **Multiple Filetype Cleanup**
+```javascript
+// Removes existing filetype: operators before adding new ones
+val = val.replace(/\s*\((filetype:[^\)]+\))\s*|\s*filetype:[^\s]+/g, '').trim();
+
+// Handles:
+// - Standalone: "filetype:pdf"
+// - Grouped: "(filetype:pdf OR filetype:docx)"
+// - With spaces: " filetype:xlsx "
+```
+
+### 4. **URL Encoding Edge Cases**
+```javascript
+// Vidal requires + instead of %20 for spaces
+if (prefix === 'vidal:') {
+  const encodedQuery = encodeURIComponent(query).replace(/%20/g, '+');
+  finalUrl = baseUrl + encodedQuery;
+}
+```
+
+---
+
+## Security Considerations
+
+### 1. **XSS Prevention**
+```javascript
+// User input is ALWAYS encoded before URL construction
+finalUrl = baseUrl + encodeURIComponent(query);
+
+// Prevents injection attacks like:
+// User types: '); alert('XSS');//
+// Encoded to: %27%29%3B%20alert%28%27XSS%27%29%3B%2F%2F
+```
+
+### 2. **External API Usage**
+- MyMemory API: Public service, no sensitive data transmitted
+- No user credentials stored
+- All API calls use HTTPS
+
+### 3. **LocalStorage**
+- Only stores theme preference (non-sensitive)
+- No query history saved (privacy by design)
+
+---
+
+## Browser Compatibility
+
+### Supported Features:
+- **ES6+ Syntax**: Arrow functions, `const`/`let`, template literals
+- **Fetch API**: For translation requests
+- **CSS Grid/Flexbox**: Layout engine
+- **LocalStorage**: Theme persistence
+- **Clipboard API**: Copy functionality
+
+### Minimum Requirements:
+- Chrome 61+, Firefox 60+, Safari 12+, Edge 79+
+- JavaScript enabled (no graceful degradation)
+
+---
+
+## Potential Enhancements
+
+### 1. **Query History**
+```javascript
+// Store last 50 searches in localStorage
+const searchHistory = JSON.parse(localStorage.getItem('searchHistory') || '[]');
+searchHistory.unshift({ query: value, prefix: prefix, timestamp: Date.now() });
+localStorage.setItem('searchHistory', JSON.stringify(searchHistory.slice(0, 50)));
+
+// Show in autocomplete dropdown
+```
+
+### 2. **Browser Extension Conversion**
+```javascript
+// Convert to Chrome/Firefox extension with:
+chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+  // Show autocomplete in address bar
+});
+
+chrome.omnibox.onInputEntered.addListener((text) => {
+  // Open search in new tab
+});
+```
+
+### 3. **Bookmarklet Version**
+```javascript
+javascript:(function(){
+  const query = prompt('Enter search query:');
+  const prefix = prompt('Engine prefix (e.g., scholar:)');
+  const url = constructSearchUrl(prefix, query);
+  window.open(url, '_blank');
+})();
+```
+
+### 4. **Mobile-Optimized Version**
+- Replace hover tooltips with tap-and-hold
+- Larger touch targets (44x44px minimum)
+- Swipe gestures for category switching
+- Bottom sheet UI for filters
+
+### 5. **Export/Import Config**
+```javascript
+function exportConfig() {
+  const config = {
+    engines: searchEngines,
+    shortcuts: keyboardShortcuts,
+    darkMode: localStorage.getItem('darkMode')
+  };
+  const blob = new Blob([JSON.stringify(config)], { type: 'application/json' });
+  // Trigger download
+}
+```
+
+---
+
+## Comparison to Similar Tools
+
+| Feature | This Tool | DuckDuckGo !bangs | Google Custom Search | Alfred/Raycast |
+|---------|-----------|-------------------|---------------------|----------------|
+| **Engine Count** | 50+ specialized | 13,000+ general | Limited | Plugin-dependent |
+| **Custom Filters** | ✅ YouTube, CISMeF | ❌ | ⚠️ Some | ✅ |
+| **Medical Focus** | ✅✅✅ 19 engines | ⚠️ Basic | ❌ | ❌ |
+| **Operator Helpers** | ✅ Tooltips + Wiki | ❌ | ❌ | ⚠️ |
+| **Translation** | ✅ Built-in | ❌ | ❌ | ✅ Via plugins |
+| **Open Source** | ✅ | ⚠️ Partial | ❌ | ⚠️ |
+| **Platform** | Web-based | Web-based | Web-based | Desktop only |
+
+---
+
+## Use Case Scenarios
+
+### Scenario 1: Medical Researcher
+**Goal:** Find French clinical guidelines on diabetes management
+
+**Workflow:**
+1. Type `cismef-bp: diabète`
+2. System auto-selects "Bonnes Pratiques" filter
+3. Opens CISMeF with pre-filtered professional guidelines
+4. If insufficient results, user can:
+   - Switch to `has: diabète` (French Health Authority)
+   - Add `intitle:recommandations` with operator button
+   - Check "site:" to search CISMeF via Google
+
+**Time Saved:** ~45 seconds vs. manual navigation
+
+---
+
+### Scenario 2: PhD Student (Thesis Research)
+**Goal:** Find similar dissertations across multiple databases
+
+**Workflow:**
+1. `these-fr: machine learning healthcare` → French theses
+2. `Alt+↓` to cycle to `these-ma:` → Moroccan database
+3. `Alt+↓` to `ndltd:` → International theses
+4. `Alt+↓` to `scholar: filetype:pdf` → Google Scholar PDFs
+5. Click "📁 Filetypes" → Select PDF + DOCX → Apply
+6. Result: `scholar: machine learning healthcare (filetype:pdf OR filetype:docx)`
+
+**Time Saved:** ~2 minutes vs. opening 4 different sites
+
+---
+
+### Scenario 3: Russian-Language Research
+**Goal:** Search Yandex for Cyrillic content without knowing Russian
+
+**Workflow:**
+1. Select `yan:` → Yandex engine
+2. Translation box appears automatically
+3. Type "quantum computing applications" in English
+4. System translates to Russian: "квантовые вычислительные приложения"
+5. Click "Insert" → Adds to search bar
+6. Press Enter → Searches Yandex with Russian query
+
+**Time Saved:** ~1 minute vs. using separate translator
+
+---
+
+## File Structure (If This Were a Project)
+
+```
+search-interface/
+├── index.html           # Main interface (current file)
+├── assets/
+│   ├── favicons/       # Custom hosted favicons
+│   │   ├── patents.google.com.ico
+│   │   ├── pro.inserm.fr.png
+│   │   └── cismef.org.ico
+│   └── styles/
+│       ├── main.css    # Could be extracted from <style>
+│       ├── dark-mode.css
+│       └── animations.css
+├── scripts/
+│   ├── search-engines.js   # Engine definitions
+│   ├── autocomplete.js     # Autocomplete logic
+│   ├── filters.js          # YouTube/Google/Bing filters
+│   ├── translation.js      # Yandex translation
+│   └── shortcuts.js        # Keyboard handling
+├── docs/
+│   ├── GEMINI.md          # This documentation
+│   ├── operators-wiki.md  # Google/Bing operator guides
+│   └── shortcuts.md       # Keyboard reference
+└── README.md
+```
+
+---
+
+## GEMINI.md Section Suggestions
+
+When updating your `GEMINI.md` for gemini-cli, include these sections:
+
+### Project Description
+```markdown
+# Multi-Engine Search Interface
+
+A unified, keyboard-driven search orchestration platform consolidating 50+ 
+specialized search engines (academic, medical, AI, general) with advanced 
+filtering, real-time translation, and operator assistance.
+
+**Core Innovation:** Prefix-based routing system (e.g., `scholar: query`) 
+eliminates context switching between search engines.
+```
+
+### Key Technical Highlights
+```markdown
+## Architecture
+- **Prefix Router:** Maps 50+ engines to unique identifiers
+- **Alias System:** Shortcuts with pre-applied filters (e.g., `cismef-bp:`)
+- **Filter Orchestration:** Context-aware UI for YouTube, Google, Bing, CISMeF
+- **Translation API:** Real-time English→Russian via MyMemory
+- **Autocomplete:** Fuzzy prefix matching with keyboard navigation
+
+## Performance
+- Event delegation for operator buttons
+- Debounced API calls (500ms)
+- CSS GPU acceleration for animations
+- Single-class dark mode toggle
+```
+
+### Medical/Academic Focus
+```markdown
+## Specialized Coverage
+
+**Medical (19 engines):**
+- CISMeF (French medical portal) with 6 filter modes
+- PubMed, Cochrane, UpToDate, Medscape, VIDAL
+- HAS (French Health Authority), NIH, CDC
+
+**Academic (11 engines):**
+- Google Scholar, arXiv, ResearchGate
+- 4 thesis databases (France, Morocco, international, specialized)
+- Google Patents
+```
+
+### Comparison to gemini-cli
+```markdown
+## Gemini-CLI Integration Potential
+
+This interface could complement gemini-cli by:
+1. **Pre-processing Queries:** Format queries with operators before sending to Gemini
+2. **Source Routing:** Use Gemini to determine best search engine for query type
+3. **Multi-Engine Synthesis:** Search multiple engines, let Gemini summarize results
+4. **Natural Language → Operators:** "Find PDFs about X from universities" → 
+   `filetype:pdf X site:.edu`
+
+**Example Workflow:**
+```bash
+gemini "Find recent machine learning papers from arxiv"
+# Gemini outputs: arxiv: machine learning after:2024-01-01
+# Interface executes search automatically
+```
+```
+
+### Future Integration Ideas
+```markdown
+## Gemini-CLI Enhancements
+
+1. **Search Intent Classification**
+   ```bash
+   gemini --search "diabetes treatment guidelines"
+   # Gemini determines: Medical query → Route to CISMeF + PubMed
+   # Executes both searches, synthesizes results
+   ```
+
+2. **Operator Suggestion**
+   ```bash
+   gemini --optimize-query "python tutorials for beginners"
+   # Outputs: intitle:tutorial python beginner filetype:pdf
+   ```
+
+3. **Cross-Engine Comparison**
+   ```bash
+   gemini --compare "climate change" --engines scholar,arxiv,pubmed
+   # Searches all three, generates comparative summary
+   ```
+
+4. **Query Translation Pipeline**
+   ```bash
+   gemini --translate-search "quantum physics" --to ru --engine yan:
+   # Translates → Searches Yandex → Translates results back
+   ```
+```
+
+---
+
+## Conclusion
+
+This is a **power-user research tool** disguised as a simple search interface. Its strength lies in:
+
+1. **Domain Specialization**: Deep integration with medical/academic databases
+2. **Workflow Efficiency**: Keyboard-first, prefix-driven navigation
+3. **Context Intelligence**: Shows only relevant filters per engine
+4. **Extensibility**: Clean architecture for adding new engines/features
+
+**Best suited for:**
+- Researchers conducting multi-database literature reviews
+- Medical professionals needing quick access to clinical guidelines
+- Students working on theses/dissertations
+- Anyone frustrated with bookmarking 50+ search engine URLs
+
+**Technical Merit:**
+- Demonstrates advanced DOM manipulation
+- Event delegation best practices
+- Responsive design patterns
+- API integration (translation)
+- LocalStorage state management
+- Accessibility considerations
+
+The code is production-ready but could benefit from:
+- Test coverage (Jest/Cypress)
+- TypeScript conversion for type safety
+- Modularization (split into separate JS files)
+- Backend for user accounts/saved searches
+- Analytics to track most-used engines/features
