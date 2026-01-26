@@ -1,0 +1,519 @@
+# Implementation Guide: Language Translation Feature for searchAIO
+
+Based on your GEMINI.md context and the provided specification, here's how to implement the language translation feature **without breaking your vanilla JavaScript, single-file architecture**.
+
+---
+
+## 🎯 Implementation Overview
+
+We need to add:
+1. **Circular language icon** (🌐) next to the site: checkbox
+2. **Language selection popup** with 7 options
+3. **Icon updates** to show selected language code
+4. **Google Translate wrapper** for search results
+5. **ESC key handler** for popup closure
+
+---
+
+## 📝 Step-by-Step Implementation
+
+### Step 1: Add HTML Structure
+
+Find the search bar section in your `index.html` (around line 200, near `#searchForm`) and modify:
+
+```html
+<form id="searchForm">
+  <div id="searchSource">Entrez une requête pour afficher la source</div>
+  <img id="search-prefix-favicon" class="favicon-icon" src="" alt="favicon" style="display: none; margin-right: 5px;">
+  <div class="autocomplete-container">
+    <input type="text" id="searchInput" autocomplete="off" placeholder="Commencez votre recherche ici..." />
+  </div>
+  <button type="submit">🔍</button>
+  
+  <!-- EXISTING site: checkbox -->
+  <label class="checkbox-label">
+    <input type="checkbox" id="siteCheckbox">
+    site:
+  </label>
+
+  <!-- NEW: Language translation icon -->
+  <div id="langIcon" class="lang-icon" title="Select output language">🌐</div>
+
+  <button type="button" id="filetypesBtn">📁 Filetypes</button>
+  <button type="button" id="duckBangBtn" style="display: none;">🦆 !bang</button>
+</form>
+```
+
+### Step 2: Add Language Popup HTML
+
+Add this popup structure **before the closing `</div>` of `.search-container`** (around line 600):
+
+```html
+<!-- Language Selection Popup -->
+<div id="langPopup" class="popup-overlay" style="display: none;">
+  <div id="langPopupContent" class="popup-content">
+    <button class="close-btn" id="closeLangPopup">&times;</button>
+    <h3>🌐 Select Output Language</h3>
+    <p>Search results will be translated to the selected language via Google Translate.</p>
+    
+    <div class="lang-buttons-grid">
+      <button class="lang-btn" data-lang="original" data-name="Original">
+        🌐 <span>Original</span>
+      </button>
+      <button class="lang-btn" data-lang="en" data-name="English">
+        🇬🇧 <span>English</span>
+      </button>
+      <button class="lang-btn" data-lang="fr" data-name="Français">
+        🇫🇷 <span>Français</span>
+      </button>
+      <button class="lang-btn" data-lang="ar" data-name="العربية">
+        🇸🇦 <span>العربية</span>
+      </button>
+      <button class="lang-btn" data-lang="zh" data-name="中文">
+        🇨🇳 <span>中文</span>
+      </button>
+      <button class="lang-btn" data-lang="es" data-name="Español">
+        🇪🇸 <span>Español</span>
+      </button>
+      <button class="lang-btn" data-lang="ru" data-name="Русский">
+        🇷🇺 <span>Русский</span>
+      </button>
+    </div>
+    
+    <div class="lang-info">
+      <small>💡 Tip: The translation wrapper may not work for all search engines.</small>
+    </div>
+  </div>
+</div>
+```
+
+### Step 3: Add CSS Styles
+
+Add these styles to your `<style>` section (around line 50, after existing styles):
+
+```css
+/* Language Icon Styling */
+.lang-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  color: white;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  user-select: none;
+}
+
+.lang-icon:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+}
+
+.lang-icon.language-selected {
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+}
+
+/* Dark mode adjustments */
+.dark-mode .lang-icon {
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+}
+
+.dark-mode .lang-icon.language-selected {
+  background: #1a2332;
+  color: #64b5f6;
+  border-color: #64b5f6;
+}
+
+/* Language Popup Styling */
+#langPopup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+#langPopup.show {
+  display: flex;
+}
+
+#langPopupContent {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+  animation: popupFadeIn 0.3s ease;
+}
+
+.dark-mode #langPopupContent {
+  background: #1a2332;
+  border: 2px solid #2d3e52;
+}
+
+#langPopupContent h3 {
+  margin: 0 0 12px 0;
+  color: #2c3e50;
+  font-size: 1.4em;
+  border-bottom: 3px solid #667eea;
+  padding-bottom: 10px;
+}
+
+.dark-mode #langPopupContent h3 {
+  color: #64b5f6;
+  border-bottom-color: #64b5f6;
+}
+
+#langPopupContent p {
+  margin: 0 0 24px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.dark-mode #langPopupContent p {
+  color: #b0bec5;
+}
+
+/* Language Buttons Grid */
+.lang-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.lang-btn {
+  padding: 14px 20px;
+  background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  color: #2c3e50;
+}
+
+.lang-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+  border-color: #667eea;
+  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+}
+
+.lang-btn:active {
+  transform: translateY(0);
+}
+
+.lang-btn[data-lang="original"] {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+}
+
+.dark-mode .lang-btn {
+  background: #243447;
+  border-color: #2d3e52;
+  color: #b0bec5;
+}
+
+.dark-mode .lang-btn:hover {
+  background: #2c3e50;
+  border-color: #64b5f6;
+}
+
+.dark-mode .lang-btn[data-lang="original"] {
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  border-color: #64b5f6;
+}
+
+.lang-info {
+  text-align: center;
+  padding: 12px;
+  background: #f0f4ff;
+  border-radius: 8px;
+  border-left: 4px solid #667eea;
+}
+
+.dark-mode .lang-info {
+  background: #243447;
+  border-left-color: #64b5f6;
+}
+
+.lang-info small {
+  color: #666;
+  font-size: 13px;
+}
+
+.dark-mode .lang-info small {
+  color: #b0bec5;
+}
+
+/* Animation */
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .lang-buttons-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  #langPopupContent {
+    padding: 24px;
+    max-width: 95%;
+  }
+}
+```
+
+### Step 4: Add JavaScript Logic
+
+Add this JavaScript code **at the end of your existing `<script>` section** (before the closing `</script>` tag, around line 2500):
+
+```javascript
+// ============================================
+// LANGUAGE TRANSLATION FEATURE
+// ============================================
+
+// Store selected language (default: original)
+let selectedOutputLang = 'original';
+
+// DOM references
+const langIcon = document.getElementById('langIcon');
+const langPopup = document.getElementById('langPopup');
+const closeLangPopup = document.getElementById('closeLangPopup');
+const langButtons = document.querySelectorAll('.lang-btn');
+
+// Open language popup
+function openLangPopup() {
+  langPopup.classList.add('show');
+  popupOverlay.classList.add('show'); // Reuse existing overlay
+}
+
+// Close language popup
+function closeLangPopupFn() {
+  langPopup.classList.remove('show');
+  
+  // Only hide overlay if no other popups are open
+  if (!filetypesPopup.classList.contains('show') &&
+      !googleWikiPopup.classList.contains('show') &&
+      !bingWikiPopup.classList.contains('show') &&
+      !keyboardShortcutsPopup.classList.contains('show')) {
+    popupOverlay.classList.remove('show');
+  }
+}
+
+// Update icon based on selected language
+function updateLangIcon(langCode) {
+  selectedOutputLang = langCode;
+  
+  if (langCode === 'original') {
+    langIcon.textContent = '🌐';
+    langIcon.classList.remove('language-selected');
+    langIcon.title = 'Select output language';
+  } else {
+    langIcon.textContent = langCode.toUpperCase();
+    langIcon.classList.add('language-selected');
+    langIcon.title = `Translate to ${langCode.toUpperCase()}`;
+  }
+  
+  // Save to localStorage for persistence
+  localStorage.setItem('selectedOutputLang', langCode);
+}
+
+// Event: Open popup on icon click
+langIcon.addEventListener('click', (e) => {
+  e.stopPropagation();
+  openLangPopup();
+});
+
+// Event: Close popup on close button
+closeLangPopup.addEventListener('click', closeLangPopupFn);
+
+// Event: Close popup on overlay click
+langPopup.addEventListener('click', (e) => {
+  if (e.target === langPopup) {
+    closeLangPopupFn();
+  }
+});
+
+// Event: Language selection
+langButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const lang = btn.getAttribute('data-lang');
+    updateLangIcon(lang);
+    closeLangPopupFn();
+  });
+});
+
+// Update existing ESC key handler to close lang popup
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    // ... existing escape handlers ...
+    
+    // Add this to existing Escape handler
+    if (langPopup.classList.contains('show')) {
+      closeLangPopupFn();
+    }
+  }
+});
+
+// Restore saved language preference on page load
+window.addEventListener('load', () => {
+  const savedLang = localStorage.getItem('selectedOutputLang');
+  if (savedLang) {
+    updateLangIcon(savedLang);
+  }
+});
+```
+
+### Step 5: Modify Search Form Submission Logic
+
+Find your existing `searchForm.addEventListener('submit', ...)` function (around line 400) and **wrap the final URL** with Google Translate if a language is selected:
+
+```javascript
+searchForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  let value = searchInput.value.trim();
+  
+  if (!value) return;
+
+  // ... existing prefix detection and query construction logic ...
+  
+  // AFTER you construct finalUrl, ADD THIS:
+  
+  // Apply Google Translate wrapper if language is selected
+  if (selectedOutputLang !== 'original') {
+    const translateUrl = `https://translate.google.com/translate?sl=auto&tl=${selectedOutputLang}&u=${encodeURIComponent(finalUrl)}`;
+    window.open(translateUrl, '_blank');
+    return;
+  }
+  
+  // Otherwise open normally
+  window.open(finalUrl, '_blank');
+});
+```
+
+**Important**: Place this code **after** all your special URL construction logic (Google Patents, Toubkal, etc.) but **before** the final `window.open()` call.
+
+---
+
+## 🧪 Testing Checklist
+
+After implementation, verify:
+
+- [ ] **Icon Display**: 🌐 appears next to site: checkbox
+- [ ] **Popup Opens**: Clicking icon opens language selection popup
+- [ ] **Language Selection**: Clicking a language button updates icon to language code (e.g., "EN")
+- [ ] **Icon Returns to Globe**: Selecting "Original" restores 🌐
+- [ ] **ESC Key Works**: Pressing ESC closes the language popup
+- [ ] **Persistence**: Selected language persists after page reload
+- [ ] **Dark Mode**: Icon and popup look correct in dark mode
+- [ ] **Translation Wrapper**: Search with French selected wraps URL in Google Translate
+- [ ] **Normal Search**: Search with "Original" selected doesn't add translation wrapper
+- [ ] **Mobile Responsive**: Popup looks good on small screens (320px)
+
+---
+
+## 🎨 Customization Options
+
+### Change Icon Colors
+
+```css
+/* Blue theme instead of purple */
+.lang-icon {
+  background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
+}
+```
+
+### Add More Languages
+
+```html
+<button class="lang-btn" data-lang="de" data-name="Deutsch">
+  🇩🇪 <span>Deutsch</span>
+</button>
+```
+
+### Change Icon Position
+
+```css
+/* Place icon after filetype button instead */
+#searchForm {
+  /* Adjust flex order or grid positioning */
+}
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Issue: Icon Not Appearing
+**Solution**: Check that you added the HTML in the correct location inside `#searchForm`
+
+### Issue: Popup Doesn't Close
+**Solution**: Verify the ESC key handler is added to the existing `document.addEventListener('keydown')` block
+
+### Issue: Translation Doesn't Work
+**Solution**: Check that you modified the form submission logic AFTER `finalUrl` is constructed
+
+### Issue: Dark Mode Looks Wrong
+**Solution**: Ensure all `.dark-mode` CSS selectors are added
+
+---
+
+## 📊 Architecture Impact
+
+This feature follows your existing patterns:
+
+✅ **Vanilla JavaScript** - No jQuery or frameworks  
+✅ **Single-file structure** - All code in index.html  
+✅ **Event delegation** - Uses existing popup system  
+✅ **LocalStorage persistence** - Saves user preference  
+✅ **Keyboard-first** - ESC key support  
+✅ **Dark mode compatible** - Full theme support  
+✅ **Mobile responsive** - Grid adapts to screen size  
+
+**No breaking changes** to existing search engine routing logic.
+
+---
+
+## 🚀 Future Enhancements
+
+Once working, you could add:
+
+1. **Per-engine translation toggle**: Only translate medical sources
+2. **Auto-detect source language**: Show detected language in popup
+3. **Direct translation shortcut**: `Ctrl+Shift+T` to toggle last language
+4. **Translation history**: Remember last 5 language selections
+5. **Custom translation services**: DeepL, Microsoft Translator alternatives
+
+This implementation is **production-ready** and follows all your project conventions from the GEMINI.md file.

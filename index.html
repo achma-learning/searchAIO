@@ -999,6 +999,9 @@
           site:
         </label>
 
+        <!-- NEW: Language translation icon -->
+        <div id="langIcon" class="lang-icon" title="Select output language">🌐</div>
+
         <button type="button" id="filetypesBtn">📁 Filetypes</button>
         <button type="button" id="duckBangBtn" style="display: none;">🦆 !bang</button>
       </form>
@@ -1430,6 +1433,43 @@
         <button type="button" id="bingWikiBtn" style="display: none;">📖 Bing Wiki</button>
         <button type="button" id="bangsBtn">!bangs</button>
     </div>
+    
+<!-- Language Selection Popup -->
+<div id="langPopup" class="popup-overlay" style="display: none;">
+  <div id="langPopupContent" class="popup-content">
+    <button class="close-btn" id="closeLangPopup">&times;</button>
+    <h3>🌐 Select Output Language</h3>
+    <p>Search results will be translated to the selected language via Google Translate.</p>
+    
+    <div class="lang-buttons-grid">
+      <button class="lang-btn" data-lang="original" data-name="Original">
+        🌐 <span>Original</span>
+      </button>
+      <button class="lang-btn" data-lang="en" data-name="English">
+        🇬🇧 <span>English</span>
+      </button>
+      <button class="lang-btn" data-lang="fr" data-name="Français">
+        🇫🇷 <span>Français</span>
+      </button>
+      <button class="lang-btn" data-lang="ar" data-name="العربية">
+        🇸🇦 <span>العربية</span>
+      </button>
+      <button class="lang-btn" data-lang="zh" data-name="中文">
+        🇨🇳 <span>中文</span>
+      </button>
+      <button class="lang-btn" data-lang="es" data-name="Español">
+        🇪🇸 <span>Español</span>
+      </button>
+      <button class="lang-btn" data-lang="ru" data-name="Русский">
+        🇷🇺 <span>Русский</span>
+      </button>
+    </div>
+    
+    <div class="lang-info">
+      <small>💡 Tip: The translation wrapper may not work for all search engines.</small>
+    </div>
+  </div>
+</div>
   </div>
 
 <script>
@@ -2623,8 +2663,8 @@ duckBangBtn.addEventListener('click', () => {
         } else if (operator.endsWith(':')) {
           textToInsert = operator; // Operator with colon, like site:
         } else if (operator === 'AROUND()') {
-          textToInsert = 'AROUND(n)';
-          cursorOffset = -2; // Place cursor inside parentheses
+          textToInsert = 'AROUND()';
+          cursorOffset = -1; // Place cursor inside parentheses
         }
 
         input.focus();
