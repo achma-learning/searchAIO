@@ -8,11 +8,15 @@ filtering, real-time translation, and operator assistance.
 eliminates context switching between search engines.
 
 ## Architecture
-- **Prefix Router:** Maps 50+ engines to unique identifiers
-- **Alias System:** Shortcuts with pre-applied filters (e.g., `cismef-bp:`)
-- **Filter Orchestration:** Context-aware UI for YouTube, Google, Bing, CISMeF
-- **Translation API:** Real-time English→Russian via MyMemory
-- **Autocomplete:** Fuzzy prefix matching with keyboard navigation
+- **Main Search Interface (`index.html`):** A standalone HTML file providing the core search functionality with prefix routing, filtering, translation, and autocomplete. It contains a large JavaScript section that handles the logic.
+- **Search Portal (React Application):** A modern frontend application built with React and Vite, likely intended for a more complex or modular search experience, located under `others/s/searchAIO/search-portal`.
+- **BookmarkOpener (Chrome Extension):** A browser extension that interacts with the local search page to facilitate opening Chrome bookmarks, located under `BookmarkOpener`.
+
+## Main Technologies:
+- **Frontend:** HTML, CSS, JavaScript (for `index.html`), React, TypeScript (for `search-portal`).
+- **Browser Extension:** JavaScript (for `BookmarkOpener`).
+- **Build Tool:** Vite (for `search-portal`).
+- **Linting:** ESLint (for `search-portal`).
 
 ## Performance
 - Event delegation for operator buttons
@@ -31,6 +35,38 @@ eliminates context switching between search engines.
 - Google Scholar, arXiv, ResearchGate
 - 4 thesis databases (France, Morocco, international, specialized)
 - Google Patents
+
+## Building and Running:
+
+*   **Main Search Interface (`index.html`):**
+    *   This is a static HTML file and can be opened directly in a web browser. No special build steps are required.
+
+*   **Search Portal (React Application located in `others/s/searchAIO/search-portal`):**
+    *   **Install dependencies:**
+        ```bash
+        cd others/s/searchAIO/search-portal
+        npm install
+        ```
+    *   **Run in development mode:**
+        ```bash
+        npm run dev
+        ```
+    *   **Build for production:**
+        ```bash
+        npm run build
+        ```
+
+*   **BookmarkOpener (Chrome Extension located in `BookmarkOpener`):**
+    *   This is a browser extension. To use it:
+        1.  Open Google Chrome.
+        2.  Go to `chrome://extensions/`.
+        3.  Enable "Developer mode" (usually a toggle in the top right).
+        4.  Click "Load unpacked" and select the `BookmarkOpener` directory.
+
+## Development Conventions:
+- **Code Style:** ESLint is configured for the `search-portal` React project.
+- **Type Checking:** TypeScript is used in the `search-portal` project.
+- **Version Control:** Git is used for version control.
 
 ## Gemini-CLI Integration Potential
 
