@@ -1244,6 +1244,7 @@
         <li><b>ddg:</b> DuckDuckGo</li>
         <li><b>yan:</b> Yandex</li>
         <li><b>bing:</b> Bing</li>
+        <li><b>bd:</b> Baidu</li>
         <li><b>gplus:</b> Google Avancé</li>
       </ul>
       
@@ -1260,6 +1261,7 @@
         <li><b>rgate:</b> ResearchGate</li>
         <li><b>ndltd:</b> NDLTD</li>
         <li><b>proinserm:</b> Pro Inserm</li>
+        <li><b>bdedu:</b> Baidu Scholar (Xueshu)</li>
       </ul>
       
       <h4>⚕️ Médical / Santé</h4>
@@ -1298,6 +1300,9 @@
         <li><b>gai:</b> Google AI Mode – utilise le mode expérimental udm=50 qui déclenche très souvent la réponse IA/Gemini</li>
         <li><b>perplexity:</b> Perplexity</li>
         <li><b>copilot:</b> Copilot</li>
+        <li><b>cbd:</b> Chat Baidu</li>
+        <li><b>ernie:</b> Baidu AI</li>
+        <li><b>duckai:</b> Duck.ai</li>
       </ul>
     </div>
     
@@ -2005,36 +2010,29 @@
       }
 
 
-      let baseUrl = searchEngines[prefix].url;
-      let finalUrl;
+      const finalEngine = searchEngines[prefix];
+      if (finalEngine) {
+        let encodedQuery;
+        if (finalEngine.plusEncoding) {
+          encodedQuery = query.replace(/ /g, '+');
+        } else {
+          encodedQuery = encodeURIComponent(query);
+        }
+        
+        let finalUrl;
+        let baseUrl = finalEngine.url;
 
-      // AI-Assisted Comment: Special handling for the Toubkal (these-ma:) search engine.
-      // This engine requires a specific 'submit=OK' parameter which is appended here.
-      // This is a correction to a previous bug where the parameter was handled incorrectly.
-      // Exception spéciale pour Toubkal
-      if (prefix === 'these-ma:') {
-        finalUrl = baseUrl + encodeURIComponent(query) + '&submit=OK';
-      } else if (prefix === 'gpat:') {
-        finalUrl = baseUrl + '?q=(' + encodeURIComponent(query) + ')&oq=' + encodeURIComponent(query);
-      } else if (prefix === 'medscape:') {
-        finalUrl = baseUrl + '?q="' + encodeURIComponent(query) + '"';
-      } else if (prefix === 'vidal:') {
-        const encodedQuery = encodeURIComponent(query).replace(/%20/g, '+');
-        finalUrl = baseUrl + encodedQuery;
-      } else if (prefix === 'dd:') {
-        const encodedQuery = encodeURIComponent(query).replace(/%20/g, '+');
-        finalUrl = baseUrl + encodedQuery + '&bytSearchType=0';
-      } else if (prefix === 'proinserm:') {
-        const encodedQuery = encodeURIComponent(query).replace(/%20/g, '+');
-        finalUrl = baseUrl + encodedQuery;
-      } else if (['webmd:', 'nih:', 'drugs:'].includes(prefix)) {
-        const encodedQuery = encodeURIComponent(query).replace(/%20/g, '+');
-        finalUrl = baseUrl + encodedQuery;
-      } else {
-        finalUrl = baseUrl + encodeURIComponent(query);
+        if (prefix === 'these-ma:') {
+          finalUrl = baseUrl + encodedQuery + '&submit=OK';
+        } else if (prefix === 'gpat:') {
+          finalUrl = baseUrl + '?q=(' + encodedQuery + ')&oq=' + encodedQuery;
+        } else if (prefix === 'medscape:') {
+          finalUrl = baseUrl + '?q="' + encodedQuery + '"';
+        } else {
+          finalUrl = baseUrl + encodedQuery;
+        }
+        window.open(finalUrl, '_blank');
       }
-
-      window.open(finalUrl, '_blank');
     }
   });
 
