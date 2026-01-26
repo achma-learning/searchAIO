@@ -974,60 +974,19 @@
     color: #b0bec5;
 }
 
-/* Language Icon Styling */
-.lang-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  color: white;
-  font-size: 18px;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-  user-select: none;
-}
-
-.lang-icon:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
-}
-
-.lang-icon.language-selected {
-  background: white;
-  color: #667eea;
-  border: 2px solid #667eea;
-  font-weight: 700;
-  font-size: 14px;
-  font-family: 'Courier New', monospace;
-}
-
-/* Dark mode adjustments */
-.dark-mode .lang-icon {
-  background: linear-gradient(135deg, #1e3c72, #2a5298);
-}
-
-.dark-mode .lang-icon.language-selected {
-  background: #1a2332;
-  color: #64b5f6;
-  border-color: #64b5f6;
-}
-
-/* Language Popup Styling */
+/* Language Popup - Enhanced Bookmarklet Style */
 #langPopup {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.85); /* Darker overlay */
   display: none;
   justify-content: center;
   align-items: center;
   z-index: 2000;
+  padding: 20px;
 }
 
 #langPopup.show {
@@ -1037,12 +996,12 @@
 #langPopupContent {
   background: white;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  padding: 32px;
-  max-width: 500px;
-  width: 90%;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+  padding: 36px;
+  max-width: 520px;
+  width: 100%;
   position: relative;
-  animation: popupFadeIn 0.3s ease;
+  animation: popupSlideIn 0.3s ease;
 }
 
 .dark-mode #langPopupContent {
@@ -1050,12 +1009,35 @@
   border: 2px solid #2d3e52;
 }
 
+#langPopupContent .close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: #dc3545;
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 22px;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+#langPopupContent .close-btn:hover {
+  background: #c82333;
+  transform: rotate(90deg);
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
+}
+
 #langPopupContent h3 {
-  margin: 0 0 12px 0;
+  margin: 0 40px 16px 0; /* Space for close button */
   color: #2c3e50;
-  font-size: 1.4em;
-  border-bottom: 3px solid #667eea;
-  padding-bottom: 10px;
+  font-size: 1.5em;
+  border-bottom: 3px solid #4285f4;
+  padding-bottom: 12px;
 }
 
 .dark-mode #langPopupContent h3 {
@@ -1064,43 +1046,46 @@
 }
 
 #langPopupContent p {
-  margin: 0 0 24px 0;
+  margin: 0 0 28px 0;
   color: #666;
   font-size: 14px;
+  line-height: 1.5;
 }
 
 .dark-mode #langPopupContent p {
   color: #b0bec5;
 }
 
-/* Language Buttons Grid */
+/* Language Buttons Grid - Bookmarklet Style */
 .lang-buttons-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr); /* 3 columns like bookmarklet */
   gap: 12px;
   margin-bottom: 20px;
 }
 
 .lang-btn {
-  padding: 14px 20px;
-  background: linear-gradient(145deg, #f8f9fa, #e9ecef);
-  border: 2px solid #e0e0e0;
+  padding: 16px 20px;
+  background: #4285f4; /* Google blue */
+  border: none;
   border-radius: 10px;
   cursor: pointer;
   font-size: 15px;
   font-weight: 600;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  gap: 6px;
   transition: all 0.2s ease;
-  color: #2c3e50;
+  color: white;
+  box-shadow: 0 2px 4px rgba(66, 133, 244, 0.3);
 }
 
 .lang-btn:hover {
+  background: #3367d6;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-  border-color: #667eea;
-  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.5);
 }
 
 .lang-btn:active {
@@ -1108,34 +1093,36 @@
 }
 
 .lang-btn[data-lang="original"] {
-  grid-column: 1 / -1;
+  grid-column: 1 / -1; /* Full width */
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-color: #667eea;
+  padding: 18px 20px;
+}
+
+.lang-btn[data-lang="original"]:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #653a8c 100%);
 }
 
 .dark-mode .lang-btn {
-  background: #243447;
-  border-color: #2d3e52;
-  color: #b0bec5;
+  background: #1e3c72;
+  box-shadow: 0 2px 4px rgba(30, 60, 114, 0.5);
 }
 
 .dark-mode .lang-btn:hover {
-  background: #2c3e50;
-  border-color: #64b5f6;
+  background: #2a5298;
 }
 
 .dark-mode .lang-btn[data-lang="original"] {
   background: linear-gradient(135deg, #1e3c72, #2a5298);
-  border-color: #64b5f6;
 }
 
+/* Info Footer */
 .lang-info {
   text-align: center;
-  padding: 12px;
+  padding: 14px;
   background: #f0f4ff;
   border-radius: 8px;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #4285f4;
+  margin-top: 12px;
 }
 
 .dark-mode .lang-info {
@@ -1145,34 +1132,58 @@
 
 .lang-info small {
   color: #666;
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .dark-mode .lang-info small {
   color: #b0bec5;
 }
 
+.lang-info kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.dark-mode .lang-info kbd {
+  background: #1a2332;
+  border-color: #455a64;
+  color: #b0bec5;
+}
+
 /* Animation */
- @keyframes popupFadeIn {
+ @keyframes popupSlideIn {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.9) translateY(-20px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateY(0);
   }
 }
 
 /* Mobile responsive */
  @media (max-width: 768px) {
   .lang-buttons-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
   }
   
   #langPopupContent {
-    padding: 24px;
+    padding: 28px 24px;
     max-width: 95%;
+  }
+}
+
+ @media (max-width: 480px) {
+  .lang-buttons-grid {
+    grid-template-columns: 1fr; /* 1 column on very small screens */
   }
 }
 
@@ -1637,37 +1648,44 @@
     
 <!-- Language Selection Popup -->
 <div id="langPopup" class="popup-overlay" style="display: none;">
-  <div id="langPopupContent" class="popup-content">
+  <div id="langPopupContent">
     <button class="close-btn" id="closeLangPopup">&times;</button>
-    <h3>🌐 Select Output Language</h3>
-    <p>Search results will be translated to the selected language via Google Translate.</p>
+    <h3>🌐 Translate Page</h3>
+    <p>Search results will be translated via Google Translate.</p>
     
     <div class="lang-buttons-grid">
       <button class="lang-btn" data-lang="original" data-name="Original">
-        🌐 <span>Original</span>
+        <span style="font-size: 24px;">🌐</span>
+        <span>Original</span>
       </button>
       <button class="lang-btn" data-lang="en" data-name="English">
-        🇬🇧 <span>English</span>
+        <span style="font-size: 24px;">🇬🇧</span>
+        <span>English</span>
       </button>
       <button class="lang-btn" data-lang="fr" data-name="Français">
-        🇫🇷 <span>Français</span>
+        <span style="font-size: 24px;">🇫🇷</span>
+        <span>Français</span>
       </button>
       <button class="lang-btn" data-lang="ar" data-name="العربية">
-        🇸🇦 <span>العربية</span>
+        <span style="font-size: 24px;">🇸🇦</span>
+        <span>العربية</span>
       </button>
       <button class="lang-btn" data-lang="zh" data-name="中文">
-        🇨🇳 <span>中文</span>
+        <span style="font-size: 24px;">🇨🇳</span>
+        <span>中文</span>
       </button>
       <button class="lang-btn" data-lang="es" data-name="Español">
-        🇪🇸 <span>Español</span>
+        <span style="font-size: 24px;">🇪🇸</span>
+        <span>Español</span>
       </button>
       <button class="lang-btn" data-lang="ru" data-name="Русский">
-        🇷🇺 <span>Русский</span>
+        <span style="font-size: 24px;">🇷🇺</span>
+        <span>Русский</span>
       </button>
     </div>
     
     <div class="lang-info">
-      <small>💡 Tip: The translation wrapper may not work for all search engines.</small>
+      <small>Press <kbd>ESC</kbd> to close • Translation may not work for all engines</small>
     </div>
   </div>
 </div>
@@ -2554,7 +2572,13 @@ duckBangBtn.addEventListener('click', () => {
       }
         if (keyboardShortcutsPopup.classList.contains('show')) {
           closeShortcutsPopup();
-        }    }
+        }
+        
+        // ADD THIS: Close language popup
+        if (langPopup.classList.contains('show')) {
+          closeLangPopupFn();
+        }
+    }
   });
 
   // Event listener for main search input to trigger Yandex translation
