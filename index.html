@@ -1165,6 +1165,7 @@
           <label><input type="radio" name="searchEngine" value="ddg:">DuckDuckGo</label>
           <label><input type="radio" name="searchEngine" value="yan:">Yandex</label>
           <label><input type="radio" name="searchEngine" value="bing:">Bing</label>
+          <label><input type="radio" name="searchEngine" value="bd:">Baidu</label>
           <label><input type="radio" name="searchEngine" value="gplus:">Google Avancé</label>
         </div>
       </div>
@@ -1183,6 +1184,7 @@
           <label><input type="radio" name="searchEngine" value="rgate:">ResearchGate</label>
           <label><input type="radio" name="searchEngine" value="ndltd:">NDLTD</label>
           <label><input type="radio" name="searchEngine" value="proinserm:">Pro Inserm</label>
+          <label><input type="radio" name="searchEngine" value="bdedu:">Baidu Scholar (Xueshu)</label>
         </div>
       </div>
       
@@ -1221,6 +1223,9 @@
           <label><input type="radio" name="searchEngine" value="gai:">Google AI Mode</label>
           <label><input type="radio" name="searchEngine" value="perplexity:">Perplexity</label>
           <label><input type="radio" name="searchEngine" value="copilot:">Copilot</label>
+          <label><input type="radio" name="searchEngine" value="cbd:">Chat Baidu</label>
+          <label><input type="radio" name="searchEngine" value="ernie:">Baidu AI</label>
+          <label><input type="radio" name="searchEngine" value="duckai:">Duck.ai</label>
         </div>
       </div>
     </div>
@@ -1519,7 +1524,7 @@
     'these-fr:': { name: 'Theses.fr', url: 'https://theses.fr/resultats?filtres=%255BStatut%25253D%252522soutenue%252522~Statut%25253D%252522Accessibles%252520en%252520ligne%252522%255D&q=', domain: 'theses.fr' },
     'rgate:': { name: 'ResearchGate', url: 'https://www.researchgate.net/search/publication?q=', domain: 'researchgate.net' },
     'ndltd:': { name: 'NDLTD', url: 'http://search.ndltd.org/search.php?q=', domain: 'ndltd.org' },
-    'bdedu:': { name: 'Baidu Academic (Xueshu)', url: 'https://xueshu.baidu.com/ndscholar/browse/search?wd=', domain: 'baidu.com' },
+    'bdedu:': { name: 'Baidu Academic (Xueshu)', url: 'https://xueshu.baidu.com/ndscholar/browse/search?wd=', domain: 'baidu.com', plusEncoding: true },
     'proinserm:': { name: 'Pro Inserm', url: 'https://pro.inserm.fr/?s=', domain: 'pro.inserm.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/pro.inserm.fr-favicon.png' },
     'cismef:': { name: 'CISMeF', url: 'https://doccismef.chu-rouen.fr/dc/#', domain: 'doccismef.chu-rouen.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.cismef.org-favicon.ico' },
     // look for functional MSPS search url
@@ -1552,9 +1557,9 @@
     'gai:': { name: 'Google AI Mode', url: 'https://www.google.com/search?udm=50&q=', domain: 'google.com' },
     'perplexity:': { name: 'Perplexity', url: 'https://www.perplexity.ai/search?q=', domain: 'perplexity.ai' },
     'copilot:': { name: 'Copilot', url: 'https://copilot.microsoft.com/?q=', domain: 'microsoft.com' },
-    'cbd:': { name: 'Chat Baidu', url: 'https://chat.baidu.com/search?word=', domain: 'baidu.com' },
+    'cbd:': { name: 'Chat Baidu', url: 'https://chat.baidu.com/search?word=', domain: 'baidu.com', plusEncoding: true },
     'ernie:': { name: 'Baidu AI', url: 'https://ernie.baidu.com/', domain: 'baidu.com' },
-    'duckai:': { name: 'Duck.ai', url: 'https://duck.ai/chat?q=', domain: 'duck.ai' }
+    'duckai:': { name: 'Duck.ai', url: 'https://duck.ai/chat?q=', domain: 'duck.ai', plusEncoding: true }
   };
 
   // AI-Assisted Comment: These constants store references to various DOM elements.
