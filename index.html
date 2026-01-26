@@ -2015,7 +2015,7 @@
       if (finalEngine) {
         let encodedQuery;
         if (finalEngine.plusEncoding) {
-          encodedQuery = query.replace(/ /g, '+');
+          encodedQuery = encodeURIComponent(query).replace(/%20/g, '+');
         } else {
           encodedQuery = encodeURIComponent(query);
         }
