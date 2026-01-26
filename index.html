@@ -975,22 +975,24 @@
 }
 
 /* Language Popup - Enhanced Bookmarklet Style */
+/* Language Popup - Enhanced Bookmarklet Style */
 #langPopup {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.85); /* Darker overlay */
-  display: none;
+  background: rgba(0, 0, 0, 0.85);
+  display: none; /* Hidden by default */
   justify-content: center;
   align-items: center;
   z-index: 2000;
   padding: 20px;
 }
 
+/* ✅ ADD THIS - Critical for showing popup */
 #langPopup.show {
-  display: flex;
+  display: flex !important;
 }
 
 #langPopupContent {
