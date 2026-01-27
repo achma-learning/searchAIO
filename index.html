@@ -1011,6 +1011,60 @@
   border: 2px solid #2d3e52;
 }
 
+/* Search Bar Styling */
+.lang-search-container {
+  margin-bottom: 20px;
+}
+
+#langSearchInput {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+#langSearchInput:focus {
+  border-color: #4285f4;
+}
+
+#langSuggestions {
+  margin-top: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  display: none;
+  background: white;
+}
+
+.lang-suggestion {
+  padding: 10px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.lang-suggestion:hover {
+  background: #f0f4ff;
+}
+
+.lang-suggestion strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.lang-suggestion span {
+  color: #888;
+  font-size: 12px;
+}
+
+/* Make Original button span full width */
+.lang-btn[data-lang="original"] {
+  grid-column: 1 / -1;
+}
+
 #langPopupContent .close-btn {
   position: absolute;
   top: 12px;
@@ -1652,43 +1706,47 @@
 <div id="langPopup" class="popup-overlay" style="display: none;">
   <div id="langPopupContent">
     <button class="close-btn" id="closeLangPopup">&times;</button>
-    <h3>🌐 Translate Page</h3>
-    <p>Search results will be translated via Google Translate.</p>
+    <h2>🌐 Translate Page</h2>
     
+    <!-- NEW: Search Bar -->
+    <div class="lang-search-container">
+      <input 
+        type="text" 
+        id="langSearchInput" 
+        placeholder="Type language name or code..." 
+        autocomplete="off"
+      />
+      <div id="langSuggestions"></div>
+    </div>
+    
+    <!-- Language Buttons -->
     <div class="lang-buttons-grid">
-      <button class="lang-btn" data-lang="original" data-name="Original">
-        <span style="font-size: 24px;">🌐</span>
-        <span>Original</span>
+      <!-- Original button spans full width -->
+      <button class="lang-btn" data-lang="original" title="No Translation">
+        🌐 Original
       </button>
-      <button class="lang-btn" data-lang="en" data-name="English">
-        <span style="font-size: 24px;">🇬🇧</span>
-        <span>English</span>
+      <!-- 6 main languages in 3x2 grid -->
+      <button class="lang-btn" data-lang="en" title="English">
+        English
       </button>
-      <button class="lang-btn" data-lang="fr" data-name="Français">
-        <span style="font-size: 24px;">🇫🇷</span>
-        <span>Français</span>
+      <button class="lang-btn" data-lang="fr" title="French">
+        Français
       </button>
-      <button class="lang-btn" data-lang="ar" data-name="العربية">
-        <span style="font-size: 24px;">🇸🇦</span>
-        <span>العربية</span>
+      <button class="lang-btn" data-lang="ar" title="Arabic">
+        العربية
       </button>
-      <button class="lang-btn" data-lang="zh" data-name="中文">
-        <span style="font-size: 24px;">🇨🇳</span>
-        <span>中文</span>
+      <button class="lang-btn" data-lang="ru" title="Russian">
+        Русский
       </button>
-      <button class="lang-btn" data-lang="es" data-name="Español">
-        <span style="font-size: 24px;">🇪🇸</span>
-        <span>Español</span>
+      <button class="lang-btn" data-lang="es" title="Spanish">
+        Español
       </button>
-      <button class="lang-btn" data-lang="ru" data-name="Русский">
-        <span style="font-size: 24px;">🇷🇺</span>
-        <span>Русский</span>
+      <button class="lang-btn" data-lang="zh" title="Chinese">
+        中文
       </button>
     </div>
     
-    <div class="lang-info">
-      <small>Press <kbd>ESC</kbd> to close • Translation may not work for all engines</small>
-    </div>
+    <p class="lang-info">Press <kbd>ESC</kbd> to close • Translation may not work for all engines</p>
   </div>
 </div>
   </div>
@@ -3017,26 +3075,48 @@ document.addEventListener('click', function(e) {
 // LANGUAGE TRANSLATION FEATURE
 // ============================================
 
-// Store selected language (default: original)
+// Extended language database (100+ languages)
+const allLanguages = {
+  ar: 'Arabic', zh: 'Chinese', en: 'English', fr: 'French', ru: 'Russian', es: 'Spanish',
+  de: 'German', ja: 'Japanese', pt: 'Portuguese', it: 'Italian', ko: 'Korean', nl: 'Dutch',
+  tr: 'Turkish', pl: 'Polish', sv: 'Swedish', da: 'Danish', fi: 'Finnish', no: 'Norwegian',
+  cs: 'Czech', hu: 'Hungarian', ro: 'Romanian', uk: 'Ukrainian', el: 'Greek', he: 'Hebrew',
+  th: 'Thai', vi: 'Vietnamese', id: 'Indonesian', ms: 'Malay', hi: 'Hindi', bn: 'Bengali',
+  ur: 'Urdu', fa: 'Persian', sw: 'Swahili', ta: 'Tamil', te: 'Telugu', mr: 'Marathi',
+  pa: 'Punjabi', gu: 'Gujarati', kn: 'Kannada', ml: 'Malayalam', si: 'Sinhala', km: 'Khmer',
+  lo: 'Lao', my: 'Burmese', ka: 'Georgian', am: 'Amharic', ne: 'Nepali', af: 'Afrikaans',
+  sq: 'Albanian', hy: 'Armenian', az: 'Azerbaijani', eu: 'Basque', be: 'Belarusian',
+  bs: 'Bosnian', bg: 'Bulgarian', ca: 'Catalan', hr: 'Croatian', et: 'Estonian',
+  tl: 'Filipino', gl: 'Galician', is: 'Icelandic', ga: 'Irish', lv: 'Latvian',
+  lt: 'Lithuanian', mk: 'Macedonian', mt: 'Maltese', mn: 'Mongolian', sr: 'Serbian',
+  sk: 'Slovak', sl: 'Slovenian', cy: 'Welsh', yi: 'Yiddish', zu: 'Zulu', xh: 'Xhosa',
+  sn: 'Shona', st: 'Sesotho', yo: 'Yoruba', ig: 'Igbo', ha: 'Hausa', ps: 'Pashto',
+  sd: 'Sindhi', ug: 'Uyghur', ku: 'Kurdish', tg: 'Tajik', uz: 'Uzbek', kk: 'Kazakh',
+  ky: 'Kyrgyz', tk: 'Turkmen', mg: 'Malagasy', ny: 'Chichewa', so: 'Somali',
+  co: 'Corsican', fy: 'Frisian', gd: 'Scottish Gaelic', haw: 'Hawaiian', hmn: 'Hmong',
+  lb: 'Luxembourgish', sm: 'Samoan', ceb: 'Cebuano', la: 'Latin', eo: 'Esperanto'
+};
+
 let selectedOutputLang = 'original';
 
-// DOM references
 const langIcon = document.getElementById('langIcon');
 const langPopup = document.getElementById('langPopup');
 const closeLangPopup = document.getElementById('closeLangPopup');
 const langButtons = document.querySelectorAll('.lang-btn');
+const langSearchInput = document.getElementById('langSearchInput');
+const langSuggestions = document.getElementById('langSuggestions');
 
-// Open language popup
 function openLangPopup() {
   langPopup.classList.add('show');
-  popupOverlay.classList.add('show'); // Reuse existing overlay
+  popupOverlay.classList.add('show');
+  langSearchInput.focus();
 }
 
-// Close language popup
 function closeLangPopupFn() {
   langPopup.classList.remove('show');
+  langSearchInput.value = '';
+  langSuggestions.style.display = 'none';
   
-  // Only hide overlay if no other popups are open
   if (!filetypesPopup.classList.contains('show') &&
       !googleWikiPopup.classList.contains('show') &&
       !bingWikiPopup.classList.contains('show') &&
@@ -3045,7 +3125,6 @@ function closeLangPopupFn() {
   }
 }
 
-// Update icon based on selected language
 function updateLangIcon(langCode) {
   selectedOutputLang = langCode;
   
@@ -3056,30 +3135,64 @@ function updateLangIcon(langCode) {
   } else {
     langIcon.textContent = langCode.toUpperCase();
     langIcon.classList.add('language-selected');
-    langIcon.title = `Translate to ${langCode.toUpperCase()}`;
+    const langName = allLanguages[langCode] || langCode.toUpperCase();
+    langIcon.title = `Translate to ${langName}`;
   }
   
-  // Save to localStorage for persistence
   localStorage.setItem('selectedOutputLang', langCode);
 }
 
-// Event: Open popup on icon click
+// NEW: Search autocomplete functionality
+langSearchInput.addEventListener('input', function() {
+  const query = this.value.toLowerCase().trim();
+  
+  if (!query) {
+    langSuggestions.style.display = 'none';
+    return;
+  }
+  
+  const matches = Object.entries(allLanguages)
+    .filter(([code, name]) => 
+      code.includes(query) || name.toLowerCase().includes(query)
+    )
+    .slice(0, 10);
+  
+  if (matches.length) {
+    langSuggestions.innerHTML = matches
+      .map(([code, name]) => `
+        <div class="lang-suggestion" data-code="${code}">
+          <strong>${name}</strong> <span>(${code})</span>
+        </div>
+      `)
+      .join('');
+    
+    langSuggestions.style.display = 'block';
+    
+    langSuggestions.querySelectorAll('.lang-suggestion').forEach(item => {
+      item.addEventListener('click', () => {
+        const code = item.getAttribute('data-code');
+        updateLangIcon(code);
+        closeLangPopupFn();
+      });
+    });
+  } else {
+    langSuggestions.style.display = 'none';
+  }
+});
+
 langIcon.addEventListener('click', (e) => {
   e.stopPropagation();
   openLangPopup();
 });
 
-// Event: Close popup on close button
 closeLangPopup.addEventListener('click', closeLangPopupFn);
 
-// Event: Close popup on overlay click
 langPopup.addEventListener('click', (e) => {
   if (e.target === langPopup) {
     closeLangPopupFn();
   }
 });
 
-// Event: Language selection
 langButtons.forEach(btn => {
   btn.addEventListener('click', () => {
     const lang = btn.getAttribute('data-lang');
@@ -3088,19 +3201,6 @@ langButtons.forEach(btn => {
   });
 });
 
-// Update existing ESC key handler to close lang popup
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    // ... existing escape handlers ...
-    
-    // Add this to existing Escape handler
-    if (langPopup.classList.contains('show')) {
-      closeLangPopupFn();
-    }
-  }
-});
-
-// Restore saved language preference on page load
 window.addEventListener('load', () => {
   const savedLang = localStorage.getItem('selectedOutputLang');
   if (savedLang) {
