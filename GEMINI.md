@@ -1,115 +1,72 @@
-# Multi-Engine Search Interface
+📌 Project Identity
+Role: Lead Software Architect & Web Developer.
 
-A unified, keyboard-driven search orchestration platform consolidating 50+ 
-specialized search engines (academic, medical, AI, general) with advanced 
-filtering, real-time translation, and operator assistance.
+Project Name: searchAIO (Multi-Engine Search Interface).
 
-**Core Innovation:** Prefix-based routing system (e.g., `scholar: query`) 
-eliminates context switching between search engines.
+Core Philosophy: A minimalist, keyboard-driven "Search Router" that consolidates 50+ specialized engines into a single-file UI.
 
-## Architecture
-- **Main Search Interface (`index.html`):** A standalone HTML file providing the core search functionality with prefix routing, filtering, translation, and autocomplete. It contains a large JavaScript section that handles the logic.
-- **Search Portal (React Application):** A modern frontend application built with React and Vite, likely intended for a more complex or modular search experience, located under `others/s/searchAIO/search-portal`.
-- **BookmarkOpener (Chrome Extension):** A browser extension that interacts with the local search page to facilitate opening Chrome bookmarks, located under `BookmarkOpener`.
+🏗 Technical Architecture
+1. Data Model (The searchEngines Schema)
+The application logic is driven by a central JavaScript object. All modifications must adhere to this structure:
 
-## Main Technologies:
-- **Frontend:** HTML, CSS, JavaScript (for `index.html`), React, TypeScript (for `search-portal`).
-- **Browser Extension:** JavaScript (for `BookmarkOpener`).
-- **Build Tool:** Vite (for `search-portal`).
-- **Linting:** ESLint (for `search-portal`).
+JavaScript
+const searchEngines = {
+  'prefix:': {
+    name: 'Engine Name',         // UI Display
+    url: 'https://base.url/q=',  // Target search URL
+    domain: 'example.com',       // Used for favicon fetching
+    space: '+',                  // Character for space replacement (+ or %20)
+    favicon: 'custom_url',       // Optional: Override favicon
+    isAlias: false,              // If true, routes to another engine
+    aliasFor: 'target:',         // Destination prefix for aliases
+    filterValue: 'param'         // Pre-applied filter value
+  }
+}
+2. Functional State Machine
+The app operates on a Prefix → Resolve → Construct → Route pipeline:
 
-## Performance
-- Event delegation for operator buttons
-- Debounced API calls (500ms)
-- CSS GPU acceleration for animations
-- Single-class dark mode toggle
+Prefix Detection: updateSearchSource() monitors the input for a : trigger.
 
-## Specialized Coverage
+Logic Branching: Handles engine-specific quirks (e.g., Google Patents' bracketed queries or Toubkal's &submit=OK).
 
-**Medical (19 engines):**
-- CISMeF (French medical portal) with 6 filter modes
-- PubMed, Cochrane, UpToDate, Medscape, VIDAL
-- HAS (French Health Authority), NIH, CDC
+URL Encoding: Sanitizes input using encodeURIComponent() and applies the specific space character defined in the model.
 
-**Academic (11 engines):**
-- Google Scholar, arXiv, ResearchGate
-- 4 thesis databases (France, Morocco, international, specialized)
-- Google Patents
+Language Proxying: Supports wrapping search results in a Google Translate layer (https://translate.google.com/translate?sl=auto&tl=${targetLang}&u=${finalUrl}).
 
-## Building and Running:
+🛠 Feature Specifications
+🧬 Specialized Search Categories
+Medical (19 Engines): Deep integration with CISMeF (using environment filters), PubMed, VIDAL, and HAS.
 
-*   **Main Search Interface (`index.html`):**
-    *   This is a static HTML file and can be opened directly in a web browser. No special build steps are required.
+Academic (11 Engines): Focus on Google Scholar, ResearchGate, and multi-national Thesis databases.
 
-*   **Search Portal (React Application located in `others/s/searchAIO/search-portal`):**
-    *   **Install dependencies:**
-        ```bash
-        cd others/s/searchAIO/search-portal
-        npm install
-        ```
-    *   **Run in development mode:**
-        ```bash
-        npm run dev
-        ```
-    *   **Build for production:**
-        ```bash
-        npm run build
-        ```
+AI/Advanced: Integration for LLM-based search (Baidu AI, Duck.ai, etc.).
 
-*   **BookmarkOpener (Chrome Extension located in `BookmarkOpener`):**
-    *   This is a browser extension. To use it:
-        1.  Open Google Chrome.
-        2.  Go to `chrome://extensions/`.
-        3.  Enable "Developer mode" (usually a toggle in the top right).
-        4.  Click "Load unpacked" and select the `BookmarkOpener` directory.
+⌨️ Keyboard-Driven UI (DX)
+The interface must remain accessible without a mouse:
 
-## Development Conventions:
-- **Code Style:** ESLint is configured for the `search-portal` React project.
-- **Type Checking:** TypeScript is used in the `search-portal` project.
-- **Version Control:** Git is used for version control.
+Ctrl + K: Global Search Focus.
 
-## Gemini-CLI Integration Potential
+Alt + Arrow Up/Down: Cycle through active engines.
 
-This interface could complement gemini-cli by:
-1. **Pre-processing Queries:** Format queries with operators before sending to Gemini
-2. **Source Routing:** Use Gemini to determine best search engine for query type
-3. **Multi-Engine Synthesis:** Search multiple engines, let Gemini summarize results
-4. **Natural Language → Operators:** "Find PDFs about X from universities" → 
-   `filetype:pdf X site:.edu`
+Alt + 1-4: Category jumping.
 
-**Example Workflow:**
-```bash
-gemini "Find recent machine learning papers from arxiv"
-# Gemini outputs: arxiv: machine learning after:2024-01-01
-# Interface executes search automatically
-```
+Esc: Close all popups/modals.
 
-## Gemini-CLI Enhancements
+🌓 UI/UX Design System
+Glassmorphism: Use of semi-transparent backgrounds (rgba) and backdrop-filter: blur().
 
-1. **Search Intent Classification**
-   ```bash
-   gemini --search "diabetes treatment guidelines"
-   # Gemini determines: Medical query → Route to CISMeF + PubMed
-   # Executes both searches, synthesizes results
-   ```
+Favicon Strategy: Priority: Custom Hosting > Google S2 Service > Domain Root.
 
-2. **Operator Suggestion**
-   ```bash
-   gemini --optimize-query "python tutorials for beginners"
-   # Outputs: intitle:tutorial python beginner filetype:pdf
-   ```
+Mobile-First: Responsive CSS Grid and Flexbox layouts.
 
-3. **Cross-Engine Comparison**
-   ```bash
-   gemini --compare "climate change" --engines scholar,arxiv,pubmed
-   # Searches all three, generates comparative summary
-   ```
+🚦 AI Behavioral Constraints
+Code Integrity: Always prioritize Vanilla JavaScript (ES6+). Do not suggest external libraries (jQuery, Bootstrap, etc.).
 
-4. **Query Translation Pipeline**
-   ```bash
-   gemini --translate-search "quantum physics" --to ru --engine yan:
-   # Translates → Searches Yandex → Translates results back
-   ```
+Safety: Ensure all user inputs are sanitized to prevent XSS.
+
+Encapsulation: Keep the project as a Single-File Build (index.html) unless explicitly asked to modularize.
+
+Precision: When adding engines, check the specific search syntax (some require quotes, others require specific parameters at the end of the string).
 
 ## Development Guidelines
 
