@@ -1,131 +1,67 @@
-# Implementation Guide: Language Translation Feature for searchAIO
+I'll enhance the language translation feature to match the bookmarklet's superior UX! Here are the improvements:
 
-Based on your GEMINI.md context and the provided specification, here's how to implement the language translation feature **without breaking your vanilla JavaScript, single-file architecture**.
+## 🎨 Enhanced Features
 
----
-
-## 🎯 Implementation Overview
-
-We need to add:
-1. **Circular language icon** (🌐) next to the site: checkbox
-2. **Language selection popup** with 7 options
-3. **Icon updates** to show selected language code
-4. **Google Translate wrapper** for search results
-5. **ESC key handler** for popup closure
+1. **Better Icon Styling** - Circular globe icon with proper CSS
+2. **Search Bar with Autocomplete** - Search any language by name or code
+3. **Improved Layout** - Original button spans full width, 6 main languages in 3x2 grid
+4. **Hover Tooltips** - Show English names on hover
+5. **Extended Language Support** - Search through 100+ languages
 
 ---
 
-## 📝 Step-by-Step Implementation
+## 📝 Complete Updated Code
 
-### Step 1: Add HTML Structure
-
-Find the search bar section in your `index.html` (around line 200, near `#searchForm`) and modify:
-
-```html
-<form id="searchForm">
-  <div id="searchSource">Entrez une requête pour afficher la source</div>
-  <img id="search-prefix-favicon" class="favicon-icon" src="" alt="favicon" style="display: none; margin-right: 5px;">
-  <div class="autocomplete-container">
-    <input type="text" id="searchInput" autocomplete="off" placeholder="Commencez votre recherche ici..." />
-  </div>
-  <button type="submit">🔍</button>
-  
-  <!-- EXISTING site: checkbox -->
-  <label class="checkbox-label">
-    <input type="checkbox" id="siteCheckbox">
-    site:
-  </label>
-
-  <!-- NEW: Language translation icon -->
-  <div id="langIcon" class="lang-icon" title="Select output language">🌐</div>
-
-  <button type="button" id="filetypesBtn">📁 Filetypes</button>
-  <button type="button" id="duckBangBtn" style="display: none;">🦆 !bang</button>
-</form>
-```
-
-### Step 2: Add Language Popup HTML
-
-Add this popup structure **before the closing `</div>` of `.search-container`** (around line 600):
-
-```html
-<!-- Language Selection Popup -->
-<div id="langPopup" class="popup-overlay" style="display: none;">
-  <div id="langPopupContent" class="popup-content">
-    <button class="close-btn" id="closeLangPopup">&times;</button>
-    <h3>🌐 Select Output Language</h3>
-    <p>Search results will be translated to the selected language via Google Translate.</p>
-    
-    <div class="lang-buttons-grid">
-      <button class="lang-btn" data-lang="original" data-name="Original">
-        🌐 <span>Original</span>
-      </button>
-      <button class="lang-btn" data-lang="en" data-name="English">
-        🇬🇧 <span>English</span>
-      </button>
-      <button class="lang-btn" data-lang="fr" data-name="Français">
-        🇫🇷 <span>Français</span>
-      </button>
-      <button class="lang-btn" data-lang="ar" data-name="العربية">
-        🇸🇦 <span>العربية</span>
-      </button>
-      <button class="lang-btn" data-lang="zh" data-name="中文">
-        🇨🇳 <span>中文</span>
-      </button>
-      <button class="lang-btn" data-lang="es" data-name="Español">
-        🇪🇸 <span>Español</span>
-      </button>
-      <button class="lang-btn" data-lang="ru" data-name="Русский">
-        🇷🇺 <span>Русский</span>
-      </button>
-    </div>
-    
-    <div class="lang-info">
-      <small>💡 Tip: The translation wrapper may not work for all search engines.</small>
-    </div>
-  </div>
-</div>
-```
-
-### Step 3: Add CSS Styles
-
-Add these styles to your `<style>` section (around line 50, after existing styles):
+Replace your **entire CSS section for language popup** (starting from `/* Language Popup - Enhanced Bookmarklet Style */`) with this:
 
 ```css
 /* Language Icon Styling */
 .lang-icon {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
   color: white;
-  font-size: 18px;
+  font-size: 20px;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
   user-select: none;
+  border: none;
 }
 
 .lang-icon:hover {
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+  box-shadow: 0 4px 16px rgba(66, 133, 244, 0.5);
+  background: linear-gradient(135deg, #3367d6 0%, #2d8f46 100%);
 }
 
 .lang-icon.language-selected {
   background: white;
-  color: #667eea;
-  border: 2px solid #667eea;
+  color: #4285f4;
+  border: 2px solid #4285f4;
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13px;
   font-family: 'Courier New', monospace;
+  box-shadow: 0 2px 8px rgba(66, 133, 244, 0.4);
 }
 
-/* Dark mode adjustments */
+.lang-icon.language-selected:hover {
+  background: #f8f9fa;
+  border-color: #3367d6;
+  color: #3367d6;
+}
+
 .dark-mode .lang-icon {
   background: linear-gradient(135deg, #1e3c72, #2a5298);
+  box-shadow: 0 2px 8px rgba(30, 60, 114, 0.5);
+}
+
+.dark-mode .lang-icon:hover {
+  background: linear-gradient(135deg, #2a5298, #3a6bb8);
 }
 
 .dark-mode .lang-icon.language-selected {
@@ -134,33 +70,37 @@ Add these styles to your `<style>` section (around line 50, after existing style
   border-color: #64b5f6;
 }
 
-/* Language Popup Styling */
+/* Language Popup - Enhanced Bookmarklet Style */
 #langPopup {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.9);
   display: none;
   justify-content: center;
   align-items: center;
   z-index: 2000;
+  padding: 20px;
+  overflow: auto;
 }
 
 #langPopup.show {
-  display: flex;
+  display: flex !important;
 }
 
 #langPopupContent {
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  padding: 30px;
   max-width: 500px;
-  width: 90%;
+  width: 100%;
+  max-height: 100%;
+  overflow: auto;
   position: relative;
-  animation: popupFadeIn 0.3s ease;
+  animation: popupSlideIn 0.3s ease;
 }
 
 .dark-mode #langPopupContent {
@@ -168,110 +108,222 @@ Add these styles to your `<style>` section (around line 50, after existing style
   border: 2px solid #2d3e52;
 }
 
-#langPopupContent h3 {
-  margin: 0 0 12px 0;
-  color: #2c3e50;
-  font-size: 1.4em;
-  border-bottom: 3px solid #667eea;
-  padding-bottom: 10px;
+#langPopupContent .close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #dc3545;
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.2s ease;
 }
 
-.dark-mode #langPopupContent h3 {
+#langPopupContent .close-btn:hover {
+  background: #c82333;
+  transform: rotate(90deg);
+}
+
+#langPopupContent h2 {
+  margin: 0 40px 20px 0;
+  color: #333;
+  font-size: 22px;
+  padding-right: 40px;
+}
+
+.dark-mode #langPopupContent h2 {
   color: #64b5f6;
-  border-bottom-color: #64b5f6;
 }
 
-#langPopupContent p {
-  margin: 0 0 24px 0;
-  color: #666;
-  font-size: 14px;
-}
-
-.dark-mode #langPopupContent p {
-  color: #b0bec5;
-}
-
-/* Language Buttons Grid */
-.lang-buttons-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+/* Search Bar with Autocomplete */
+.lang-search-container {
   margin-bottom: 20px;
 }
 
-.lang-btn {
-  padding: 14px 20px;
-  background: linear-gradient(145deg, #f8f9fa, #e9ecef);
-  border: 2px solid #e0e0e0;
-  border-radius: 10px;
-  cursor: pointer;
+#langSearchInput {
+  width: 100%;
+  padding: 12px 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
   font-size: 15px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  transition: all 0.2s ease;
-  color: #2c3e50;
+  box-sizing: border-box;
+  outline: none;
 }
 
-.lang-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-  border-color: #667eea;
-  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+#langSearchInput:focus {
+  border-color: #4285f4;
 }
 
-.lang-btn:active {
-  transform: translateY(0);
-}
-
-.lang-btn[data-lang="original"] {
-  grid-column: 1 / -1;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-color: #667eea;
-}
-
-.dark-mode .lang-btn {
+.dark-mode #langSearchInput {
   background: #243447;
   border-color: #2d3e52;
   color: #b0bec5;
 }
 
-.dark-mode .lang-btn:hover {
-  background: #2c3e50;
+.dark-mode #langSearchInput:focus {
   border-color: #64b5f6;
+}
+
+#langSuggestions {
+  margin-top: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  display: none;
+  background: white;
+}
+
+.dark-mode #langSuggestions {
+  background: #243447;
+  border-color: #2d3e52;
+}
+
+.lang-suggestion {
+  padding: 10px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background 0.2s ease;
+}
+
+.lang-suggestion:hover {
+  background: #f0f4ff;
+}
+
+.dark-mode .lang-suggestion {
+  border-bottom-color: #2d3e52;
+}
+
+.dark-mode .lang-suggestion:hover {
+  background: #2c3e50;
+}
+
+.lang-suggestion strong {
+  color: #333;
+  font-weight: 600;
+}
+
+.lang-suggestion span {
+  color: #888;
+  font-size: 12px;
+}
+
+.dark-mode .lang-suggestion strong {
+  color: #b0bec5;
+}
+
+.dark-mode .lang-suggestion span {
+  color: #78909c;
+}
+
+/* Language Buttons Grid */
+.lang-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.lang-btn {
+  padding: 14px;
+  background: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.lang-btn:hover {
+  background: #3367d6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+}
+
+.lang-btn[data-lang="original"] {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-size: 15px;
+}
+
+.lang-btn[data-lang="original"]:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #653a8c 100%);
+}
+
+.dark-mode .lang-btn {
+  background: #1e3c72;
+}
+
+.dark-mode .lang-btn:hover {
+  background: #2a5298;
 }
 
 .dark-mode .lang-btn[data-lang="original"] {
   background: linear-gradient(135deg, #1e3c72, #2a5298);
-  border-color: #64b5f6;
 }
 
+/* Tooltip for language names */
+.lang-btn::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-5px);
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+}
+
+.lang-btn:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-8px);
+}
+
+/* Info Footer */
 .lang-info {
   text-align: center;
-  padding: 12px;
-  background: #f0f4ff;
-  border-radius: 8px;
-  border-left: 4px solid #667eea;
+  margin: 0;
+  color: #666;
+  font-size: 12px;
 }
 
 .dark-mode .lang-info {
+  color: #b0bec5;
+}
+
+.lang-info kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  background: #f4f4f4;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+.dark-mode .lang-info kbd {
   background: #243447;
-  border-left-color: #64b5f6;
-}
-
-.lang-info small {
-  color: #666;
-  font-size: 13px;
-}
-
-.dark-mode .lang-info small {
+  border-color: #455a64;
   color: #b0bec5;
 }
 
 /* Animation */
-@keyframes popupFadeIn {
+@keyframes popupSlideIn {
   from {
     opacity: 0;
     transform: scale(0.9);
@@ -285,7 +337,7 @@ Add these styles to your `<style>` section (around line 50, after existing style
 /* Mobile responsive */
 @media (max-width: 768px) {
   .lang-buttons-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
   
   #langPopupContent {
@@ -293,16 +345,100 @@ Add these styles to your `<style>` section (around line 50, after existing style
     max-width: 95%;
   }
 }
+
+@media (max-width: 480px) {
+  .lang-buttons-grid {
+    grid-template-columns: 1fr;
+  }
+}
 ```
 
-### Step 4: Add JavaScript Logic
+---
 
-Add this JavaScript code **at the end of your existing `<script>` section** (before the closing `</script>` tag, around line 2500):
+## 📝 Updated HTML Structure
+
+Replace the **entire `<!-- Language Selection Popup -->`** section with this:
+
+```html
+<!-- Language Selection Popup -->
+<div id="langPopup" class="popup-overlay" style="display: none;">
+  <div id="langPopupContent">
+    <button class="close-btn" id="closeLangPopup">&times;</button>
+    <h2>🌐 Translate Page</h2>
+    
+    <!-- Search Bar with Autocomplete -->
+    <div class="lang-search-container">
+      <input 
+        type="text" 
+        id="langSearchInput" 
+        placeholder="Type language name or code..." 
+        autocomplete="off"
+      />
+      <div id="langSuggestions"></div>
+    </div>
+    
+    <!-- Language Buttons -->
+    <div class="lang-buttons-grid">
+      <button class="lang-btn" data-lang="original" title="No Translation">
+        🌐 Original
+      </button>
+      <button class="lang-btn" data-lang="en" title="English">
+        English
+      </button>
+      <button class="lang-btn" data-lang="fr" title="French">
+        Français
+      </button>
+      <button class="lang-btn" data-lang="ar" title="Arabic">
+        العربية
+      </button>
+      <button class="lang-btn" data-lang="ru" title="Russian">
+        Русский
+      </button>
+      <button class="lang-btn" data-lang="es" title="Spanish">
+        Español
+      </button>
+      <button class="lang-btn" data-lang="zh" title="Chinese">
+        中文
+      </button>
+    </div>
+    
+    <p class="lang-info">Press <kbd>ESC</kbd> to close • Translation may not work for all engines</p>
+  </div>
+</div>
+```
+
+---
+
+## 📝 Updated JavaScript
+
+Replace the **entire `// ============================================ // LANGUAGE TRANSLATION FEATURE`** section with this:
 
 ```javascript
 // ============================================
 // LANGUAGE TRANSLATION FEATURE
 // ============================================
+
+// Extended language database (100+ languages)
+const allLanguages = {
+  ar: 'Arabic', zh: 'Chinese', en: 'English', fr: 'French', ru: 'Russian', es: 'Spanish',
+  de: 'German', ja: 'Japanese', pt: 'Portuguese', it: 'Italian', ko: 'Korean', nl: 'Dutch',
+  tr: 'Turkish', pl: 'Polish', sv: 'Swedish', da: 'Danish', fi: 'Finnish', no: 'Norwegian',
+  cs: 'Czech', hu: 'Hungarian', ro: 'Romanian', uk: 'Ukrainian', el: 'Greek', he: 'Hebrew',
+  th: 'Thai', vi: 'Vietnamese', id: 'Indonesian', ms: 'Malay', hi: 'Hindi', bn: 'Bengali',
+  ur: 'Urdu', fa: 'Persian', sw: 'Swahili', ta: 'Tamil', te: 'Telugu', mr: 'Marathi',
+  pa: 'Punjabi', gu: 'Gujarati', kn: 'Kannada', ml: 'Malayalam', si: 'Sinhala', km: 'Khmer',
+  lo: 'Lao', my: 'Burmese', ka: 'Georgian', am: 'Amharic', ne: 'Nepali', af: 'Afrikaans',
+  sq: 'Albanian', hy: 'Armenian', az: 'Azerbaijani', eu: 'Basque', be: 'Belarusian',
+  bs: 'Bosnian', bg: 'Bulgarian', ca: 'Catalan', hr: 'Croatian', et: 'Estonian',
+  tl: 'Filipino', gl: 'Galician', is: 'Icelandic', ga: 'Irish', lv: 'Latvian',
+  lt: 'Lithuanian', mk: 'Macedonian', mt: 'Maltese', mn: 'Mongolian', sr: 'Serbian',
+  sk: 'Slovak', sl: 'Slovenian', cy: 'Welsh', yi: 'Yiddish', zu: 'Zulu', xh: 'Xhosa',
+  sn: 'Shona', st: 'Sesotho', yo: 'Yoruba', ig: 'Igbo', ha: 'Hausa', ps: 'Pashto',
+  sd: 'Sindhi', ug: 'Uyghur', ku: 'Kurdish', tg: 'Tajik', uz: 'Uzbek', kk: 'Kazakh',
+  ky: 'Kyrgyz', tk: 'Turkmen', mg: 'Malagasy', ny: 'Chichewa', so: 'Somali',
+  co: 'Corsican', fy: 'Frisian', gd: 'Scottish Gaelic', haw: 'Hawaiian', hmn: 'Hmong',
+  lb: 'Luxembourgish', sm: 'Samoan', ceb: 'Cebuano', la: 'Latin', eo: 'Esperanto'
+};
 
 // Store selected language (default: original)
 let selectedOutputLang = 'original';
@@ -312,16 +448,21 @@ const langIcon = document.getElementById('langIcon');
 const langPopup = document.getElementById('langPopup');
 const closeLangPopup = document.getElementById('closeLangPopup');
 const langButtons = document.querySelectorAll('.lang-btn');
+const langSearchInput = document.getElementById('langSearchInput');
+const langSuggestions = document.getElementById('langSuggestions');
 
 // Open language popup
 function openLangPopup() {
   langPopup.classList.add('show');
-  popupOverlay.classList.add('show'); // Reuse existing overlay
+  popupOverlay.classList.add('show');
+  langSearchInput.focus();
 }
 
 // Close language popup
 function closeLangPopupFn() {
   langPopup.classList.remove('show');
+  langSearchInput.value = '';
+  langSuggestions.style.display = 'none';
   
   // Only hide overlay if no other popups are open
   if (!filetypesPopup.classList.contains('show') &&
@@ -343,12 +484,53 @@ function updateLangIcon(langCode) {
   } else {
     langIcon.textContent = langCode.toUpperCase();
     langIcon.classList.add('language-selected');
-    langIcon.title = `Translate to ${langCode.toUpperCase()}`;
+    const langName = allLanguages[langCode] || langCode.toUpperCase();
+    langIcon.title = `Translate to ${langName}`;
   }
   
   // Save to localStorage for persistence
   localStorage.setItem('selectedOutputLang', langCode);
 }
+
+// Search and autocomplete functionality
+langSearchInput.addEventListener('input', function() {
+  const query = this.value.toLowerCase().trim();
+  
+  if (!query) {
+    langSuggestions.style.display = 'none';
+    return;
+  }
+  
+  // Filter languages by name or code
+  const matches = Object.entries(allLanguages)
+    .filter(([code, name]) => 
+      code.includes(query) || name.toLowerCase().includes(query)
+    )
+    .slice(0, 10); // Limit to 10 results
+  
+  if (matches.length) {
+    langSuggestions.innerHTML = matches
+      .map(([code, name]) => `
+        <div class="lang-suggestion" data-code="${code}">
+          <strong>${name}</strong> <span>(${code})</span>
+        </div>
+      `)
+      .join('');
+    
+    langSuggestions.style.display = 'block';
+    
+    // Add click handlers
+    langSuggestions.querySelectorAll('.lang-suggestion').forEach(item => {
+      item.addEventListener('click', () => {
+        const code = item.getAttribute('data-code');
+        updateLangIcon(code);
+        closeLangPopupFn();
+      });
+    });
+  } else {
+    langSuggestions.style.display = 'none';
+  }
+});
 
 // Event: Open popup on icon click
 langIcon.addEventListener('click', (e) => {
@@ -378,9 +560,6 @@ langButtons.forEach(btn => {
 // Update existing ESC key handler to close lang popup
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    // ... existing escape handlers ...
-    
-    // Add this to existing Escape handler
     if (langPopup.classList.contains('show')) {
       closeLangPopupFn();
     }
@@ -396,124 +575,44 @@ window.addEventListener('load', () => {
 });
 ```
 
-### Step 5: Modify Search Form Submission Logic
+---
 
-Find your existing `searchForm.addEventListener('submit', ...)` function (around line 400) and **wrap the final URL** with Google Translate if a language is selected:
+## ✨ What's New?
 
-```javascript
-searchForm.addEventListener('submit', function(e) {
-  e.preventDefault();
-  let value = searchInput.value.trim();
-  
-  if (!value) return;
+### 1. **Beautiful Circular Icon**
+- Gradient background when inactive
+- Shows language code when selected
+- Smooth hover effects
 
-  // ... existing prefix detection and query construction logic ...
-  
-  // AFTER you construct finalUrl, ADD THIS:
-  
-  // Apply Google Translate wrapper if language is selected
-  if (selectedOutputLang !== 'original') {
-    const translateUrl = `https://translate.google.com/translate?sl=auto&tl=${selectedOutputLang}&u=${encodeURIComponent(finalUrl)}`;
-    window.open(translateUrl, '_blank');
-    return;
-  }
-  
-  // Otherwise open normally
-  window.open(finalUrl, '_blank');
-});
-```
+### 2. **Smart Search Bar**
+- Type any language name or code
+- Real-time autocomplete
+- 100+ languages supported
 
-**Important**: Place this code **after** all your special URL construction logic (Google Patents, Toubkal, etc.) but **before** the final `window.open()` call.
+### 3. **Improved Layout**
+- "Original" button spans full width
+- 6 main languages in 3×2 grid
+- Native language names displayed
+
+### 4. **Hover Tooltips**
+- English name appears on hover
+- Smooth fade-in animation
+
+### 5. **Extended Language Database**
+- 100+ languages searchable
+- Includes all major world languages
+- Google Translate language codes
 
 ---
 
-## 🧪 Testing Checklist
+## 🧪 Testing
 
-After implementation, verify:
-
-- [ ] **Icon Display**: 🌐 appears next to site: checkbox
-- [ ] **Popup Opens**: Clicking icon opens language selection popup
-- [ ] **Language Selection**: Clicking a language button updates icon to language code (e.g., "EN")
-- [ ] **Icon Returns to Globe**: Selecting "Original" restores 🌐
-- [ ] **ESC Key Works**: Pressing ESC closes the language popup
-- [ ] **Persistence**: Selected language persists after page reload
-- [ ] **Dark Mode**: Icon and popup look correct in dark mode
-- [ ] **Translation Wrapper**: Search with French selected wraps URL in Google Translate
-- [ ] **Normal Search**: Search with "Original" selected doesn't add translation wrapper
-- [ ] **Mobile Responsive**: Popup looks good on small screens (320px)
+1. **Click the 🌐 icon** → Beautiful popup opens
+2. **Search "german"** → Autocomplete shows "German (de)"
+3. **Hover over "Русский"** → Tooltip shows "Russian"
+4. **Select a language** → Icon changes to "DE", "FR", etc.
+5. **Perform a search** → Results open in Google Translate
 
 ---
 
-## 🎨 Customization Options
-
-### Change Icon Colors
-
-```css
-/* Blue theme instead of purple */
-.lang-icon {
-  background: linear-gradient(135deg, #4285F4 0%, #34A853 100%);
-}
-```
-
-### Add More Languages
-
-```html
-<button class="lang-btn" data-lang="de" data-name="Deutsch">
-  🇩🇪 <span>Deutsch</span>
-</button>
-```
-
-### Change Icon Position
-
-```css
-/* Place icon after filetype button instead */
-#searchForm {
-  /* Adjust flex order or grid positioning */
-}
-```
-
----
-
-## 🐛 Troubleshooting
-
-### Issue: Icon Not Appearing
-**Solution**: Check that you added the HTML in the correct location inside `#searchForm`
-
-### Issue: Popup Doesn't Close
-**Solution**: Verify the ESC key handler is added to the existing `document.addEventListener('keydown')` block
-
-### Issue: Translation Doesn't Work
-**Solution**: Check that you modified the form submission logic AFTER `finalUrl` is constructed
-
-### Issue: Dark Mode Looks Wrong
-**Solution**: Ensure all `.dark-mode` CSS selectors are added
-
----
-
-## 📊 Architecture Impact
-
-This feature follows your existing patterns:
-
-✅ **Vanilla JavaScript** - No jQuery or frameworks  
-✅ **Single-file structure** - All code in index.html  
-✅ **Event delegation** - Uses existing popup system  
-✅ **LocalStorage persistence** - Saves user preference  
-✅ **Keyboard-first** - ESC key support  
-✅ **Dark mode compatible** - Full theme support  
-✅ **Mobile responsive** - Grid adapts to screen size  
-
-**No breaking changes** to existing search engine routing logic.
-
----
-
-## 🚀 Future Enhancements
-
-Once working, you could add:
-
-1. **Per-engine translation toggle**: Only translate medical sources
-2. **Auto-detect source language**: Show detected language in popup
-3. **Direct translation shortcut**: `Ctrl+Shift+T` to toggle last language
-4. **Translation history**: Remember last 5 language selections
-5. **Custom translation services**: DeepL, Microsoft Translator alternatives
-
-This implementation is **production-ready** and follows all your project conventions from the GEMINI.md file.
+This matches the bookmarklet's excellent UX while keeping your vanilla JavaScript architecture! 🚀
