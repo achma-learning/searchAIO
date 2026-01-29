@@ -1,8 +1,4 @@
-WebMD+ (openMD* exsite) | 
-NIH+ | 
-Medscape- | 
-Drugs.com+ | 
-CDC+
+make it functionnal and usable, then make it beautiful , then make it a winning product not a perfect product, just a useful tool
 
 # searchAIO
 #
