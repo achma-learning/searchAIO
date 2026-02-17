@@ -77,10 +77,21 @@
             align-items: center;
         }
         
-        .radio-group input[type=radio] {
-            margin-right: 8px;
-            cursor: pointer;
-        }
+.radio-group input[type=radio] {
+    accent-color: #9c5af2;
+    cursor: pointer;
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    min-width: 16px;        /* Prevents shrinking */
+    min-height: 16px;       /* Prevents shrinking */
+    flex-shrink: 0;         /* Prevents flex compression */
+    vertical-align: middle; /* Aligns with text */
+}
+
+.dark-mode .radio-group input[type=radio] {
+    accent-color: #9c5af2;
+}
         
         .radio-group label.selected,
         .radio-group label:hover {
@@ -909,40 +920,127 @@
         }
 
 #autocomplete {
-    position: absolute;
-    background: white;
-    border: 2px solid #667eea;
-    border-radius: 8px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-    max-height: 300px;
+    position: fixed;
+    /* iOS Floating Island - Glassmorphism */
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    
+    /* iOS-style shadow - multiple layers for depth */
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.12),
+        0 2px 8px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    
+    max-height: 400px;
     overflow-y: auto;
     z-index: 1000;
     display: none;
-    min-width: 400px;
+    padding: 20px;
+    
+    /* Match container width instead of fixed 800px */
+    width: calc(100% - 40px);
+    max-width: 1160px; /* match search-container max-width minus padding */
+    
+    /* Smooth appearance animation */
+    animation: floatIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: top center;
+}
+
+ @keyframes floatIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 .dark-mode #autocomplete {
-    background: #1a2332;
-    border-color: #64b5f6;
+    background: rgba(26, 35, 50, 0.85);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(100, 181, 246, 0.2);
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        0 2px 8px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(100, 181, 246, 0.1);
 }
 
-.autocomplete-item {
-    padding: 10px 15px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border-bottom: 1px solid #e0e0e0;
+/* Smooth scrollbar for iOS feel */
+#autocomplete::-webkit-scrollbar {
+    width: 8px;
+}
+
+#autocomplete::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#autocomplete::-webkit-scrollbar-thumb {
+    background: rgba(156, 90, 242, 0.3);
+    border-radius: 10px;
     transition: background 0.2s;
 }
 
-.dark-mode .autocomplete-item {
-    border-bottom-color: #2d3e52;
+#autocomplete::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 90, 242, 0.5);
+}
+
+.dark-mode #autocomplete::-webkit-scrollbar-thumb {
+    background: rgba(100, 181, 246, 0.3);
+}
+
+.dark-mode #autocomplete::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 181, 246, 0.5);
+}
+
+/* 4-COLUMN GRID STRUCTURE */
+.autocomplete-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.autocomplete-column {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.autocomplete-column-title {
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-size: 0.95em;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 6px;
+}
+
+.dark-mode .autocomplete-column-title {
+    color: #64b5f6;
+    border-bottom-color: #64b5f6;
+}
+
+.autocomplete-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    font-size: 0.9em;
 }
 
 .autocomplete-item:hover,
 .autocomplete-item.selected {
     background: linear-gradient(135deg, #667eea15, #764ba215);
+    transform: translateX(4px);
 }
 
 .dark-mode .autocomplete-item:hover,
@@ -958,7 +1056,8 @@
     font-family: 'Courier New', monospace;
     font-weight: 700;
     color: #667eea;
-    min-width: 80px;
+    min-width: 60px;
+    font-size: 0.85em;
 }
 
 .dark-mode .autocomplete-prefix {
@@ -968,10 +1067,30 @@
 .autocomplete-name {
     color: #555;
     flex: 1;
+    font-size: 0.9em;
 }
 
 .dark-mode .autocomplete-name {
     color: #b0bec5;
+}
+
+/* Mobile responsive */
+ @media (max-width: 1024px) {
+    #autocomplete {
+        min-width: 600px;
+    }
+    .autocomplete-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+ @media (max-width: 600px) {
+    #autocomplete {
+        min-width: 90vw;
+    }
+    .autocomplete-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ============================================ */
@@ -3082,105 +3201,7 @@ duckBangBtn.addEventListener('click', () => {
     }
   });
 
-// Autocomplete functionality
-const autocompleteDiv = document.createElement('div');
-autocompleteDiv.id = 'autocomplete';
-searchInput.parentElement.appendChild(autocompleteDiv);
 
-let selectedIndex = -1;
-
-function showAutocomplete(matches) {
-  if (matches.length === 0) {
-    autocompleteDiv.style.display = 'none';
-    return;
-  }
-
-  autocompleteDiv.innerHTML = '';
-  matches.forEach((match, index) => {
-    const item = document.createElement('div');
-    item.className = 'autocomplete-item';
-    if (index === selectedIndex) item.classList.add('selected');
-    
-    const favicon = document.createElement('img');
-    favicon.className = 'favicon-icon';
-    favicon.src = `https://www.google.com/s2/favicons?sz=32&domain=${match.engine.domain}`;
-    favicon.alt = '';
-    
-    const prefix = document.createElement('span');
-    prefix.className = 'autocomplete-prefix';
-    prefix.textContent = match.prefix;
-    
-    const name = document.createElement('span');
-    name.className = 'autocomplete-name';
-    name.textContent = match.engine.name;
-    
-    item.appendChild(favicon);
-    item.appendChild(prefix);
-    item.appendChild(name);
-    
-    item.addEventListener('click', () => {
-      const currentValue = searchInput.value.trim();
-      const afterPrefix = currentValue.split(':')[1] || '';
-      searchInput.value = match.prefix + (afterPrefix ? ' ' + afterPrefix.trim() : ' ');
-      autocompleteDiv.style.display = 'none';
-      updateSearchSource();
-      searchInput.focus();
-    });
-    
-    autocompleteDiv.appendChild(item);
-  });
-  
-  const rect = searchInput.getBoundingClientRect();
-  autocompleteDiv.style.top = (rect.bottom + window.scrollY + 5) + 'px';
-  autocompleteDiv.style.left = rect.left + 'px';
-  autocompleteDiv.style.display = 'block';
-}
-
-searchInput.addEventListener('input', function(e) {
-  const value = e.target.value.trim().toLowerCase();
-  selectedIndex = -1;
-  
-  if (!value || value.includes(' ')) {
-    autocompleteDiv.style.display = 'none';
-    return;
-  }
-  
-  const matches = Object.keys(searchEngines)
-    .filter(prefix => prefix.toLowerCase().startsWith(value))
-    .map(prefix => ({ prefix, engine: searchEngines[prefix] }))
-    .slice(0, 10);
-  
-  showAutocomplete(matches);
-});
-
-searchInput.addEventListener('keydown', function(e) {
-  const items = autocompleteDiv.querySelectorAll('.autocomplete-item');
-  
-  if (autocompleteDiv.style.display === 'none' || items.length === 0) return;
-  
-  if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
-    items.forEach((item, i) => item.classList.toggle('selected', i === selectedIndex));
-    items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    selectedIndex = Math.max(selectedIndex - 1, 0);
-    items.forEach((item, i) => item.classList.toggle('selected', i === selectedIndex));
-    items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
-  } else if (e.key === 'Enter' && selectedIndex >= 0) {
-    e.preventDefault();
-    items[selectedIndex]?.click();
-  } else if (e.key === 'Escape') {
-    autocompleteDiv.style.display = 'none';
-  }
-});
-
-document.addEventListener('click', function(e) {
-  if (!searchInput.contains(e.target) && !autocompleteDiv.contains(e.target)) {
-    autocompleteDiv.style.display = 'none';
-  }
-});
 
 // ============================================
 // LANGUAGE TRANSLATION FEATURE
@@ -3316,6 +3337,220 @@ window.addEventListener('load', () => {
   const savedLang = localStorage.getItem('selectedOutputLang');
   if (savedLang) {
     updateLangIcon(savedLang);
+  }
+});
+// Autocomplete functionality
+const autocompleteDiv = document.createElement('div');
+autocompleteDiv.id = 'autocomplete';
+searchInput.parentElement.appendChild(autocompleteDiv);
+
+let selectedIndex = -1;
+
+const engineCategories = {
+  'general': ['g:', 'yt:', 'brave:', 'ddg:', 'yan:', 'bing:', 'bd:', 'gplus:'],
+  'academic': ['scholar:', 'pubmed:', 'arxiv:', 'gpat:', 'these2.0:', 'cismef-th:', 
+               'these-ma:', 'these-fr:', 'rgate:', 'ndltd:', 'proinserm:', 'bdedu:'],
+  'medical': ['cismef:', 'msps:', 'has:', 'vidal:', 'mesh:', 'lissa:', 'anm:', 'hetop:', 
+              'nejm:', 'rp:', 'utd:', 'coch:', 'medscape:', 'openmd:', 'dd:', 'webmd:', 
+              'nih:', 'drugs:', 'cdc:', 'cismef-bp:', 'cismef-edu:', 'cismef-edn:', 'cismef-pat:'],
+  'ai': ['wolf:', 'chatgpt:', 'claude:', 'gemini:', 'gai:', 'perplexity:', 
+         'copilot:', 'cbd:', 'ernie:', 'duckai:']
+};
+
+const categoryTitles = {
+  'general': '🌐 Recherche Générale',
+  'academic': '🎓 Académique / Thèses',
+  'medical': '⚕️ Médical / Santé',
+  'ai': '🤖 IA / Avancé'
+};
+
+function getCategoryForPrefix(prefix) {
+  for (const [category, prefixes] of Object.entries(engineCategories)) {
+    if (prefixes.includes(prefix)) {
+      return category;
+    }
+  }
+  return 'general'; // default
+}
+
+// SMART POSITIONING FUNCTION
+function positionAutocomplete() {
+  const inputRect = searchInput.getBoundingClientRect();
+  const searchContainer = document.querySelector('.search-container');
+  
+  if (!searchContainer) return;
+  
+  const containerRect = searchContainer.getBoundingClientRect();
+  const autocompleteHeight = 400;
+  const gap = 10;
+
+  const spaceAbove = inputRect.top;
+  const spaceBelow = window.innerHeight - inputRect.bottom;
+  const showAbove = spaceAbove > autocompleteHeight + gap || spaceAbove > spaceBelow;
+
+  if (showAbove) {
+    autocompleteDiv.style.bottom = (window.innerHeight - inputRect.top + gap) + 'px';
+    autocompleteDiv.style.top = 'auto';
+  } else {
+    autocompleteDiv.style.top = (inputRect.bottom + gap) + 'px';
+    autocompleteDiv.style.bottom = 'auto';
+  }
+
+  // Match search-container width (accounting for padding)
+  const containerWidth = containerRect.width - 60; // 30px padding on each side
+  autocompleteDiv.style.width = containerWidth + 'px';
+  autocompleteDiv.style.maxWidth = containerWidth + 'px';
+  
+  // Center horizontally within container
+  autocompleteDiv.style.left = (containerRect.left + 30) + 'px';
+}
+
+function showAutocomplete(matches) {
+  if (matches.length === 0) {
+    autocompleteDiv.style.display = 'none';
+    return;
+  }
+
+  // Group matches by category
+  const categorizedMatches = {
+    general: [],
+    academic: [],
+    medical: [],
+    ai: []
+  };
+
+  matches.forEach(match => {
+    const category = getCategoryForPrefix(match.prefix);
+    categorizedMatches[category].push(match);
+  });
+
+  // Create grid structure
+  autocompleteDiv.innerHTML = '<div class="autocomplete-grid"></div>';
+  const grid = autocompleteDiv.querySelector('.autocomplete-grid');
+
+  // Create columns for each category
+  ['general', 'academic', 'medical', 'ai'].forEach(category => {
+    const column = document.createElement('div');
+    column.className = 'autocomplete-column';
+
+    // Only show column if it has items
+    if (categorizedMatches[category].length > 0) {
+      const title = document.createElement('div');
+      title.className = 'autocomplete-column-title';
+      title.textContent = categoryTitles[category];
+      column.appendChild(title);
+
+      categorizedMatches[category].forEach((match, index) => {
+        const item = document.createElement('div');
+        item.className = 'autocomplete-item';
+        if (index === selectedIndex) item.classList.add('selected');
+        
+        // Favicon
+        const favicon = document.createElement('img');
+        favicon.className = 'favicon-icon';
+        let faviconUrl;
+        if (match.engine.favicon) {
+          faviconUrl = match.engine.favicon;
+        } else if (match.engine.domain) {
+          faviconUrl = `https://www.google.com/s2/favicons?sz=32&domain=${match.engine.domain}`;
+        }
+        if (faviconUrl) {
+          favicon.src = faviconUrl;
+          favicon.alt = '';
+          item.appendChild(favicon);
+        }
+        
+        // Prefix
+        const prefix = document.createElement('span');
+        prefix.className = 'autocomplete-prefix';
+        prefix.textContent = match.prefix;
+        item.appendChild(prefix);
+        
+        // Name
+        const name = document.createElement('span');
+        name.className = 'autocomplete-name';
+        name.textContent = match.engine.name;
+        item.appendChild(name);
+        
+        item.addEventListener('click', () => {
+          const currentValue = searchInput.value.trim();
+          const afterPrefix = currentValue.split(':')[1] || '';
+          searchInput.value = match.prefix + (afterPrefix ? ' ' + afterPrefix.trim() : ' ');
+          autocompleteDiv.style.display = 'none';
+          updateSearchSource();
+          searchInput.focus();
+        });
+        
+        column.appendChild(item);
+      });
+    }
+
+    grid.appendChild(column);
+  });
+  
+  // Show and position
+  autocompleteDiv.style.display = 'block';
+  positionAutocomplete();
+}
+
+// Update search input listener
+searchInput.addEventListener('input', function(e) {
+  const value = e.target.value.trim().toLowerCase();
+  selectedIndex = -1;
+  
+  if (!value || value.includes(' ')) {
+    autocompleteDiv.style.display = 'none';
+    updateSearchSource();
+    return;
+  }
+  
+  const matches = Object.keys(searchEngines)
+    .filter(prefix => prefix.toLowerCase().startsWith(value))
+    .map(prefix => ({ prefix, engine: searchEngines[prefix] }));
+  
+  showAutocomplete(matches);
+  updateSearchSource();
+});
+
+searchInput.addEventListener('keydown', function(e) {
+  const items = autocompleteDiv.querySelectorAll('.autocomplete-item');
+  
+  if (autocompleteDiv.style.display === 'none' || items.length === 0) return;
+  
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+    items.forEach((item, i) => item.classList.toggle('selected', i === selectedIndex));
+    items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    selectedIndex = Math.max(selectedIndex - 1, 0);
+    items.forEach((item, i) => item.classList.toggle('selected', i === selectedIndex));
+    items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'Enter' && selectedIndex >= 0) {
+    e.preventDefault();
+    items[selectedIndex]?.click();
+  } else if (e.key === 'Escape') {
+    autocompleteDiv.style.display = 'none';
+  }
+});
+
+document.addEventListener('click', function(e) {
+  if (!searchInput.contains(e.target) && !autocompleteDiv.contains(e.target)) {
+    autocompleteDiv.style.display = 'none';
+  }
+});
+
+// Reposition on window resize or scroll
+window.addEventListener('resize', () => {
+  if (autocompleteDiv.style.display === 'block') {
+    positionAutocomplete();
+  }
+});
+
+window.addEventListener('scroll', () => {
+  if (autocompleteDiv.style.display === 'block') {
+    positionAutocomplete();
   }
 });
 </script>
