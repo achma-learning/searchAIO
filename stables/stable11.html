@@ -3306,6 +3306,7 @@ const langSuggestions = document.getElementById('langSuggestions');
 
 function openLangPopup() {
   langPopup.classList.add('show');
+  popupOverlay.classList.add('show');
   langSearchInput.focus();
 }
 
@@ -3570,10 +3571,7 @@ searchInput.addEventListener('input', function(e) {
   }
   
   const matches = Object.keys(searchEngines)
-    .filter(prefix => {
-        const engine = searchEngines[prefix];
-        return engine && (prefix.toLowerCase().startsWith(value) || engine.name.toLowerCase().includes(value));
-    })
+    .filter(prefix => prefix.toLowerCase().startsWith(value))
     .map(prefix => ({ prefix, engine: searchEngines[prefix] }));
   
   showAutocomplete(matches);
