@@ -33,6 +33,33 @@
 .dark-mode .focus-overlay {
     background: rgba(0, 0, 0, 0.6);  /* Darker in dark mode */
 }
+
+.notification {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background-color: #333;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  z-index: 1001;
+  transition: transform 0.4s ease-in-out;
+  opacity: 0;
+}
+
+.notification.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.notification.success {
+  background-color: #28a745;
+}
+
+.notification.error {
+  background-color: #dc3545;
+}
         * { box-sizing: border-box; }
         
         body {
@@ -1998,59 +2025,29 @@
         <button type="button" id="bangsBtn">!bangs</button>
     </div>
     <p style="text-align: center; font-size: 12px; color: #888; margin-top: 15px;">
-        💡 Engines with a * require manual pasting. Your query is copied to the clipboard automatically.
+        * Engines marked with an asterisk require you to manually paste your query. The query is copied to your clipboard automatically.
     </p>
-    
-<!-- Language Selection Popup -->
-<div id="langPopup" class="popup-overlay" style="display: none;">
-  <div id="langPopupContent">
-    <button class="close-btn" id="closeLangPopup">&times;</button>
-    <h2>🌐 Translate Page</h2>
-    
-    <!-- NEW: Search Bar -->
-    <div class="lang-search-container">
-      <input 
-        type="text" 
-        id="langSearchInput" 
-        placeholder="Type language name or code..." 
-        autocomplete="off"
-      />
-      <div id="langSuggestions"></div>
-    </div>
-    
-    <!-- Language Buttons -->
-    <div class="lang-buttons-grid">
-      <!-- Original button spans full width -->
-      <button class="lang-btn" data-lang="original" title="No Translation">
-        🌐 Original
-      </button>
-      <!-- 6 main languages in 3x2 grid -->
-      <button class="lang-btn" data-lang="en" title="English">
-        English
-      </button>
-      <button class="lang-btn" data-lang="fr" title="French">
-        Français
-      </button>
-      <button class="lang-btn" data-lang="ar" title="Arabic">
-        العربية
-      </button>
-      <button class="lang-btn" data-lang="ru" title="Russian">
-        Русский
-      </button>
-      <button class="lang-btn" data-lang="es" title="Spanish">
-        Español
-      </button>
-      <button class="lang-btn" data-lang="zh" title="Chinese">
-        中文
-      </button>
-    </div>
-    
-    <p class="lang-info">Press <kbd>ESC</kbd> to close • Translation may not work for all engines</p>
-  </div>
-</div>
-  </div>
 
 <script>
+  function createNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        document.body.removeChild(notification);
+      }, 500);
+    }, 4000);
+  }
+
   let operatorHandlersInitialized = false;
   const filetypesWiki = {
       "📄 Documents & Text": [
@@ -2159,7 +2156,7 @@
     'cismef-edn:': { name: 'CISMeF ECN', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=ecn&q=a&p=' },
     'cismef-pat:': { name: 'CISMeF Patients', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=pat&q=' },
     'lissa:': { name: 'LISSA', url: 'https://www.lissa.fr/dc/#env=lissa&q=', domain: 'lissa.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.lissa.fr-favicon.ico' },
-    'anm:': { name: 'Académie nationale de médecine', url: 'http://dictionnaire.academie-medecine.fr/search?titre=', domain: 'dictionnaire.academie-medecine.fr' },
+    'anm:': { name: 'Académie nationale de médecine', url: 'http://91.209.229.113/search?titre=', domain: '91.209.229.113' },
     'hetop:': { name: 'HETOP', url: 'https://www.hetop.eu/hetop/fr/#q=', domain: 'hetop.eu' },
     'nejm:': { name: 'New England Journal of Medicine', url: 'https://www.nejm.org/search?q=', domain: 'nejm.org' },
     'rp:': { name: 'Radiopaedia', url: 'https://radiopaedia.org/search?q=', domain: 'radiopaedia.org' },
@@ -2174,12 +2171,12 @@
     'drugs:': { name: 'Drugs.com', url: 'https://www.drugs.com/search.php?searchterm=', domain: 'drugs.com' },
     'cdc:': { name: 'CDC', url: 'https://search.cdc.gov/search/?query=', domain: 'cdc.gov' },
     'wolf:': { name: 'Wolfram Alpha', url: 'https://www.wolframalpha.com/input?i=', domain: 'wolframalpha.com' },
-    'chatgpt:': { name: 'ChatGPT*', url: 'https://chatgpt.com/', domain: 'chatgpt.com', promptBased: true },
-    'claude:': { name: 'Claude AI*', url: 'https://claude.ai/', domain: 'claude.ai', promptBased: true },
-    'gemini:': { name: 'Gemini*', url: 'https://gemini.google.com/app', domain: 'gemini.google.com/', promptBased: true },
+    'chatgpt:': { name: 'ChatGPT*', url: 'https://chatgpt.com/?prompt=', domain: 'chatgpt.com', promptBased: true },
+    'claude:': { name: 'Claude AI*', url: 'https://claude.ai/new?q=', domain: 'claude.ai', promptBased: true },
+    'gemini:': { name: 'Gemini*', url: 'https://gemini.google.com/app?q=', domain: 'gemini.google.com/', promptBased: true },
     'gai:': { name: 'Google AI Mode', url: 'https://www.google.com/search?udm=50&q=', domain: 'google.com' },
     'perplexity:': { name: 'Perplexity', url: 'https://www.perplexity.ai/search?q=', domain: 'perplexity.ai' },
-    'copilot:': { name: 'Copilot*', url: 'https://copilot.microsoft.com/', domain: 'microsoft.com', promptBased: true },
+    'copilot:': { name: 'Copilot*', url: 'https://copilot.microsoft.com/?q=', domain: 'microsoft.com', promptBased: true },
     'cbd:': { name: 'Chat Baidu', url: 'https://chat.baidu.com/search?word=', domain: 'baidu.com', plusEncoding: true },
 	// look for ernie search with terme URL 
     'ernie:': { name: 'Baidu AI*', url: 'https://ernie.baidu.com/', domain: 'baidu.com', promptBased: true },
@@ -2541,25 +2538,6 @@
       
       searchInput.value = selectedPrefix + (val ? ' ' + val : '');
       updateSearchSource();
-  document.querySelectorAll('input[name="searchEngine"]').forEach(radio => {
-    radio.addEventListener('change', function() {
-      document.querySelectorAll('input[name="searchEngine"]').forEach(r => 
-        r.parentElement.classList.remove('selected')
-      );
-      radio.parentElement.classList.add('selected');
-      
-      let val = searchInput.value.trim();
-      let selectedPrefix = radio.value;
-      
-      for (const key of Object.keys(searchEngines)) {
-        if (val.startsWith(key)) {
-          val = val.substring(key.length).trim();
-          break;
-        }
-      }
-      
-      searchInput.value = selectedPrefix + (val ? ' ' + val : '');
-      updateSearchSource();
       searchInput.focus();
     });
   });
@@ -2596,18 +2574,6 @@
       query = value;
     }
 
-    const engine = searchEngines[prefix];
-
-    if (engine && engine.promptBased) {
-        if (query) {
-            navigator.clipboard.writeText(query).catch(err => {
-                console.error('Failed to copy query: ', err);
-            });
-        }
-        window.open(engine.url, '_blank');
-        return;
-    }
-    
     if (siteCheckbox.checked) {
       const selectedRadio = document.querySelector('input[name="searchEngine"]:checked');
       if (selectedRadio && searchEngines[selectedRadio.value]) {
@@ -2624,6 +2590,7 @@
       }
     }
     
+    const engine = searchEngines[prefix];
     if (engine && engine.isAlias) {
         const filterRadio = document.querySelector(`input[name="cismef_scope"][value="${engine.filterValue}"]`);
         if (filterRadio) filterRadio.checked = true;
@@ -2661,6 +2628,18 @@
 
       const finalEngine = searchEngines[prefix];
       if (finalEngine) {
+        if (finalEngine.promptBased) {
+          navigator.clipboard.writeText(query).then(() => {
+            createNotification('Query copied to clipboard! Paste it in the new tab.', 'success');
+            window.open(finalEngine.url, '_blank');
+          }).catch(err => {
+            console.error('Failed to copy query: ', err);
+            createNotification('Failed to copy query. Please copy it manually.', 'error');
+            window.open(finalEngine.url, '_blank');
+          });
+          return;
+        }
+
         let encodedQuery;
         if (finalEngine.plusEncoding) {
           encodedQuery = encodeURIComponent(query).replace(/%20/g, '+');
@@ -3339,6 +3318,7 @@ const langSuggestions = document.getElementById('langSuggestions');
 
 function openLangPopup() {
   langPopup.classList.add('show');
+  popupOverlay.classList.add('show');
   langSearchInput.focus();
 }
 
@@ -3603,10 +3583,7 @@ searchInput.addEventListener('input', function(e) {
   }
   
   const matches = Object.keys(searchEngines)
-    .filter(prefix => {
-        const engine = searchEngines[prefix];
-        return engine && (prefix.toLowerCase().startsWith(value) || engine.name.toLowerCase().includes(value));
-    })
+    .filter(prefix => prefix.toLowerCase().startsWith(value))
     .map(prefix => ({ prefix, engine: searchEngines[prefix] }));
   
   showAutocomplete(matches);
