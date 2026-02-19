@@ -12,14 +12,16 @@ The application logic is driven by a central JavaScript object. All modification
 JavaScript
 const searchEngines = {
   'prefix:': {
-    name: 'Engine Name',         // UI Display
+    name: 'Engine Name*',        // UI Display (* for prompt-based engines)
     url: 'https://base.url/q=',  // Target search URL
     domain: 'example.com',       // Used for favicon fetching
     space: '+',                  // Character for space replacement (+ or %20)
     favicon: 'custom_url',       // Optional: Override favicon
     isAlias: false,              // If true, routes to another engine
     aliasFor: 'target:',         // Destination prefix for aliases
-    filterValue: 'param'         // Pre-applied filter value
+    filterValue: 'param',        // Pre-applied filter value
+    promptBased: false,          // If true, copies query and opens base URL for manual paste
+    notes: ''                    // Internal notes about engine behavior
   }
 }
 2. Functional State Machine
