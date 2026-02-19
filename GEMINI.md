@@ -72,5 +72,6 @@ Precision: When adding engines, check the specific search syntax (some require q
 
 ## Development Guidelines
 
+- **Preservation of `stables/**`:** Files in the `stables/` directory are read-only and must never be deleted. They serve as stable reference points for the project.
 - **Preservation of `stable.html`:** The file `stable.html` must never be deleted. It serves as a stable reference point for the project.
 - **Git Push Policy:** After each code update, changes must be pushed to the GitHub repository to ensure that the codebase remains current and synchronized.
