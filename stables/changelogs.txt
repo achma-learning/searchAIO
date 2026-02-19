@@ -2,3 +2,4 @@ stable 5 : add translation icon
 6, multi language translations
 stable9 : autocomplete fixed good
 stable10 : added floation island search auto complete - next is to add a blur when search is focused, and make a the search bar with purple color like in macOS for focus
+stable11: before claude project fix the
