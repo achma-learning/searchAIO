@@ -1538,47 +1538,6 @@
   }
 }
 
-.paste-popup {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #333;
-    color: white;
-    padding: 15px 25px;
-    border-radius: 8px;
-    z-index: 9999;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    font-size: 16px;
-    text-align: center;
-    display: none;
-}
-.dark-mode .paste-popup {
-    background-color: #f0f0f0;
-    color: #111;
-}
-.paste-popup.show {
-    display: block;
-    animation: fadeInDown 0.3s ease;
-}
-@keyframes fadeInDown {
-    from { top: -50px; opacity: 0; }
-    to { top: 20px; opacity: 1; }
-}
-.paste-popup button {
-    margin-top: 10px;
-    padding: 5px 15px;
-    border-radius: 5px;
-    border: none;
-    background: #555;
-    color: white;
-    cursor: pointer;
-}
-.dark-mode .paste-popup button {
-    background: #ccc;
-    color: #111;
-}
-
     </style>
 </head>
 <body>
@@ -1590,11 +1549,6 @@
   </div>
   <div class="popup-overlay" id="popupOverlay"></div>
   
-  <div id="paste-notification" class="paste-popup">
-    <p>Query copied! Please paste it into the search box.</p>
-    <button id="paste-notification-ok">OK</button>
-  </div>
-
   <div class="search-container">
     <div class="search-bar">
       <form id="searchForm">
@@ -2043,6 +1997,9 @@
         <button type="button" id="bingWikiBtn" style="display: none;">📖 Bing Wiki</button>
         <button type="button" id="bangsBtn">!bangs</button>
     </div>
+    <p style="text-align: center; font-size: 12px; color: #888; margin-top: 15px;">
+        💡 Engines with a * require manual pasting. Your query is copied to the clipboard automatically.
+    </p>
     
 <!-- Language Selection Popup -->
 <div id="langPopup" class="popup-overlay" style="display: none;">
@@ -2202,7 +2159,7 @@
     'cismef-edn:': { name: 'CISMeF ECN', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=ecn&q=a&p=' },
     'cismef-pat:': { name: 'CISMeF Patients', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=pat&q=' },
     'lissa:': { name: 'LISSA', url: 'https://www.lissa.fr/dc/#env=lissa&q=', domain: 'lissa.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.lissa.fr-favicon.ico' },
-    'anm:': { name: 'Académie nationale de médecine', url: 'http://91.209.229.113/search?titre=', domain: '91.209.229.113' },
+    'anm:': { name: 'Académie nationale de médecine', url: 'http://dictionnaire.academie-medecine.fr/search?titre=', domain: 'dictionnaire.academie-medecine.fr' },
     'hetop:': { name: 'HETOP', url: 'https://www.hetop.eu/hetop/fr/#q=', domain: 'hetop.eu' },
     'nejm:': { name: 'New England Journal of Medicine', url: 'https://www.nejm.org/search?q=', domain: 'nejm.org' },
     'rp:': { name: 'Radiopaedia', url: 'https://radiopaedia.org/search?q=', domain: 'radiopaedia.org' },
@@ -2217,15 +2174,15 @@
     'drugs:': { name: 'Drugs.com', url: 'https://www.drugs.com/search.php?searchterm=', domain: 'drugs.com' },
     'cdc:': { name: 'CDC', url: 'https://search.cdc.gov/search/?query=', domain: 'cdc.gov' },
     'wolf:': { name: 'Wolfram Alpha', url: 'https://www.wolframalpha.com/input?i=', domain: 'wolframalpha.com' },
-    'chatgpt:': { name: 'ChatGPT', url: 'https://chatgpt.com/', domain: 'chatgpt.com', promptBased: true },
-    'claude:': { name: 'Claude AI', url: 'https://claude.ai/', domain: 'claude.ai', promptBased: true },
-    'gemini:': { name: 'Gemini', url: 'https://gemini.google.com/app', domain: 'gemini.google.com/', promptBased: true },
+    'chatgpt:': { name: 'ChatGPT*', url: 'https://chatgpt.com/', domain: 'chatgpt.com', promptBased: true },
+    'claude:': { name: 'Claude AI*', url: 'https://claude.ai/', domain: 'claude.ai', promptBased: true },
+    'gemini:': { name: 'Gemini*', url: 'https://gemini.google.com/app', domain: 'gemini.google.com/', promptBased: true },
     'gai:': { name: 'Google AI Mode', url: 'https://www.google.com/search?udm=50&q=', domain: 'google.com' },
     'perplexity:': { name: 'Perplexity', url: 'https://www.perplexity.ai/search?q=', domain: 'perplexity.ai' },
-    'copilot:': { name: 'Copilot', url: 'https://copilot.microsoft.com/', domain: 'microsoft.com', promptBased: true },
+    'copilot:': { name: 'Copilot*', url: 'https://copilot.microsoft.com/', domain: 'microsoft.com', promptBased: true },
     'cbd:': { name: 'Chat Baidu', url: 'https://chat.baidu.com/search?word=', domain: 'baidu.com', plusEncoding: true },
 	// look for ernie search with terme URL 
-    'ernie:': { name: 'Baidu AI', url: 'https://ernie.baidu.com/', domain: 'baidu.com', promptBased: true },
+    'ernie:': { name: 'Baidu AI*', url: 'https://ernie.baidu.com/', domain: 'baidu.com', promptBased: true },
     'duckai:': { name: 'Duck.ai', url: 'https://duck.ai/chat?q=', domain: 'duckduckgo.com', plusEncoding: true }
   };
 
@@ -2584,34 +2541,28 @@
       
       searchInput.value = selectedPrefix + (val ? ' ' + val : '');
       updateSearchSource();
+  document.querySelectorAll('input[name="searchEngine"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      document.querySelectorAll('input[name="searchEngine"]').forEach(r => 
+        r.parentElement.classList.remove('selected')
+      );
+      radio.parentElement.classList.add('selected');
+      
+      let val = searchInput.value.trim();
+      let selectedPrefix = radio.value;
+      
+      for (const key of Object.keys(searchEngines)) {
+        if (val.startsWith(key)) {
+          val = val.substring(key.length).trim();
+          break;
+        }
+      }
+      
+      searchInput.value = selectedPrefix + (val ? ' ' + val : '');
+      updateSearchSource();
       searchInput.focus();
     });
   });
-
-  function showPasteNotification() {
-    const notification = document.getElementById('paste-notification');
-    if (!notification) return;
-
-    notification.classList.add('show');
-
-    const close = () => {
-        notification.classList.remove('show');
-        document.removeEventListener('keydown', keydownHandler);
-    };
-
-    const okButton = document.getElementById('paste-notification-ok');
-    okButton.onclick = close;
-
-    const keydownHandler = (e) => {
-        if (e.key === ' ' || e.key === 'Escape') {
-            e.preventDefault();
-            close();
-        }
-    };
-    document.addEventListener('keydown', keydownHandler, { once: true });
-
-    setTimeout(close, 3000);
-  }
 
   // AI-Assisted Comment: This is the main event listener for the form submission.
   // It prevents the default form submission, parses the user's input to separate the prefix and the query,
@@ -2649,11 +2600,8 @@
 
     if (engine && engine.promptBased) {
         if (query) {
-            navigator.clipboard.writeText(query).then(() => {
-                showPasteNotification();
-            }).catch(err => {
+            navigator.clipboard.writeText(query).catch(err => {
                 console.error('Failed to copy query: ', err);
-                alert('Could not copy query to clipboard.');
             });
         }
         window.open(engine.url, '_blank');
