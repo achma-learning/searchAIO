@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tools Search</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/a/a9/Vector_search_icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="focusOverlay" class="focus-overlay"></div>
+  <div id="stars-container">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>
+  </div>
+  <div class="popup-overlay" id="popupOverlay"></div>
+
+  <div class="search-container">
+    <div class="search-bar">
+      <form id="searchForm">
+        <div id="searchSource">Entrez une requête pour afficher la source</div>
+        <img id="search-prefix-favicon" class="favicon-icon" src="" alt="favicon"
+          style="display: none; margin-right: 5px;">
+        <div class="autocomplete-container">
+          <input type="text" id="searchInput" autocomplete="off" placeholder="Commencez votre recherche ici..." />
+        </div>
+        <button type="submit">🔍</button>
+        <label class="checkbox-label">
+          <input type="checkbox" id="siteCheckbox">
+          site:
+        </label>
+
+        <!-- NEW: Language translation icon -->
+        <div id="langIcon" class="lang-icon" title="Select output language">🌐</div>
+
+        <button type="button" id="filetypesBtn">📁 Filetypes</button>
+        <button type="button" id="duckBangBtn" style="display: none;">🦆 !bang</button>
+      </form>
+    </div>
+
+    <div id="youtubeFilters" style="display: none;">
+      <div class="category-section">
+        <div class="category-title">🔽 Trier par</div>
+        <div class="radio-group">
+          <label><input type="radio" name="yt_sort" value="" checked> Pertinence</label>
+          <label><input type="radio" name="yt_sort" value="CAI%3D"> Date d'ajout</label>
+          <label><input type="radio" name="yt_sort" value="CAM%3D"> Nombre de vues</label>
+          <label><input type="radio" name="yt_sort" value="CAE%3D"> Note</label>
+        </div>
+      </div>
+      <div class="category-section">
+        <div class="category-title">📁 Type</div>
+        <div class="radio-group">
+          <label><input type="radio" name="yt_type" value="" checked> Tout</label>
+          <label><input type="radio" name="yt_type" value="EgIQAQ%253D%253D"> Vidéo</label>
+          <label><input type="radio" name="yt_type" value="EgIQAg%253D%253D"> Chaîne</label>
+          <label><input type="radio" name="yt_type" value="EgIQAw%253D%253D"> Playlist</label>
+        </div>
+      </div>
+      <div class="category-section">
+        <div class="category-title">🏱️ Durée</div>
+        <div class="radio-group">
+          <label><input type="radio" name="yt_duration" value="" checked> Indifférent</label>
+          <label><input type="radio" name="yt_duration" value="EgIYAQ%253D%253D"> &lt; 4 min</label>
+          <label><input type="radio" name="yt_duration" value="EgIYAw%253D%253D"> 4-20 min</label>
+          <label><input type="radio" name="yt_duration" value="EgIYAg%253D%253D"> &gt; 20 min</label>
+        </div>
+      </div>
+      <div class="category-section">
+        <div class="category-title">📅 Date d'ajout</div>
+        <div class="radio-group">
+          <label><input type="radio" name="yt_date" value="" checked> Indifférent</label>
+          <label><input type="radio" name="yt_date" value="EgIIAQ%253D%253D"> Dernière heure</label>
+          <label><input type="radio" name="yt_date" value="EgIIAg%253D%253D"> Aujourd'hui</label>
+          <label><input type="radio" name="yt_date" value="EgIIAw%253D%253D"> Cette semaine</label>
+          <label><input type="radio" name="yt_date" value="EgIIBA%253D%253D"> Ce mois-ci</label>
+          <label><input type="radio" name="yt_date" value="EgIIBQ%253D%253D"> Cette année</label>
+        </div>
+      </div>
+    </div>
+
+    <div id="googleOperatorFilters" style="display: none;">
+      <div class="category-section">
+        <div class="category-title">Basic Operators</div>
+        <div class="operators-group">
+          <button class="operator-btn" data-operator='" "'>"phrase"</button>
+          <button class="operator-btn" data-operator="OR">OR</button>
+          <button class="operator-btn" data-operator="-">-term</button>
+          <button class="operator-btn" data-operator="*">*</button>
+          <button class="operator-btn" data-operator="( )">(group)</button>
+          <button class="operator-btn" data-operator="in">in</button>
+        </div>
+      </div>
+      <div class="category-section">
+        <div class="category-title">Advanced Operators</div>
+        <div class="operators-group">
+          <button class="operator-btn" data-operator="site:">site:</button>
+          <button class="operator-btn" data-operator="intitle:">intitle:</button>
+          <button class="operator-btn" data-operator="allintitle:">allintitle:</button>
+          <button class="operator-btn" data-operator="inurl:">inurl:</button>
+          <button class="operator-btn" data-operator="allinurl:">allinurl:</button>
+          <button class="operator-btn" data-operator="intext:">intext:</button>
+          <button class="operator-btn" data-operator="allintext:">allintext:</button>
+          <button class="operator-btn" data-operator="filetype:">filetype:</button>
+          <button class="operator-btn" data-operator="related:">related:</button>
+        </div>
+      </div>
+      <div class="category-section">
+        <div class="category-title">Specialized Operators</div>
+        <div class="operators-group">
+          <button class="operator-btn" data-operator="define:">define:</button>
+          <button class="operator-btn" data-operator="source:">source:</button>
+          <button class="operator-btn" data-operator="stocks:">stocks:</button>
+          <button class="operator-btn" data-operator="weather:">weather:</button>
+          <button class="operator-btn" data-operator="before:">before:</button>
+          <button class="operator-btn" data-operator="after:">after:</button>
+          <button class="operator-btn" data-operator="AROUND()">AROUND()</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="bingOperatorFilters" style="display: none;">
+      <div class="category-section">
+        <div class="category-title">Basic Operators</div>
+        <div class="operators-group">
+          <button class="operator-btn" data-operator='" "'>"phrase"</button>
+          <button class="operator-btn" data-operator="OR">OR</button>
+          <button class="operator-btn" data-operator="NOT">NOT</button>
+        </div>
+      </div>
+      <div class="category-section">
+        <div class="category-title">Advanced Operators</div>
+        <div class="operators-group">
+          <button class="operator-btn" data-operator="site:">site:</button>
+          <button class="operator-btn" data-operator="filetype:">filetype:</button>
+          <button class="operator-btn" data-operator="inurl:">inurl:</button>
+          <button class="operator-btn" data-operator="inbody:">inbody:</button>
+          <button class="operator-btn" data-operator="intitle:">intitle:</button>
+        </div>
+      </div>
+      <div class="category-section">
+        <div class="category-title">Specialized Operators</div>
+        <div class="operators-group">
+          <button class="operator-btn" data-operator="define:">define:</button>
+          <button class="operator-btn" data-operator="imagesize:">imagesize:</button>
+          <button class="operator-btn" data-operator="feed:">feed:</button>
+          <button class="operator-btn" data-operator="language:">language:</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="cismefFilters" style="display: none;">
+      <div class="category-section">
+        <div class="category-title">⚕️ CISMeF - Type de document</div>
+        <div class="radio-group">
+          <label><input type="radio" name="cismef_scope" value="env=basic&q=" checked> Tous les types</label>
+          <label><input type="radio" name="cismef_scope" value="env=bp&q="> Uniquement les recommandations
+            professionnelles</label>
+          <label><input type="radio" name="cismef_scope" value="env=unf3s&q="> Documents d'enseignement</label>
+          <label><input type="radio" name="cismef_scope" value="env=pat&q="> Documents grand public et les associations
+            de patients</label>
+          <label><input type="radio" name="cismef_scope" value="env=thm&q="> Thèses et mémoires</label>
+          <label><input type="radio" name="cismef_scope" value="env=ecn&q=a&p="> Épreuves Classantes Nationales (nouveau
+            programme 2022)</label>
+        </div>
+      </div>
+    </div>
+
+    <div id="yandexTranslationBox" style="display: none;">
+      <div class="category-section">
+        <div class="category-title">🇷🇺 Translate to Russian</div>
+        <div id="yandexTranslateContent">
+          <div class="yandex-translate-row" style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+            <label for="yandexSourceLang" style="font-weight: 500;">From:</label>
+            <select id="yandexSourceLang"
+              style="padding: 8px; border-radius: 6px; border: 1px solid #ddd; width: auto;">
+              <option value="en" selected>English</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+              <option value="es">Spanish</option>
+              <option value="ar">Arabic</option>
+              <option value="zh">Chinese</option>
+            </select>
+            <input type="text" id="yandexSourceText" placeholder="Enter text to translate..."
+              style="flex-grow: 1; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+          </div>
+          <textarea id="yandexTargetText" readonly placeholder="Russian translation..."
+            style="width: 100%; min-height: 80px; padding: 8px; border-radius: 6px; border: 1px solid #ddd; resize: vertical; margin-bottom: 10px;"></textarea>
+          <div id="yandexTranslateButtons" style="display: flex; gap: 10px;">
+            <button id="yandexInsertBtn" class="operator-btn">Insert</button>
+            <button id="yandexCopyBtn" class="operator-btn">Copy</button>
+          </div>
+          <div id="yandexTranslateStatus" style="font-size: 12px; color: #666; min-height: 18px; margin-top: 10px;">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="category-row">
+      <div class="category-section">
+        <div class="category-title">🌐 Recherche Générale</div>
+        <div class="radio-group" id="group1">
+          <label><input type="radio" name="searchEngine" value="g:" checked>Google</label>
+          <label><input type="radio" name="searchEngine" value="yt:">YouTube</label>
+          <label><input type="radio" name="searchEngine" value="brave:">Brave Search</label>
+          <label><input type="radio" name="searchEngine" value="ddg:">DuckDuckGo</label>
+          <label><input type="radio" name="searchEngine" value="yan:">Yandex</label>
+          <label><input type="radio" name="searchEngine" value="bing:">Bing</label>
+          <label><input type="radio" name="searchEngine" value="bd:">Baidu</label>
+          <label><input type="radio" name="searchEngine" value="gplus:">Google Avancé</label>
+        </div>
+      </div>
+
+      <div class="category-section">
+        <div class="category-title">🎓 Académique / Thèses</div>
+        <div class="radio-group" id="group2">
+          <label><input type="radio" name="searchEngine" value="scholar:">Google Scholar</label>
+          <label><input type="radio" name="searchEngine" value="pubmed:">PubMed</label>
+          <label><input type="radio" name="searchEngine" value="arxiv:">arXiv</label>
+          <label><input type="radio" name="searchEngine" value="gpat:">Google Patents</label>
+          <label><input type="radio" name="searchEngine" value="these2.0:">These2.0</label>
+          <label><input type="radio" name="searchEngine" value="cismef-th:">CISMeF Thèses</label>
+          <label><input type="radio" name="searchEngine" value="these-ma:">Toubkal</label>
+          <label><input type="radio" name="searchEngine" value="these-fr:">Theses.fr</label>
+          <label><input type="radio" name="searchEngine" value="rgate:">ResearchGate</label>
+          <label><input type="radio" name="searchEngine" value="ndltd:">NDLTD</label>
+          <label><input type="radio" name="searchEngine" value="proinserm:">Pro Inserm</label>
+          <label><input type="radio" name="searchEngine" value="bdedu:">Baidu Scholar (Xueshu)</label>
+        </div>
+      </div>
+
+      <div class="category-section">
+        <div class="category-title">⚕️ Médical / Santé</div>
+        <div class="radio-group" id="group3">
+          <label><input type="radio" name="searchEngine" value="cismef:">CISMeF</label>
+          <label><input type="radio" name="searchEngine" value="msps:">Ministère de la santé et de la Protection
+            Sociale</label>
+          <label><input type="radio" name="searchEngine" value="has:">HAS</label>
+          <label><input type="radio" name="searchEngine" value="vidal:">VIDAL</label>
+          <label><input type="radio" name="searchEngine" value="mesh:">MeSH Browser</label>
+          <label><input type="radio" name="searchEngine" value="lissa:">LISSA</label>
+          <label><input type="radio" name="searchEngine" value="anm:">Académie nationale de médecine</label>
+          <label><input type="radio" name="searchEngine" value="hetop:">HETOP</label>
+          <label><input type="radio" name="searchEngine" value="nejm:">New England Journal of Medicine</label>
+          <label><input type="radio" name="searchEngine" value="rp:">Radiopaedia</label>
+          <label><input type="radio" name="searchEngine" value="utd:">UpToDate</label>
+          <label><input type="radio" name="searchEngine" value="coch:">Cochrane Library</label>
+          <label><input type="radio" name="searchEngine" value="medscape:">Medscape</label>
+          <label><input type="radio" name="searchEngine" value="openmd:">OpenMD</label>
+          <label><input type="radio" name="searchEngine" value="dd:">Diseases Database</label>
+          <label><input type="radio" name="searchEngine" value="webmd:">WebMD</label>
+          <label><input type="radio" name="searchEngine" value="nih:">NIH</label>
+          <label><input type="radio" name="searchEngine" value="drugs:">Drugs.com</label>
+          <label><input type="radio" name="searchEngine" value="cdc:">CDC</label>
+        </div>
+      </div>
+
+      <div class="category-section">
+        <div class="category-title">🤖 IA / Avancé</div>
+        <div class="radio-group" id="group4">
+          <label><input type="radio" name="searchEngine" value="wolf:">Wolfram Alpha</label>
+          <label><input type="radio" name="searchEngine" value="chatgpt:">ChatGPT</label>
+          <label><input type="radio" name="searchEngine" value="claude:">Claude AI</label>
+          <label><input type="radio" name="searchEngine" value="gemini:">Gemini</label>
+          <label><input type="radio" name="searchEngine" value="gai:">Google AI Mode</label>
+          <label><input type="radio" name="searchEngine" value="perplexity:">Perplexity</label>
+          <label><input type="radio" name="searchEngine" value="copilot:">Copilot</label>
+          <label><input type="radio" name="searchEngine" value="cbd:">Chat Baidu</label>
+          <label><input type="radio" name="searchEngine" value="ernie:">Baidu AI</label>
+          <label><input type="radio" name="searchEngine" value="duckai:">Duck.ai</label>
+        </div>
+      </div>
+    </div>
+
+    <div id="wikiContent" role="region" aria-label="Wiki des préfixes">
+      <div class="checkbox-container">
+        <input type="checkbox" id="keepWikiOpenCheckbox" />
+        <label for="keepWikiOpenCheckbox">Garder le wiki ouvert</label>
+      </div>
+
+      <h4>🌐 Recherche Générale</h4>
+      <ul>
+        <li><b>g:</b> Google</li>
+        <li><b>yt:</b> YouTube</li>
+        <li><b>brave:</b> Brave Search</li>
+        <li><b>ddg:</b> DuckDuckGo</li>
+        <li><b>yan:</b> Yandex</li>
+        <li><b>bing:</b> Bing</li>
+        <li><b>bd:</b> Baidu</li>
+        <li><b>gplus:</b> Google Avancé</li>
+      </ul>
+
+      <h4>🎓 Académique / Thèses</h4>
+      <ul>
+        <li><b>scholar:</b> Google Scholar</li>
+        <li><b>pubmed:</b> PubMed</li>
+        <li><b>arxiv:</b> arXiv</li>
+        <li><b>gpat:</b> Google Patents</li>
+        <li><b>these2.0:</b> These2.0</li>
+        <li><b>cismef-th:</b> CISMeF Thèses</li>
+        <li><b>these-ma:</b> Toubkal</li>
+        <li><b>these-fr:</b> Theses.fr</li>
+        <li><b>rgate:</b> ResearchGate</li>
+        <li><b>ndltd:</b> NDLTD</li>
+        <li><b>proinserm:</b> Pro Inserm</li>
+        <li><b>bdedu:</b> Baidu Scholar (Xueshu)</li>
+      </ul>
+
+      <h4>⚕️ Médical / Santé</h4>
+      <ul>
+        <li><b>cismef:</b> CISMeF (recherche globale)</li>
+        <li><b>cismef-bp:</b> CISMeF (Bonnes Pratiques)</li>
+        <li><b>cismef-edu:</b> CISMeF (Éducation)</li>
+        <li><b>cismef-edn:</b> CISMeF (ECN)</li>
+        <li><b>cismef-pat:</b> CISMeF (Patients)</li>
+        <li><b>msps:</b> Ministère de la santé et de la Protection Sociale</li>
+        <li><b>has:</b> HAS</li>
+        <li><b>vidal:</b> VIDAL</li>
+        <li><b>mesh:</b> MeSH Browser</li>
+        <li><b>lissa:</b> LISSA</li>
+        <li><b>anm:</b> Académie nationale de médecine</li>
+        <li><b>hetop:</b> HETOP</li>
+        <li><b>nejm:</b> New England Journal of Medicine</li>
+        <li><b>rp:</b> Radiopaedia</li>
+        <li><b>utd:</b> UpToDate</li>
+        <li><b>coch:</b> Cochrane Library</li>
+        <li><b>medscape:</b> Medscape</li>
+        <li><b>openmd:</b> OpenMD</li>
+        <li><b>dd:</b> Diseases Database</li>
+        <li><b>webmd:</b> WebMD</li>
+        <li><b>nih:</b> NIH</li>
+        <li><b>drugs:</b> Drugs.com</li>
+        <li><b>cdc:</b> CDC</li>
+      </ul>
+
+      <h4>🤖 IA / Avancé</h4>
+      <ul>
+        <li><b>wolf:</b> Wolfram Alpha</li>
+        <li><b>chatgpt:</b> ChatGPT</li>
+        <li><b>claude:</b> Claude AI</li>
+        <li><b>gemini:</b> Gemini</li>
+        <li><b>gai:</b> Google AI Mode – utilise le mode expérimental udm=50 qui déclenche très souvent la réponse
+          IA/Gemini</li>
+        <li><b>perplexity:</b> Perplexity</li>
+        <li><b>copilot:</b> Copilot</li>
+        <li><b>cbd:</b> Chat Baidu</li>
+        <li><b>ernie:</b> Baidu AI</li>
+        <li><b>duckai:</b> Duck.ai</li>
+      </ul>
+    </div>
+
+    <div id="filetypesPopup">
+      <button class="close-btn" id="closeFiletypes">&times;</button>
+      <h3>📁 Select Filetypes</h3>
+      <p>Select one or more filetypes. Multiple selections will be joined by OR.</p>
+      <div class="popup-buttons">
+        <button type="button" id="clearFiletypes">Clear</button>
+        <button type="button" id="applyFiletypes">Apply</button>
+      </div>
+      <div id="filetype-grid"></div>
+    </div>
+    <div id="googleWikiPopup" style="display: none;">
+      <button class="close-btn" id="closeGoogleWikiBtn">&times;</button>
+      <h3><span class="favicon-icon"
+          style="background-image: url('https://www.google.com/s2/favicons?sz=32&domain=google.com'); background-size: contain; display: inline-block; vertical-align: middle;"></span>
+        Google Search Operators Wiki</h3>
+      <div class="checkbox-container"
+        style="padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid #e0e0e0;">
+        <input type="checkbox" id="keepGoogleWikiOpenCheckbox" />
+        <label for="keepGoogleWikiOpenCheckbox">Keep wiki open</label>
+      </div>
+      <p>Search operators are special words and symbols to refine search results. Here are the most reliable ones:</p>
+      <div style="max-height: 50vh; overflow-y: auto;">
+        <h4>Basic Operators</h4>
+        <table class="wiki-table">
+          <thead>
+            <tr>
+              <th>Operator</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>"phrase"</code></td>
+              <td>Searches for an exact phrase match.</td>
+            </tr>
+            <tr>
+              <td><code>OR</code> or <code>|</code></td>
+              <td>Returns results containing either term.</td>
+            </tr>
+            <tr>
+              <td><code>-term</code></td>
+              <td>Excludes results containing the term.</td>
+            </tr>
+            <tr>
+              <td><code>*</code></td>
+              <td>Wildcard for any word or phrase.</td>
+            </tr>
+            <tr>
+              <td><code>( )</code></td>
+              <td>Groups terms to control search logic.</td>
+            </tr>
+            <tr>
+              <td><code>in</code></td>
+              <td>Converts units or currencies.</td>
+            </tr>
+          </tbody>
+        </table>
+        <h4>Advanced Operators</h4>
+        <table class="wiki-table">
+          <thead>
+            <tr>
+              <th>Operator</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>site:</code></td>
+              <td>Restricts results to a specific site.</td>
+            </tr>
+            <tr>
+              <td><code>intitle:</code></td>
+              <td>Term must appear in the page title.</td>
+            </tr>
+            <tr>
+              <td><code>allintitle:</code></td>
+              <td>All terms must appear in the page title.</td>
+            </tr>
+            <tr>
+              <td><code>inurl:</code></td>
+              <td>Term must be in the page's URL.</td>
+            </tr>
+            <tr>
+              <td><code>allinurl:</code></td>
+              <td>All terms must be in the URL.</td>
+            </tr>
+            <tr>
+              <td><code>intext:</code></td>
+              <td>Term must be in the page body text.</td>
+            </tr>
+            <tr>
+              <td><code>allintext:</code></td>
+              <td>All terms must be in the body text.</td>
+            </tr>
+            <tr>
+              <td><code>filetype:</code></td>
+              <td>Limits results to specific file types (e.g., pdf, docx).</td>
+            </tr>
+            <tr>
+              <td><code>related:</code></td>
+              <td>Finds sites similar to a given domain.</td>
+            </tr>
+          </tbody>
+        </table>
+        <h4>Specialized Operators</h4>
+        <table class="wiki-table">
+          <thead>
+            <tr>
+              <th>Operator</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>define:</code></td>
+              <td>Displays definitions.</td>
+            </tr>
+            <tr>
+              <td><code>source:</code></td>
+              <td>In Google News, filters by a specific outlet.</td>
+            </tr>
+            <tr>
+              <td><code>stocks:</code></td>
+              <td>Fetches stock info.</td>
+            </tr>
+            <tr>
+              <td><code>weather:</code></td>
+              <td>Shows weather for a location.</td>
+            </tr>
+            <tr>
+              <td><code>before:/after:</code></td>
+              <td>Filters results before/after a date (YYYY-MM-DD).</td>
+            </tr>
+            <tr>
+              <td><code>AROUND(n)</code></td>
+              <td>Finds terms within 'n' words of each other.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="wiki-footer" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #e0e0e0;">
+        <p>Operators can be combined (e.g., <code>site:gov filetype:pdf "policy"</code>). For full details, see <a
+            href="https://support.google.com/websearch/answer/2466433" target="_blank"
+            rel="noopener noreferrer">Google's official documentation</a>.</p>
+      </div>
+    </div>
+    <div id="bingWikiPopup" style="display: none;">
+      <button class="close-btn" id="closeBingWikiBtn">&times;</button>
+      <h3><span class="favicon-icon"
+          style="background-image: url('https://www.google.com/s2/favicons?sz=32&domain=bing.com'); background-size: contain; display: inline-block; vertical-align: middle;"></span>
+        Bing Search Operators Wiki</h3>
+      <div class="checkbox-container"
+        style="padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid #e0e0e0;">
+        <input type="checkbox" id="keepBingWikiOpenCheckbox" />
+        <label for="keepBingWikiOpenCheckbox">Keep wiki open</label>
+      </div>
+      <p>Bing search operators for more precise outcomes.</p>
+      <div style="max-height: 50vh; overflow-y: auto;">
+        <h4>Basic Operators</h4>
+        <table class="wiki-table">
+          <thead>
+            <tr>
+              <th>Operator</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>"phrase"</code></td>
+              <td>Searches for an exact phrase match.</td>
+            </tr>
+            <tr>
+              <td><code>OR</code></td>
+              <td>Returns results containing either term.</td>
+            </tr>
+            <tr>
+              <td><code>NOT</code> or <code>-</code></td>
+              <td>Excludes results containing the term.</td>
+            </tr>
+          </tbody>
+        </table>
+        <h4>Advanced Operators</h4>
+        <table class="wiki-table">
+          <thead>
+            <tr>
+              <th>Operator</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>site:</code></td>
+              <td>Restricts results to a specific site.</td>
+            </tr>
+            <tr>
+              <td><code>filetype:</code></td>
+              <td>Limits results to specific file types.</td>
+            </tr>
+            <tr>
+              <td><code>inurl:</code></td>
+              <td>Term must be in the page's URL.</td>
+            </tr>
+            <tr>
+              <td><code>inbody:</code></td>
+              <td>Term must be in the page body text.</td>
+            </tr>
+            <tr>
+              <td><code>intitle:</code></td>
+              <td>Term must appear in the page title.</td>
+            </tr>
+          </tbody>
+        </table>
+        <h4>Specialized Operators</h4>
+        <table class="wiki-table">
+          <thead>
+            <tr>
+              <th>Operator</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>define:</code></td>
+              <td>Displays definitions.</td>
+            </tr>
+            <tr>
+              <td><code>imagesize:</code></td>
+              <td>Searches for images of a specific size.</td>
+            </tr>
+            <tr>
+              <td><code>feed:</code></td>
+              <td>Returns RSS or Atom feeds.</td>
+            </tr>
+            <tr>
+              <td><code>language:</code></td>
+              <td>Searches in a specific language.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="wiki-footer" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #e0e0e0;">
+        <p>Operators can be combined. Do not put a space after the colon.</p>
+      </div>
+    </div>
+
+    <div id="keyboardShortcutsPopup" style="display: none;">
+      <button class="close-btn" id="closeShortcutsBtn">&times;</button>
+      <h3>⌨️ Keyboard Shortcuts</h3>
+      <div id="shortcuts-content" style="max-height: 50vh; overflow-y: auto;">
+        <!-- Shortcuts will be loaded here -->
+      </div>
+    </div>
+
+    <div class="bottom-buttons" style="text-align: center; margin-top: 24px;">
+      <button type="button" id="wikiToggleBtn">📖 Wiki</button>
+      <button type="button" id="keyboardShortcutsBtn">⌨️</button>
+      <button type="button" id="darkModeToggleBtn">🌙</button>
+      <button type="button" id="googleWikiBtn" style="display: none;">📖 Google Wiki</button>
+      <button type="button" id="bingWikiBtn" style="display: none;">📖 Bing Wiki</button>
+      <button type="button" id="bangsBtn">!bangs</button>
+    </div>
+
+    <!-- Language Selection Popup -->
+    <div id="langPopup" class="popup-overlay" style="display: none;">
+      <div id="langPopupContent">
+        <button class="close-btn" id="closeLangPopup">&times;</button>
+        <h2>🌐 Translate Page</h2>
+
+        <!-- NEW: Search Bar -->
+        <div class="lang-search-container">
+          <input type="text" id="langSearchInput" placeholder="Type language name or code..." autocomplete="off" />
+          <div id="langSuggestions"></div>
+        </div>
+
+        <!-- Language Buttons -->
+        <div class="lang-buttons-grid">
+          <!-- Original button spans full width -->
+          <button class="lang-btn" data-lang="original" title="No Translation">
+            🌐 Original
+          </button>
+          <!-- 6 main languages in 3x2 grid -->
+          <button class="lang-btn" data-lang="en" title="English">
+            English
+          </button>
+          <button class="lang-btn" data-lang="fr" title="French">
+            Français
+          </button>
+          <button class="lang-btn" data-lang="ar" title="Arabic">
+            العربية
+          </button>
+          <button class="lang-btn" data-lang="ru" title="Russian">
+            Русский
+          </button>
+          <button class="lang-btn" data-lang="es" title="Spanish">
+            Español
+          </button>
+          <button class="lang-btn" data-lang="zh" title="Chinese">
+            中文
+          </button>
+        </div>
+
+        <p class="lang-info">Press <kbd>ESC</kbd> to close • Translation may not work for all engines</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/engines.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

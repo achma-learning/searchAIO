@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ANTIGRAVITY // V2</title>
+  <link rel="icon" type="image/svg+xml"
+    href="https://upload.wikimedia.org/wikipedia/commons/a/a9/Vector_search_icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #000000;
+      --text-color: #e0e0e0;
+      --accent-color: #9d46ff;
+      /* Arch Purple */
+      --accent-glow: rgba(157, 70, 255, 0.3);
+      --island-bg: rgba(20, 20, 20, 0.95);
+      --border-color: #333;
+      --font-main: 'JetBrains Mono', monospace;
+      --font-ui: 'Inter', sans-serif;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: var(--font-ui);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* --- Dynamic Island --- */
+    .island-container {
+      margin-top: 5vh;
+      position: relative;
+      z-index: 1000;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .island {
+      background: var(--island-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 40px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      width: 400px;
+      height: 50px;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.8);
+    }
+
+    .island.expanded {
+      width: 600px;
+      box-shadow: 0 0 30px var(--accent-glow);
+      border-color: var(--accent-color);
+    }
+
+    .engine-indicator {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      transition: all 0.3s;
+      overflow: hidden;
+      background: #222;
+    }
+
+    .engine-indicator img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    #searchInput {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-family: var(--font-ui);
+      font-size: 16px;
+      outline: none;
+      padding: 0 5px;
+    }
+
+    .status-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-left: 10px;
+    }
+
+    .action-icon {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    .action-icon:hover {
+      opacity: 1;
+      color: var(--accent-color);
+    }
+
+    /* --- Autocomplete --- */
+    .autocomplete-suggestions {
+      position: absolute;
+      top: 60px;
+      width: 600px;
+      background: rgba(20, 20, 20, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+      transition: all 0.2s;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .island.expanded~.autocomplete-suggestions {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    /* Only show when active class is added by JS */
+    .autocomplete-suggestions.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .suggestion-item {
+      padding: 12px 20px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #ccc;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .suggestion-item:hover {
+      background: rgba(157, 70, 255, 0.1);
+      color: #fff;
+    }
+
+
+    /* --- Main Grid --- */
+    .grid-wrapper {
+      flex: 1;
+      width: 100%;
+      max-width: 1000px;
+      padding: 40px;
+      overflow-y: auto;
+      mask-image: linear-gradient(to bottom, transparent 0%, black 5%, black 95%, transparent 100%);
+    }
+
+    .grid-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+
+    .category-header {
+      font-family: var(--font-main);
+      color: #444;
+      font-size: 12px;
+      margin: 30px 0 15px 0;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+    }
+
+    .category-header::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #222;
+      margin-left: 15px;
+    }
+
+    .engine-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 15px;
+    }
+
+    .engine-pill {
+      background: rgba(30, 30, 30, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .engine-pill:hover,
+    .engine-pill.active-engine {
+      background: rgba(157, 70, 255, 0.15);
+      border-color: var(--accent-color);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px -5px var(--accent-glow);
+    }
+
+    .engine-pill img {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 10px;
+      border-radius: 6px;
+    }
+
+    .engine-pill span {
+      font-size: 11px;
+      color: #888;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .engine-pill:hover span {
+      color: #fff;
+    }
+
+    /* --- Footer --- */
+    .minimal-footer {
+      padding: 20px;
+      font-size: 10px;
+      color: #333;
+      font-family: var(--font-main);
+    }
+
+    /* --- Background --- */
+    .bg-mesh {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background:
+        radial-gradient(circle at 15% 50%, rgba(157, 70, 255, 0.08), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(100, 50, 255, 0.08), transparent 25%);
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="bg-mesh"></div>
+
+  <div class="island-container">
+    <div id="dynamicIsland" class="island">
+      <div class="engine-indicator">
+        <img id="activeEngineIcon" src="https://www.google.com/s2/favicons?sz=64&domain=google.com" alt="">
+      </div>
+      <input type="text" id="searchInput" placeholder="Search..." autocomplete="off">
+      <div class="status-actions">
+        <div class="action-icon" title="MyNoise"
+          onclick="window.open('https://mynoise.net/noiseMachines.php', '_blank')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 1v22M5 8v8M19 8v8M2 11v2M22 11v2" stroke-linecap="round"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div id="autocompleteDropdown" class="autocomplete-suggestions"></div>
+  </div>
+
+  <div class="grid-wrapper" id="mainGrid">
+    <!-- Injected by JS -->
+  </div>
+
+  <footer class="minimal-footer">ANTIGRAVITY // DIGITAL MINIMALISM</footer>
+
+  <script>
+    // --- Configuration & Data ---
+    const searchEngines = {
+      'g:': { name: 'Google', url: 'https://www.google.com/search?q=', domain: 'google.com', category: 'general' },
+      'yt:': { name: 'YouTube', url: 'https://www.youtube.com/results?search_query=', domain: 'youtube.com', category: 'general' },
+      'brave:': { name: 'Brave Search', url: 'https://search.brave.com/search?q=', domain: 'brave.com', category: 'general' },
+      'ddg:': { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=', domain: 'duckduckgo.com', category: 'general' },
+      'yan:': { name: 'Yandex', url: 'https://yandex.com/search/?text=', domain: 'yandex.com', category: 'general' },
+      'bing:': { name: 'Bing', url: 'https://www.bing.com/search?q=', domain: 'bing.com', category: 'general' },
+      'bd:': { name: 'Baidu', url: 'https://www.baidu.com/s?wd=', domain: 'baidu.com', category: 'general' },
+      'gplus:': { name: 'Google Avancé', url: 'https://www.google.com/advanced_search?q=', domain: 'google.com', category: 'general' },
+
+      'scholar:': { name: 'Google Scholar', url: 'https://scholar.google.com/scholar?q=', domain: 'google.com', category: 'academic' },
+      'pubmed:': { name: 'PubMed', url: 'https://pubmed.ncbi.nlm.nih.gov/?term=', domain: 'ncbi.nlm.nih.gov', category: 'academic' },
+      'arxiv:': { name: 'arXiv', url: 'https://arxiv.org/search/?query=', domain: 'arxiv.org', category: 'academic' },
+      'gpat:': { name: 'Google Patents', url: 'https://patents.google.com/', domain: 'patents.google.com', category: 'academic' },
+      'these2.0:': { name: 'These2.0', url: 'https://thesefmpm.vercel.app/search?page=1&search=', domain: 'thesefmpm.vercel.app', category: 'academic' },
+      'cismef-th:': { name: 'CISMeF Thèses', url: 'https://doccismef.chu-rouen.fr/dc/#env=thm&q=', domain: 'doccismef.chu-rouen.fr', category: 'academic' },
+      'these-ma:': { name: 'Toubkal', url: 'https://toubkal.imist.ma/search?query=', domain: 'toubkal.imist.ma', category: 'academic' },
+      'these-fr:': { name: 'Theses.fr', url: 'https://theses.fr/resultats?filtres=%255BStatut%25253D%252522soutenue%252522~Statut%25253D%252522Accessibles%252520en%252520ligne%252522%255D&q=', domain: 'theses.fr', category: 'academic' },
+      'rgate:': { name: 'ResearchGate', url: 'https://www.researchgate.net/search/publication?q=', domain: 'researchgate.net', category: 'academic' },
+      'ndltd:': { name: 'NDLTD', url: 'http://search.ndltd.org/search.php?q=', domain: 'ndltd.org', category: 'academic' },
+      'bdedu:': { name: 'Baidu Academic', url: 'https://xueshu.baidu.com/ndscholar/browse/search?wd=', domain: 'baidu.com', plusEncoding: true, category: 'academic' },
+
+      'msps:': { name: 'Santé.gov.ma', url: 'https://www.google.com/search?q=site:sante.gov.ma ', domain: 'sante.gov.ma', category: 'medical' },
+      'has:': { name: 'HAS', url: 'https://www.has-sante.fr/jcms/fc_2875171/fr/resultat-de-recherche?text=', domain: 'has-sante.fr', category: 'medical' },
+      'vidal:': { name: 'VIDAL', url: 'https://www.vidal.fr/recherche.html?query=', domain: 'vidal.fr', category: 'medical' },
+      'cismef:': { name: 'CISMeF', url: 'https://doccismef.chu-rouen.fr/dc/#', domain: 'doccismef.chu-rouen.fr', category: 'medical' },
+      'cismef-bp:': { name: 'CISMeF BP', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=bp&q=', category: 'medical' },
+      'cismef-edu:': { name: 'CISMeF Edu', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=unf3s&q=', category: 'medical' },
+      'cismef-edn:': { name: 'CISMeF ECN', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=ecn&q=a&p=', category: 'medical' },
+      'cismef-pat:': { name: 'CISMeF Pat', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=pat&q=', category: 'medical' },
+      'lissa:': { name: 'LISSA', url: 'https://www.lissa.fr/dc/#env=lissa&q=', domain: 'lissa.fr', category: 'medical' },
+      'anm:': { name: 'Acad. Médecine', url: 'http://91.209.229.113/search?titre=', domain: '91.209.229.113', category: 'medical' },
+      'hetop:': { name: 'HETOP', url: 'https://www.hetop.eu/hetop/fr/#q=', domain: 'hetop.eu', category: 'medical' },
+      'nejm:': { name: 'NEJM', url: 'https://www.nejm.org/search?q=', domain: 'nejm.org', category: 'medical' },
+      'rp:': { name: 'Radiopaedia', url: 'https://radiopaedia.org/search?q=', domain: 'radiopaedia.org', category: 'medical' },
+      'utd:': { name: 'UpToDate', url: 'https://www.uptodate.com/contents/search?search=', domain: 'uptodate.com', category: 'medical' },
+      'coch:': { name: 'Cochrane', url: 'https://www.cochranelibrary.com/search?q=', domain: 'cochranelibrary.com', category: 'medical' },
+      'medscape:': { name: 'Medscape', url: 'https://search.medscape.com/search/fr/', domain: 'medscape.com', category: 'medical' },
+      'openmd:': { name: 'OpenMD', url: 'https://openmd.com/search?q=', domain: 'openmd.com', category: 'medical' },
+      'mesh:': { name: 'MeSH', url: 'https://meshb.nlm.nih.gov/search?searchInField=allTerms&searchString=', domain: 'nlm.nih.gov', category: 'medical' },
+      'dd:': { name: 'Diseases DB', url: 'http://www.diseasesdatabase.com/item_choice.asp?strUserInput=', domain: 'diseasesdatabase.com', category: 'medical' },
+      'webmd:': { name: 'WebMD', url: 'https://www.webmd.com/search?query=', domain: 'webmd.com', category: 'medical' },
+      'nih:': { name: 'NIH', url: 'https://search.usa.gov/search?utf8=%E2%9C%93&affiliate=nih&query=', domain: 'nih.gov', category: 'medical' },
+      'drugs:': { name: 'Drugs.com', url: 'https://www.drugs.com/search.php?searchterm=', domain: 'drugs.com', category: 'medical' },
+      'cdc:': { name: 'CDC', url: 'https://search.cdc.gov/search/?query=', domain: 'cdc.gov', category: 'medical' },
+
+      'wolf:': { name: 'Wolfram Alpha', url: 'https://www.wolframalpha.com/input?i=', domain: 'wolframalpha.com', category: 'ai' },
+      'chatgpt:': { name: 'ChatGPT*', url: 'https://chatgpt.com/?prompt=', domain: 'chatgpt.com', promptBased: true, category: 'ai' },
+      'claude:': { name: 'Claude AI*', url: 'https://claude.ai/new?q=', domain: 'claude.ai', promptBased: true, category: 'ai' },
+      'gemini:': { name: 'Gemini*', url: 'https://gemini.google.com/app?q=', domain: 'gemini.google.com/', promptBased: true, category: 'ai' },
+      'gai:': { name: 'Google AI', url: 'https://www.google.com/search?udm=50&q=', domain: 'google.com', category: 'ai' },
+      'perplexity:': { name: 'Perplexity', url: 'https://www.perplexity.ai/search?q=', domain: 'perplexity.ai', category: 'ai' },
+      'copilot:': { name: 'Copilot*', url: 'https://copilot.microsoft.com/?q=', domain: 'microsoft.com', promptBased: true, category: 'ai' },
+      'cbd:': { name: 'Chat Baidu', url: 'https://chat.baidu.com/search?word=', domain: 'baidu.com', plusEncoding: true, category: 'ai' },
+      'ernie:': { name: 'Baidu AI*', url: 'https://ernie.baidu.com/', domain: 'baidu.com', promptBased: true, category: 'ai' },
+      'duckai:': { name: 'Duck.ai', url: 'https://duck.ai/chat?q=', domain: 'duckduckgo.com', plusEncoding: true, category: 'ai' }
+    };
+
+    const categories = ['general', 'academic', 'medical', 'ai'];
+
+    // --- State ---
+    let selectedEnginePrefix = 'g:';
+
+    // --- DOM Elements ---
+    const searchInput = document.getElementById('searchInput');
+    const island = document.getElementById('dynamicIsland');
+    const suggestionsBox = document.getElementById('autocompleteDropdown');
+    const activeIcon = document.getElementById('activeEngineIcon');
+    const mainGrid = document.getElementById('mainGrid');
+
+    // --- Init ---
+    function init() {
+      renderGrid();
+      searchInput.focus();
+    }
+
+    // --- Rendering ---
+    function renderGrid() {
+      mainGrid.innerHTML = '';
+
+      categories.forEach(cat => {
+        const catEngines = Object.entries(searchEngines).filter(([k, v]) => (v.category || 'general') === cat);
+        if (catEngines.length === 0) return;
+
+        const catSection = document.createElement('div');
+
+        const header = document.createElement('div');
+        header.className = 'category-header';
+        header.textContent = cat;
+        catSection.appendChild(header);
+
+        const grid = document.createElement('div');
+        grid.className = 'engine-grid';
+
+        catEngines.forEach(([prefix, data]) => {
+          const pill = document.createElement('div');
+          pill.className = `engine-pill ${prefix === selectedEnginePrefix ? 'active-engine' : ''}`;
+          pill.setAttribute('data-prefix', prefix); // Use data attribute for safe selection
+          pill.onclick = () => selectEngine(prefix);
+
+          let favicon = data.favicon;
+          if (!favicon && data.domain) favicon = `https://www.google.com/s2/favicons?sz=64&domain=${data.domain}`;
+
+          pill.innerHTML = `
+                    <img src="${favicon}" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/a/a9/Vector_search_icon.svg'">
+                    <span>${data.name}</span>
+                `;
+          grid.appendChild(pill);
+        });
+
+        catSection.appendChild(grid);
+        mainGrid.appendChild(catSection);
+      });
+    }
+
+    function selectEngine(prefix) {
+      selectedEnginePrefix = prefix;
+      const engine = searchEngines[prefix];
+      if (!engine) return;
+
+      // Update Grid Visuals
+      document.querySelectorAll('.engine-pill').forEach(p => p.classList.remove('active-engine'));
+
+      // Properly escape prefix for selector if needed, but attribute selector is safer
+      const activePill = document.querySelector(`.engine-pill[data-prefix="${prefix}"]`);
+      if (activePill) {
+        activePill.classList.add('active-engine');
+        // Scroll to view if needed?
+      }
+
+      // Update Island Icon
+      let favicon = engine.favicon;
+      if (!favicon && engine.domain) favicon = `https://www.google.com/s2/favicons?sz=64&domain=${engine.domain}`;
+      activeIcon.src = favicon;
+
+      // Update Placeholder
+      searchInput.placeholder = `Search ${engine.name}...`;
+      searchInput.focus();
+    }
+
+    // --- Interaction ---
+    let debounceTimer;
+
+    searchInput.addEventListener('input', (e) => {
+      const val = e.target.value;
+
+      // Dynamic Expansion
+      if (val.length > 0) {
+        island.classList.add('expanded');
+        // Debounce suggestions
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          // If simple text, fetch suggestions.
+          // If it looks like a prefix, don't?
+          if (!val.includes(':')) fetchSuggestions(val);
+        }, 200);
+      } else {
+        island.classList.remove('expanded');
+        suggestionsBox.classList.remove('active');
+      }
+
+      // Prefix Detection
+      // If user types known prefix "yt:", switch and clear.
+      for (const key of Object.keys(searchEngines)) {
+        if (val.startsWith(key)) {
+          selectEngine(key);
+          // Clear prefix from input
+          searchInput.value = val.substring(key.length).trimStart();
+          break;
+        }
+      }
+    });
+
+    // Hide autocomplete on blur (delay to allow click)
+    searchInput.addEventListener('blur', () => {
+      setTimeout(() => {
+        suggestionsBox.classList.remove('active');
+        if (searchInput.value.length === 0) island.classList.remove('expanded');
+      }, 200);
+    });
+
+    // --- Autocomplete Logic ---
+    function fetchSuggestions(query) {
+      // Simple Google Suggest JSONP
+      // We need a unique callback name to avoid collisions?
+      const callbackName = 'googleSuggestCallback_' + Date.now();
+      window[callbackName] = function (data) {
+        const suggestions = data[1].slice(0, 5); // Limit to 5
+        renderSuggestions(suggestions);
+        delete window[callbackName]; // Clean up
+        document.body.removeChild(script);
+      };
+
+      const script = document.createElement('script');
+      script.src = `https://suggestqueries.google.com/complete/search?client=chrome&q=${encodeURIComponent(query)}&callback=${callbackName}`;
+      document.body.appendChild(script);
+    }
+
+    function renderSuggestions(list) {
+      suggestionsBox.innerHTML = '';
+      if (list.length === 0) {
+        suggestionsBox.classList.remove('active');
+        return;
+      }
+
+      list.forEach(text => {
+        const div = document.createElement('div');
+        div.className = 'suggestion-item';
+        div.textContent = text;
+        div.onclick = (e) => {
+          e.preventDefault(); // Prevent blur?
+          searchInput.value = text;
+          performSearch(text);
+        };
+        suggestionsBox.appendChild(div);
+      });
+      suggestionsBox.classList.add('active');
+    }
+
+    // --- Search Execution ---
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') performSearch(searchInput.value);
+    });
+
+    function performSearch(query) {
+      const engine = searchEngines[selectedEnginePrefix];
+      if (!engine) return;
+
+      // Alias Handling (Ported from v1)
+      if (engine.isAlias) {
+        const target = searchEngines[engine.aliasFor];
+        if (target) {
+          // We don't change visual selection, just route
+          // Re-use logic?
+          // For simplicity, just recursively call logic on target?
+          // No, aliases use complex params filterValue.
+          // Let's implement full construction here.
+          launchUrl(target, query, engine.filterValue);
+          return;
+        }
+      }
+
+      launchUrl(engine, query);
+    }
+
+    function launchUrl(engine, query, filterParam = '') {
+      // Prompt Based
+      if (engine.promptBased) {
+        navigator.clipboard.writeText(query);
+        // Visual feedback could be added here
+        // Using a standard window open
+        window.open(engine.url + encodeURIComponent(query), '_blank'); // Some allow prompts in URL
+        return;
+      }
+
+      let encodedQuery = encodeURIComponent(query);
+      if (engine.plusEncoding) encodedQuery = encodedQuery.replace(/%20/g, '+');
+
+      let finalUrl = engine.url;
+      let customHandled = false;
+
+      // Specific Engine Quirks
+      // To properly detect engine, we need to know its 'prefix' key (but we passed engine object).
+      // Let's check domain or name? Or better, pass prefix to launchUrl.
+      // For now, let's look up prefix by object reference (slow) or just assume engine object has a key added?
+
+      // Creating a Reverse Lookup or just checking specific URLs
+      if (engine.url.includes('patents.google.com')) { // gpat
+        finalUrl = engine.url + '?q=(' + encodedQuery + ')&oq=' + encodedQuery;
+        customHandled = true;
+      } else if (engine.url.includes('search.medscape.com')) { // medscape
+        finalUrl = engine.url + '?q="' + encodedQuery + '"';
+        customHandled = true;
+      }
+
+      if (!customHandled) {
+        if (engine.domain === 'doccismef.chu-rouen.fr' || filterParam) { // CISMeF logic
+          const params = filterParam || 'env=basic&q=';
+          finalUrl += params + encodedQuery;
+        } else {
+          finalUrl += encodedQuery;
+        }
+      }
+
+      if (engine.name === 'Toubkal') finalUrl += '&submit=OK'; // these-ma
+
+      window.open(finalUrl, '_blank');
+    }
+
+    init();
+
+  </script>
+</body>
+
+</html>

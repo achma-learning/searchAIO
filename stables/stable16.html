@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Tools Search</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/a/a9/Vector_search_icon.svg" />
+
+  <link rel="icon" type="image/svg+xml"
+    href="https://upload.wikimedia.org/wikipedia/commons/a/a9/Vector_search_icon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght @400;500;600;700&family=Roboto:wght @400;500;700&family=Source+Code+Pro:wght @400;500;600&display=swap"
+    rel="stylesheet">
   <style>
     .focus-overlay {
       position: fixed;
@@ -180,7 +185,7 @@
     }
 
     #searchInput {
-      padding: 12px 16px;
+      padding: 12px 16px 12px 42px;
       font-size: 15px;
       border: 2px solid #e0e0e0;
       border-radius: 8px;
@@ -492,6 +497,33 @@
       vertical-align: middle;
       border-radius: 2px;
       /* Slightly rounded corners for favicons */
+    }
+
+    /* Active engine favicon indicator — inside the search input, left side */
+    #search-prefix-favicon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+      z-index: 2;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    /* Swap animation on engine change */
+    @keyframes faviconSwap {
+      0%   { opacity: 0; transform: translateY(-50%) scale(0.6); }
+      100% { opacity: 1; transform: translateY(-50%) scale(1); }
+    }
+
+    #search-prefix-favicon.swapping {
+      animation: faviconSwap 0.2s ease-out forwards;
+    }
+      animation: faviconSwap 0.2s ease-out forwards;
     }
 
     /* Responsive */
@@ -1664,9 +1696,9 @@
     .notification.info {
       border-left: 4px solid #2196F3;
     }
-
-</style>
+  </style>
 </head>
+
 <body>
   <div id="focusOverlay" class="focus-overlay"></div>
   <div id="stars-container">
@@ -1680,9 +1712,8 @@
     <div class="search-bar">
       <form id="searchForm">
         <div id="searchSource">Entrez une requête pour afficher la source</div>
-        <img id="search-prefix-favicon" class="favicon-icon" src="" alt="favicon"
-          style="display: none; margin-right: 5px;">
         <div class="autocomplete-container">
+          <img id="search-prefix-favicon" src="https://www.google.com/s2/favicons?sz=64&domain=google.com" alt="favicon" title="Moteur actif">
           <input type="text" id="searchInput" autocomplete="off" placeholder="Commencez votre recherche ici..." />
         </div>
         <button type="submit">🔍</button>
@@ -2317,67 +2348,6 @@
   </div>
 
   <script>
-    const searchEngines = {
-      'g:': { name: 'Google', url: 'https://www.google.com/search?q=', domain: 'google.com' },
-      'yt:': { name: 'YouTube', url: 'https://www.youtube.com/results?search_query=', domain: 'youtube.com' },
-      'brave:': { name: 'Brave Search', url: 'https://search.brave.com/search?q=', domain: 'brave.com' },
-      'ddg:': { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=', domain: 'duckduckgo.com' },
-      'yan:': { name: 'Yandex', url: 'https://yandex.com/search/?text=', domain: 'yandex.com' },
-      'bing:': { name: 'Bing', url: 'https://www.bing.com/search?q=', domain: 'bing.com' },
-      'bd:': { name: 'Baidu', url: 'https://www.baidu.com/s?wd=', domain: 'baidu.com' },
-      'gplus:': { name: 'Google Avancé', url: 'https://www.google.com/advanced_search?q=', domain: 'google.com' },
-      'gai:': { name: 'Google AI Mode', url: 'https://www.google.com/search?udm=50&q=', domain: 'google.com' },
-      'scholar:': { name: 'Google Scholar', url: 'https://scholar.google.com/scholar?q=', domain: 'google.com' },
-      'pubmed:': { name: 'PubMed', url: 'https://pubmed.ncbi.nlm.nih.gov/?term=', domain: 'ncbi.nlm.nih.gov' },
-      'arxiv:': { name: 'arXiv', url: 'https://arxiv.org/search/?query=', domain: 'arxiv.org' },
-      'gpat:': { name: 'Google Patents', url: 'https://patents.google.com/', domain: 'patents.google.com', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/patents.google.com-favicon.ico' },
-      'these2.0:': { name: 'These2.0', url: 'https://thesefmpm.vercel.app/search?page=1&search=', domain: 'thesefmpm.vercel.app' },
-      'cismef-th:': { name: 'CISMeF Thèses', url: 'https://doccismef.chu-rouen.fr/dc/#env=thm&q=', domain: 'doccismef.chu-rouen.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.cismef.org-favicon.ico' },
-      'these-ma:': { name: 'Toubkal', url: 'https://toubkal.imist.ma/search?query=', domain: 'toubkal.imist.ma' },
-      'these-fr:': { name: 'Theses.fr', url: 'https://theses.fr/resultats?filtres=%255BStatut%25253D%252522soutenue%252522~Statut%25253D%252522Accessibles%252520en%252520ligne%252522%255D&q=', domain: 'theses.fr' },
-      'rgate:': { name: 'ResearchGate', url: 'https://www.researchgate.net/search/publication?q=', domain: 'researchgate.net' },
-      'ndltd:': { name: 'NDLTD', url: 'http://search.ndltd.org/search.php?q=', domain: 'ndltd.org' },
-      'bdedu:': { name: 'Baidu Academic (Xueshu)', url: 'https://xueshu.baidu.com/ndscholar/browse/search?wd=', domain: 'baidu.com', plusEncoding: true },
-      'proinserm:': { name: 'Pro Inserm', url: 'https://pro.inserm.fr/?s=', domain: 'pro.inserm.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/pro.inserm.fr-favicon.png' },
-      'cismef:': { name: 'CISMeF', url: 'https://doccismef.chu-rouen.fr/dc/#', domain: 'doccismef.chu-rouen.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.cismef.org-favicon.ico' },
-      // look for functional MSPS search url
-      'msps:': { name: 'Ministère de la santé et de la Protection Sociale', url: 'https://www.google.com/search?q=site:sante.gov.ma ', domain: 'sante.gov.ma', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.sante.gov.ma-favicon.png' },
-      'has:': { name: 'HAS', url: 'https://www.has-sante.fr/jcms/fc_2875171/fr/resultat-de-recherche?text=', domain: 'has-sante.fr' },
-      'vidal:': { name: 'VIDAL', url: 'https://www.vidal.fr/recherche.html?query=', domain: 'vidal.fr' },
-      'cismef-bp:': { name: 'CISMeF Bonnes Pratiques', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=bp&q=' },
-      'cismef-edu:': { name: 'CISMeF Éducation', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=unf3s&q=' },
-      'cismef-edn:': { name: 'CISMeF ECN', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=ecn&q=a&p=' },
-      'cismef-pat:': { name: 'CISMeF Patients', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=pat&q=' },
-      'lissa:': { name: 'LISSA', url: 'https://www.lissa.fr/dc/#env=lissa&q=', domain: 'lissa.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.lissa.fr-favicon.ico' },
-      'anm:': { name: 'Académie nationale de médecine', url: 'http://91.209.229.113/search?titre=', domain: '91.209.229.113' },
-      'hetop:': { name: 'HETOP', url: 'https://www.hetop.eu/hetop/fr/#q=', domain: 'hetop.eu' },
-      'nejm:': { name: 'New England Journal of Medicine', url: 'https://www.nejm.org/search?q=', domain: 'nejm.org' },
-      'rp:': { name: 'Radiopaedia', url: 'https://radiopaedia.org/search?q=', domain: 'radiopaedia.org' },
-      'utd:': { name: 'UpToDate', url: 'https://www.uptodate.com/contents/search?search=', domain: 'uptodate.com' },
-      'coch:': { name: 'Cochrane Library', url: 'https://www.cochranelibrary.com/search?q=', domain: 'cochranelibrary.com' },
-      'medscape:': { name: 'Medscape', url: 'https://search.medscape.com/search/fr/', domain: 'medscape.com' },
-      'openmd:': { name: 'OpenMD', url: 'https://openmd.com/search?q=', domain: 'openmd.com' },
-      'mesh:': { name: 'MeSH Browser', url: 'https://meshb.nlm.nih.gov/search?searchInField=allTerms&searchString=', domain: 'nlm.nih.gov' },
-      'dd:': { name: 'Diseases Database', url: 'http://www.diseasesdatabase.com/item_choice.asp?strUserInput=', domain: 'diseasesdatabase.com' },
-      'webmd:': { name: 'WebMD', url: 'https://www.webmd.com/search?query=', domain: 'webmd.com' },
-      'nih:': { name: 'NIH', url: 'https://search.usa.gov/search?utf8=%E2%9C%93&affiliate=nih&query=', domain: 'nih.gov', favicon: 'https://www.google.com/s2/favicons?sz=32&domain=nlm.nih.gov' },
-      'drugs:': { name: 'Drugs.com', url: 'https://www.drugs.com/search.php?searchterm=', domain: 'drugs.com' },
-      'cdc:': { name: 'CDC', url: 'https://search.cdc.gov/search/?query=', domain: 'cdc.gov' },
-      'wolf:': { name: 'Wolfram Alpha', url: 'https://www.wolframalpha.com/input?i=', domain: 'wolframalpha.com' },
-      'chatgpt:': { name: 'ChatGPT*', url: 'https://chatgpt.com/?prompt=', domain: 'chatgpt.com', promptBased: true },
-      'claude:': { name: 'Claude AI*', url: 'https://claude.ai/new?q=', domain: 'claude.ai', promptBased: true },
-      'gemini:': { name: 'Gemini*', url: 'https://gemini.google.com/app?q=', domain: 'gemini.google.com/', promptBased: true },
-      'gai:': { name: 'Google AI Mode', url: 'https://www.google.com/search?udm=50&q=', domain: 'google.com' },
-      'perplexity:': { name: 'Perplexity', url: 'https://www.perplexity.ai/search?q=', domain: 'perplexity.ai' },
-      'copilot:': { name: 'Copilot*', url: 'https://copilot.microsoft.com/?q=', domain: 'microsoft.com', promptBased: true },
-      'cbd:': { name: 'Chat Baidu', url: 'https://chat.baidu.com/search?word=', domain: 'baidu.com', plusEncoding: true },
-      // look for ernie search with terme URL 
-      'ernie:': { name: 'Baidu AI*', url: 'https://ernie.baidu.com/', domain: 'baidu.com', promptBased: true },
-      'duckai:': { name: 'Duck.ai', url: 'https://duck.ai/chat?q=', domain: 'duckduckgo.com', plusEncoding: true }
-    };
-
-</script>
-  <script>
     let operatorHandlersInitialized = false;
     const filetypesWiki = {
       "📄 Documents & Text": [
@@ -2454,7 +2424,64 @@
     // AI-Assisted Comment: This object maps search prefixes (e.g., 'g:') to their corresponding search engine details.
     // Each entry contains the search engine's name and the base URL for constructing search queries.
     // The script uses this map to determine which search engine to use based on user input or selection.
-    // searchEngines will be loaded from engines.js
+    const searchEngines = {
+      'g:': { name: 'Google', url: 'https://www.google.com/search?q=', domain: 'google.com' },
+      'yt:': { name: 'YouTube', url: 'https://www.youtube.com/results?search_query=', domain: 'youtube.com' },
+      'brave:': { name: 'Brave Search', url: 'https://search.brave.com/search?q=', domain: 'brave.com' },
+      'ddg:': { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=', domain: 'duckduckgo.com' },
+      'yan:': { name: 'Yandex', url: 'https://yandex.com/search/?text=', domain: 'yandex.com' },
+      'bing:': { name: 'Bing', url: 'https://www.bing.com/search?q=', domain: 'bing.com' },
+      'bd:': { name: 'Baidu', url: 'https://www.baidu.com/s?wd=', domain: 'baidu.com' },
+      'gplus:': { name: 'Google Avancé', url: 'https://www.google.com/advanced_search?q=', domain: 'google.com' },
+      'gai:': { name: 'Google AI Mode', url: 'https://www.google.com/search?udm=50&q=', domain: 'google.com' },
+      'scholar:': { name: 'Google Scholar', url: 'https://scholar.google.com/scholar?q=', domain: 'google.com' },
+      'pubmed:': { name: 'PubMed', url: 'https://pubmed.ncbi.nlm.nih.gov/?term=', domain: 'ncbi.nlm.nih.gov' },
+      'arxiv:': { name: 'arXiv', url: 'https://arxiv.org/search/?query=', domain: 'arxiv.org' },
+      'gpat:': { name: 'Google Patents', url: 'https://patents.google.com/', domain: 'patents.google.com', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/patents.google.com-favicon.ico' },
+      'these2.0:': { name: 'These2.0', url: 'https://thesefmpm.vercel.app/search?page=1&search=', domain: 'thesefmpm.vercel.app' },
+      'cismef-th:': { name: 'CISMeF Thèses', url: 'https://doccismef.chu-rouen.fr/dc/#env=thm&q=', domain: 'doccismef.chu-rouen.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.cismef.org-favicon.ico' },
+      'these-ma:': { name: 'Toubkal', url: 'https://toubkal.imist.ma/search?query=', domain: 'toubkal.imist.ma' },
+      'these-fr:': { name: 'Theses.fr', url: 'https://theses.fr/resultats?filtres=%255BStatut%25253D%252522soutenue%252522~Statut%25253D%252522Accessibles%252520en%252520ligne%252522%255D&q=', domain: 'theses.fr' },
+      'rgate:': { name: 'ResearchGate', url: 'https://www.researchgate.net/search/publication?q=', domain: 'researchgate.net' },
+      'ndltd:': { name: 'NDLTD', url: 'http://search.ndltd.org/search.php?q=', domain: 'ndltd.org' },
+      'bdedu:': { name: 'Baidu Academic (Xueshu)', url: 'https://xueshu.baidu.com/ndscholar/browse/search?wd=', domain: 'baidu.com', plusEncoding: true },
+      'proinserm:': { name: 'Pro Inserm', url: 'https://pro.inserm.fr/?s=', domain: 'pro.inserm.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/pro.inserm.fr-favicon.png' },
+      'cismef:': { name: 'CISMeF', url: 'https://doccismef.chu-rouen.fr/dc/#', domain: 'doccismef.chu-rouen.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.cismef.org-favicon.ico' },
+      // look for functional MSPS search url
+      'msps:': { name: 'Ministère de la santé et de la Protection Sociale', url: 'https://www.google.com/search?q=site:sante.gov.ma ', domain: 'sante.gov.ma', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.sante.gov.ma-favicon.png' },
+      'has:': { name: 'HAS', url: 'https://www.has-sante.fr/jcms/fc_2875171/fr/resultat-de-recherche?text=', domain: 'has-sante.fr' },
+      'vidal:': { name: 'VIDAL', url: 'https://www.vidal.fr/recherche.html?query=', domain: 'vidal.fr' },
+      'cismef-bp:': { name: 'CISMeF Bonnes Pratiques', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=bp&q=' },
+      'cismef-edu:': { name: 'CISMeF Éducation', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=unf3s&q=' },
+      'cismef-edn:': { name: 'CISMeF ECN', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=ecn&q=a&p=' },
+      'cismef-pat:': { name: 'CISMeF Patients', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=pat&q=' },
+      'lissa:': { name: 'LISSA', url: 'https://www.lissa.fr/dc/#env=lissa&q=', domain: 'lissa.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.lissa.fr-favicon.ico' },
+      'anm:': { name: 'Académie nationale de médecine', url: 'http://91.209.229.113/search?titre=', domain: '91.209.229.113' },
+      'hetop:': { name: 'HETOP', url: 'https://www.hetop.eu/hetop/fr/#q=', domain: 'hetop.eu' },
+      'nejm:': { name: 'New England Journal of Medicine', url: 'https://www.nejm.org/search?q=', domain: 'nejm.org' },
+      'rp:': { name: 'Radiopaedia', url: 'https://radiopaedia.org/search?q=', domain: 'radiopaedia.org' },
+      'utd:': { name: 'UpToDate', url: 'https://www.uptodate.com/contents/search?search=', domain: 'uptodate.com' },
+      'coch:': { name: 'Cochrane Library', url: 'https://www.cochranelibrary.com/search?q=', domain: 'cochranelibrary.com' },
+      'medscape:': { name: 'Medscape', url: 'https://search.medscape.com/search/fr/', domain: 'medscape.com' },
+      'openmd:': { name: 'OpenMD', url: 'https://openmd.com/search?q=', domain: 'openmd.com' },
+      'mesh:': { name: 'MeSH Browser', url: 'https://meshb.nlm.nih.gov/search?searchInField=allTerms&searchString=', domain: 'nlm.nih.gov' },
+      'dd:': { name: 'Diseases Database', url: 'http://www.diseasesdatabase.com/item_choice.asp?strUserInput=', domain: 'diseasesdatabase.com' },
+      'webmd:': { name: 'WebMD', url: 'https://www.webmd.com/search?query=', domain: 'webmd.com' },
+      'nih:': { name: 'NIH', url: 'https://search.usa.gov/search?utf8=%E2%9C%93&affiliate=nih&query=', domain: 'nih.gov', favicon: 'https://www.google.com/s2/favicons?sz=32&domain=nlm.nih.gov' },
+      'drugs:': { name: 'Drugs.com', url: 'https://www.drugs.com/search.php?searchterm=', domain: 'drugs.com' },
+      'cdc:': { name: 'CDC', url: 'https://search.cdc.gov/search/?query=', domain: 'cdc.gov' },
+      'wolf:': { name: 'Wolfram Alpha', url: 'https://www.wolframalpha.com/input?i=', domain: 'wolframalpha.com' },
+      'chatgpt:': { name: 'ChatGPT*', url: 'https://chatgpt.com/?prompt=', domain: 'chatgpt.com', promptBased: true },
+      'claude:': { name: 'Claude AI*', url: 'https://claude.ai/new?q=', domain: 'claude.ai', promptBased: true },
+      'gemini:': { name: 'Gemini*', url: 'https://gemini.google.com/app?q=', domain: 'gemini.google.com/', promptBased: true },
+      'gai:': { name: 'Google AI Mode', url: 'https://www.google.com/search?udm=50&q=', domain: 'google.com' },
+      'perplexity:': { name: 'Perplexity', url: 'https://www.perplexity.ai/search?q=', domain: 'perplexity.ai' },
+      'copilot:': { name: 'Copilot*', url: 'https://copilot.microsoft.com/?q=', domain: 'microsoft.com', promptBased: true },
+      'cbd:': { name: 'Chat Baidu', url: 'https://chat.baidu.com/search?word=', domain: 'baidu.com', plusEncoding: true },
+      // look for ernie search with terme URL 
+      'ernie:': { name: 'Baidu AI*', url: 'https://ernie.baidu.com/', domain: 'baidu.com', promptBased: true },
+      'duckai:': { name: 'Duck.ai', url: 'https://duck.ai/chat?q=', domain: 'duckduckgo.com', plusEncoding: true }
+    };
 
     // AI-Assisted Comment: These constants store references to various DOM elements.
     // Caching these elements in variables improves performance by avoiding repeated DOM lookups.
@@ -2715,13 +2742,16 @@
           faviconUrl = `https://www.google.com/s2/favicons?sz=32&domain=${effectiveEngine.domain}`;
         }
 
-        if (faviconUrl) {
+        if (faviconUrl && faviconUrl !== searchPrefixFavicon.src) {
+          searchPrefixFavicon.classList.remove('swapping');
+          void searchPrefixFavicon.offsetWidth; // reflow to restart animation
           searchPrefixFavicon.src = faviconUrl;
           searchPrefixFavicon.alt = sourceName;
-          searchPrefixFavicon.style.display = 'inline-block';
-        } else {
-          searchPrefixFavicon.style.display = 'none';
-          searchPrefixFavicon.src = '';
+          searchPrefixFavicon.title = sourceName;
+          searchPrefixFavicon.classList.add('swapping');
+        } else if (!faviconUrl) {
+          // Fallback to Google favicon
+          searchPrefixFavicon.src = 'https://www.google.com/s2/favicons?sz=64&domain=google.com';
         }
         // Sync radio buttons
         document.querySelectorAll('input[name="searchEngine"]').forEach(radio => {
@@ -2730,11 +2760,17 @@
           radio.parentElement.classList.toggle('selected', isEffective);
         });
       } else {
-        // No engine could be determined
+        // No engine — show Google as default
         source = "Entrez une requête pour afficher la source";
         color = "#555";
-        searchPrefixFavicon.style.display = 'none';
-        searchPrefixFavicon.src = '';
+        if (!searchPrefixFavicon.src.includes('google.com')) {
+          searchPrefixFavicon.classList.remove('swapping');
+          void searchPrefixFavicon.offsetWidth;
+          searchPrefixFavicon.src = 'https://www.google.com/s2/favicons?sz=64&domain=google.com';
+          searchPrefixFavicon.alt = 'Google';
+          searchPrefixFavicon.title = 'Google (défaut)';
+          searchPrefixFavicon.classList.add('swapping');
+        }
       }
 
       // Toggle YouTube filters visibility
@@ -3955,7 +3991,7 @@
       searchInput.blur();
       document.getElementById('autocomplete').style.display = 'none';
     });
-
-</script>
+  </script>
 </body>
+
 </html>
