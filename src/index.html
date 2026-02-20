@@ -21,25 +21,47 @@
 
   <div class="search-container">
     <div class="search-bar">
-      <form id="searchForm">
-        <div id="searchSource">Entrez une requête pour afficher la source</div>
-        <img id="search-prefix-favicon" class="favicon-icon" src="" alt="favicon"
-          style="display: none; margin-right: 5px;">
-        <div class="autocomplete-container">
-          <input type="text" id="searchInput" autocomplete="off" placeholder="Commencez votre recherche ici..." />
-        </div>
-        <button type="submit">🔍</button>
-        <label class="checkbox-label">
+      <!-- ISLAND ROW: site: | island | globe+filetypes -->
+      <div class="island-row" id="islandRow">
+        <!-- LEFT: site: checkbox -->
+        <label class="site-pill" title="Restreindre au domaine">
           <input type="checkbox" id="siteCheckbox">
-          site:
+          <span>site:</span>
         </label>
 
-        <!-- NEW: Language translation icon -->
-        <div id="langIcon" class="lang-icon" title="Select output language">🌐</div>
+        <!-- CENTER: YouTube-style search row -->
+        <div class="yt-search-row">
+          <!-- Input pill: favicon left + input -->
+          <div id="dynamicIsland" class="dynamic-island">
+            <form id="searchForm">
+              <div class="engine-indicator">
+                <img id="search-prefix-favicon" src="https://www.google.com/s2/favicons?sz=64&domain=google.com" alt="favicon" title="Moteur actif">
+              </div>
+              <input type="text" id="searchInput" autocomplete="off" placeholder="Rechercher..." />
+              <button type="submit" class="island-submit" tabindex="-1" aria-hidden="true" style="display:none"></button>
+            </form>
+          </div>
 
-        <button type="button" id="filetypesBtn">📁 Filetypes</button>
-        <button type="button" id="duckBangBtn" style="display: none;">🦆 !bang</button>
-      </form>
+          <!-- External search button (YouTube style) -->
+          <button type="button" class="yt-search-btn" id="ytSearchBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- RIGHT: globe + filetypes stacked -->
+        <div class="island-right">
+          <div id="langIcon" class="lang-icon" title="Select output language">🌐</div>
+          <button type="button" id="filetypesBtn">📁</button>
+          <button type="button" id="duckBangBtn" style="display: none;">🦆</button>
+        </div>
+      </div>
+
+      <!-- SOURCE LINE -->
+      <div class="island-controls">
+        <div id="searchSource">Entrez une requête pour afficher la source</div>
+      </div>
     </div>
 
     <div id="youtubeFilters" style="display: none;">
