@@ -105,6 +105,7 @@
     const keyboardShortcutsBtn = document.getElementById('keyboardShortcutsBtn'); // New button
     const keyboardShortcutsPopup = document.getElementById('keyboardShortcutsPopup');
     const closeShortcutsBtn = document.getElementById('closeShortcutsBtn');
+    const wikiSearchInput = document.getElementById('wikiSearchInput');
 
     // Yandex Translation elements
     const yandexTranslationBox = document.getElementById('yandexTranslationBox');
@@ -202,6 +203,37 @@
 
     keyboardShortcutsBtn.addEventListener('click', openShortcutsPopup);
     closeShortcutsBtn.addEventListener('click', closeShortcutsPopup);
+
+    // Wiki search functionality
+    if (wikiSearchInput) {
+      wikiSearchInput.addEventListener('input', function() {
+        const filter = this.value.toLowerCase().trim();
+        const wikiItems = document.getElementById('wikiItems');
+        if (!wikiItems) return;
+
+        const lists = wikiItems.querySelectorAll('ul');
+        const titles = wikiItems.querySelectorAll('h4');
+
+        lists.forEach((list, index) => {
+          let hasVisibleItems = false;
+          const items = list.querySelectorAll('li');
+          items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(filter)) {
+              item.style.display = '';
+              hasVisibleItems = true;
+            } else {
+              item.style.display = 'none';
+            }
+          });
+
+          // Hide title if no items match in this section
+          if (titles[index]) {
+            titles[index].style.display = hasVisibleItems ? '' : 'none';
+          }
+        });
+      });
+    }
 
     // Translation API function (using MyMemory - free, no key required)
     async function translateText(text, sourceLang, targetLang) {
@@ -324,7 +356,19 @@
 
       // Update UI
       if (effectiveEngine) {
-        source = "🔗 " + sourceName;
+        const categoryEmojis = { general: '🌐', academic: '🎓', medical: '⚕️', ai: '🤖' };
+        const categoryMap = {
+          general: ['g:', 'yt:', 'brave:', 'ddg:', 'yan:', 'bing:', 'bd:', 'gplus:'],
+          academic: ['scholar:', 'pubmed:', 'arxiv:', 'gpat:', 'these2.0:', 'cismef-th:', 'these-ma:', 'these-fr:', 'rgate:', 'ndltd:', 'proinserm:', 'bdedu:'],
+          medical: ['cismef:', 'msps:', 'has:', 'vidal:', 'mesh:', 'lissa:', 'anm:', 'hetop:', 'nejm:', 'rp:', 'utd:', 'coch:', 'medscape:', 'openmd:', 'dd:', 'webmd:', 'nih:', 'drugs:', 'cdc:', 'cismef-bp:', 'cismef-edu:', 'cismef-edn:', 'cismef-pat:'],
+          ai: ['wolf:', 'chatgpt:', 'claude:', 'gemini:', 'gai:', 'perplexity:', 'copilot:', 'cbd:', 'ernie:', 'duckai:']
+        };
+        let engineCategory = 'general';
+        for (const [cat, prefixes] of Object.entries(categoryMap)) {
+          if (prefixes.includes(effectivePrefix)) { engineCategory = cat; break; }
+        }
+        const categoryEmoji = categoryEmojis[engineCategory] || '🔗';
+        source = categoryEmoji + " " + sourceName;
         color = "#28a745";
 
         // Update favicon
@@ -335,13 +379,23 @@
           faviconUrl = `https://www.google.com/s2/favicons?sz=32&domain=${effectiveEngine.domain}`;
         }
 
-        if (faviconUrl) {
+        if (faviconUrl && faviconUrl !== searchPrefixFavicon.src) {
+          searchPrefixFavicon.classList.remove('swapping');
+          void searchPrefixFavicon.offsetWidth; // reflow to restart animation
           searchPrefixFavicon.src = faviconUrl;
           searchPrefixFavicon.alt = sourceName;
-          searchPrefixFavicon.style.display = 'inline-block';
-        } else {
-          searchPrefixFavicon.style.display = 'none';
-          searchPrefixFavicon.src = '';
+          searchPrefixFavicon.title = sourceName;
+          searchPrefixFavicon.classList.add('swapping');
+        } else if (!faviconUrl) {
+          // Fallback to Google favicon
+          if (!searchPrefixFavicon.src.includes('google.com')) {
+            searchPrefixFavicon.classList.remove('swapping');
+            void searchPrefixFavicon.offsetWidth;
+            searchPrefixFavicon.src = 'https://www.google.com/s2/favicons?sz=64&domain=google.com';
+            searchPrefixFavicon.alt = 'Google';
+            searchPrefixFavicon.title = 'Google (défaut)';
+            searchPrefixFavicon.classList.add('swapping');
+          }
         }
         // Sync radio buttons
         document.querySelectorAll('input[name="searchEngine"]').forEach(radio => {
@@ -350,11 +404,17 @@
           radio.parentElement.classList.toggle('selected', isEffective);
         });
       } else {
-        // No engine could be determined
+        // No engine determined
         source = "Entrez une requête pour afficher la source";
         color = "#555";
-        searchPrefixFavicon.style.display = 'none';
-        searchPrefixFavicon.src = '';
+        if (!searchPrefixFavicon.src.includes('google.com')) {
+          searchPrefixFavicon.classList.remove('swapping');
+          void searchPrefixFavicon.offsetWidth;
+          searchPrefixFavicon.src = 'https://www.google.com/s2/favicons?sz=64&domain=google.com';
+          searchPrefixFavicon.alt = 'Google';
+          searchPrefixFavicon.title = 'Google (défaut)';
+          searchPrefixFavicon.classList.add('swapping');
+        }
       }
 
       // Toggle YouTube filters visibility
@@ -419,17 +479,16 @@
         );
         radio.parentElement.classList.add('selected');
 
+        // Strip any existing prefix from the input, keep only the query
         let val = searchInput.value.trim();
-        let selectedPrefix = radio.value;
-
         for (const key of Object.keys(searchEngines)) {
-          if (val.startsWith(key)) {
+          if (val.toLowerCase().startsWith(key.toLowerCase())) {
             val = val.substring(key.length).trim();
             break;
           }
         }
 
-        searchInput.value = selectedPrefix + (val ? ' ' + val : '');
+        searchInput.value = val; // keep query, no prefix
         updateSearchSource();
         searchInput.focus();
       });
@@ -843,9 +902,90 @@
       }
     });
 
-    // Event listener for main search input to trigger Yandex translation
-    searchInput.addEventListener('input', (e) => {
-      // We update the search source and the other displayed boxes on each input
+    // Event listener for main search input to trigger UI updates
+    // (Consolidated logic for grid filtering, autocomplete, and engine selection)
+    searchInput.addEventListener('input', function (e) {
+      const value = e.target.value;
+      const valueLower = value.trim().toLowerCase();
+      selectedIndex = -1;
+
+      // 1. Grid Filtering: Filter radio buttons as user types
+      const gridItems = document.querySelectorAll('.category-section label');
+      const categorySections = document.querySelectorAll('.category-section');
+      
+      if (!valueLower || valueLower.includes(' ')) {
+        gridItems.forEach(label => label.style.display = 'flex');
+        categorySections.forEach(section => section.style.display = 'block');
+      } else {
+        categorySections.forEach(section => {
+          let hasVisible = false;
+          const labels = section.querySelectorAll('label');
+          labels.forEach(label => {
+            const prefix = label.querySelector('input').value.toLowerCase();
+            const name = label.textContent.toLowerCase();
+            if (prefix.includes(valueLower) || name.includes(valueLower)) {
+              label.style.display = 'flex';
+              hasVisible = true;
+            } else {
+              label.style.display = 'none';
+            }
+          });
+          section.style.display = hasVisible ? 'block' : 'none';
+        });
+      }
+
+      // 2. Meta-prefix handling for 'se:' (Search for search engine)
+      if (valueLower.startsWith('se:')) {
+        const query = valueLower.substring(3).trim();
+        const matches = Object.keys(searchEngines)
+          .filter(prefix => {
+            const engine = searchEngines[prefix];
+            return prefix.toLowerCase().includes(query) ||
+              engine.name.toLowerCase().includes(query);
+          })
+          .map(prefix => ({ prefix, engine: searchEngines[prefix] }));
+        
+        showAutocomplete(matches);
+        updateSearchSource();
+        return;
+      }
+
+      // 3. Detect exact prefix match (e.g. user typed "yt:" or "scholar:")
+      // Strip it immediately and select the engine
+      for (const key of Object.keys(searchEngines)) {
+        if (valueLower.startsWith(key.toLowerCase())) {
+          const query = value.trim().substring(key.length).trim();
+          const radio = document.querySelector(`input[name="searchEngine"][value="${key}"]`);
+          if (radio) {
+            radio.checked = true;
+            document.querySelectorAll('input[name="searchEngine"]').forEach(r =>
+              r.parentElement.classList.remove('selected')
+            );
+            radio.parentElement.classList.add('selected');
+          }
+          searchInput.value = query;
+          if (autocompleteDiv) autocompleteDiv.style.display = 'none';
+          updateSearchSource();
+          return;
+        }
+      }
+
+      // 4. Autocomplete logic
+      if (!valueLower || valueLower.includes(' ')) {
+        if (autocompleteDiv) autocompleteDiv.style.display = 'none';
+        updateSearchSource();
+        return;
+      }
+
+      const matches = Object.keys(searchEngines)
+        .filter(prefix => {
+          const engine = searchEngines[prefix];
+          return prefix.toLowerCase().startsWith(valueLower) ||
+            engine.name.toLowerCase().includes(valueLower);
+        })
+        .map(prefix => ({ prefix, engine: searchEngines[prefix] }));
+
+      showAutocomplete(matches);
       updateSearchSource();
     });
 
@@ -1341,7 +1481,11 @@
     // Autocomplete functionality
     const autocompleteDiv = document.createElement('div');
     autocompleteDiv.id = 'autocomplete';
-    searchInput.parentElement.appendChild(autocompleteDiv);
+    if (dynamicIsland) {
+      dynamicIsland.appendChild(autocompleteDiv);
+    } else {
+      searchInput.parentElement.appendChild(autocompleteDiv);
+    }
 
     let selectedIndex = -1;
 
@@ -1353,7 +1497,7 @@
         'nejm:', 'rp:', 'utd:', 'coch:', 'medscape:', 'openmd:', 'dd:', 'webmd:',
         'nih:', 'drugs:', 'cdc:', 'cismef-bp:', 'cismef-edu:', 'cismef-edn:', 'cismef-pat:'],
       'ai': ['wolf:', 'chatgpt:', 'claude:', 'gemini:', 'gai:', 'perplexity:',
-        'copilot:', 'cbd:', 'ernie:', 'duckai:']
+        'copilot:', 'cbd:', 'ernie:', 'duckai:', 'se:']
     };
 
     const categoryTitles = {
@@ -1374,34 +1518,30 @@
 
     // SMART POSITIONING FUNCTION
     function positionAutocomplete() {
-      const inputRect = searchInput.getBoundingClientRect();
-      const searchContainer = document.querySelector('.search-container');
+      const ytRow = document.querySelector('.yt-search-row');
+      const island = document.getElementById('dynamicIsland');
+      const anchor = ytRow || island;
+      if (!anchor) return;
 
-      if (!searchContainer) return;
-
-      const containerRect = searchContainer.getBoundingClientRect();
+      const rect = anchor.getBoundingClientRect();
       const autocompleteHeight = 400;
-      const gap = 10;
+      const gap = 8;
 
-      const spaceAbove = inputRect.top;
-      const spaceBelow = window.innerHeight - inputRect.bottom;
-      const showAbove = spaceAbove > autocompleteHeight + gap || spaceAbove > spaceBelow;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      const showAbove = spaceAbove > autocompleteHeight + gap && spaceAbove > spaceBelow;
 
       if (showAbove) {
-        autocompleteDiv.style.bottom = (window.innerHeight - inputRect.top + gap) + 'px';
+        autocompleteDiv.style.bottom = (window.innerHeight - rect.top + gap) + 'px';
         autocompleteDiv.style.top = 'auto';
       } else {
-        autocompleteDiv.style.top = (inputRect.bottom + gap) + 'px';
+        autocompleteDiv.style.top = (rect.bottom + gap) + 'px';
         autocompleteDiv.style.bottom = 'auto';
       }
 
-      // Match search-container width (accounting for padding)
-      const containerWidth = containerRect.width - 60; // 30px padding on each side
-      autocompleteDiv.style.width = containerWidth + 'px';
-      autocompleteDiv.style.maxWidth = containerWidth + 'px';
-
-      // Center horizontally within container
-      autocompleteDiv.style.left = (containerRect.left + 30) + 'px';
+      autocompleteDiv.style.width = rect.width + 'px';
+      autocompleteDiv.style.maxWidth = rect.width + 'px';
+      autocompleteDiv.style.left = rect.left + 'px';
     }
 
     function showAutocomplete(matches) {
@@ -1472,10 +1612,32 @@
             item.appendChild(name);
 
             item.addEventListener('click', () => {
+              // Select the matching radio button
+              const radio = document.querySelector(`input[name="searchEngine"][value="${match.prefix}"]`);
+              if (radio) {
+                radio.checked = true;
+                document.querySelectorAll('input[name="searchEngine"]').forEach(r =>
+                  r.parentElement.classList.remove('selected')
+                );
+                radio.parentElement.classList.add('selected');
+              }
+              
+              // Robust Prefix Stripping:
+              // If user typed "schol" and clicked "scholar:", we clear the input.
+              // If user typed "scholar:query" and clicked "scholar:", we keep "query".
               const currentValue = searchInput.value.trim();
-              const afterPrefix = currentValue.split(':')[1] || '';
-              searchInput.value = match.prefix + (afterPrefix ? ' ' + afterPrefix.trim() : ' ');
-              autocompleteDiv.style.display = 'none';
+              let query = '';
+              
+              if (currentValue.toLowerCase().startsWith(match.prefix.toLowerCase())) {
+                query = currentValue.substring(match.prefix.length).trim();
+              } else if (match.prefix.toLowerCase().startsWith(currentValue.toLowerCase())) {
+                query = ''; // Partial match, just clear it to start query fresh
+              } else {
+                query = currentValue; // Should not happen with current filter
+              }
+              
+              searchInput.value = query;
+              if (autocompleteDiv) autocompleteDiv.style.display = 'none';
               updateSearchSource();
               searchInput.focus();
             });
@@ -1490,35 +1652,19 @@
       // Show and position
       autocompleteDiv.style.display = 'block';
       positionAutocomplete();
+
+      // Auto-highlight first item
+      const allItems = autocompleteDiv.querySelectorAll('.autocomplete-item');
+      if (allItems.length > 0) {
+        selectedIndex = 0;
+        allItems[0].classList.add('selected');
+      }
     }
 
-    // Update search input listener
-    searchInput.addEventListener('input', function (e) {
-      const value = e.target.value.trim().toLowerCase();
-      selectedIndex = -1;
-
-      if (!value || value.includes(' ')) {
-        autocompleteDiv.style.display = 'none';
-        updateSearchSource();
-        return;
-      }
-
-      const matches = Object.keys(searchEngines)
-        .filter(prefix => {
-          const engine = searchEngines[prefix];
-          return prefix.toLowerCase().startsWith(value) ||
-            engine.name.toLowerCase().includes(value);
-        })
-        .map(prefix => ({ prefix, engine: searchEngines[prefix] }));
-
-      showAutocomplete(matches);
-      updateSearchSource();
-    });
-
     searchInput.addEventListener('keydown', function (e) {
+      if (!autocompleteDiv || autocompleteDiv.style.display === 'none') return;
       const items = autocompleteDiv.querySelectorAll('.autocomplete-item');
-
-      if (autocompleteDiv.style.display === 'none' || items.length === 0) return;
+      if (items.length === 0) return;
 
       if (e.key === 'ArrowDown') {
         e.preventDefault();
@@ -1530,48 +1676,129 @@
         selectedIndex = Math.max(selectedIndex - 1, 0);
         items.forEach((item, i) => item.classList.toggle('selected', i === selectedIndex));
         items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
-      } else if (e.key === 'Enter' && selectedIndex >= 0) {
-        e.preventDefault();
-        items[selectedIndex]?.click();
+      } else if (e.key === 'Enter') {
+        if (selectedIndex >= 0) {
+          e.preventDefault();
+          items[selectedIndex]?.click();
+        } else if (items.length > 0) {
+          // Auto-select top match if none selected
+          e.preventDefault();
+          items[0]?.click();
+        }
       } else if (e.key === 'Escape') {
         autocompleteDiv.style.display = 'none';
       }
     });
 
-    document.addEventListener('click', function (e) {
-      if (!searchInput.contains(e.target) && !autocompleteDiv.contains(e.target)) {
-        autocompleteDiv.style.display = 'none';
-      }
-    });
-
-    // Reposition on window resize or scroll
-    window.addEventListener('resize', () => {
-      if (autocompleteDiv.style.display === 'block') {
-        positionAutocomplete();
-      }
-    });
-
-    window.addEventListener('scroll', () => {
-      if (autocompleteDiv.style.display === 'block') {
-        positionAutocomplete();
-      }
-    });
     const focusOverlay = document.getElementById('focusOverlay');
     const searchContainer = document.querySelector('.search-container');
+    const dynamicIsland = document.getElementById('dynamicIsland');
 
     searchInput.addEventListener('focus', () => {
       focusOverlay.classList.add('active');
       searchContainer.classList.add('focused');
+      if (dynamicIsland) dynamicIsland.classList.add('focused');
+      const islandRow = document.querySelector('.island-row');
+      if (islandRow) islandRow.classList.add('row-focused');
     });
 
     searchInput.addEventListener('blur', () => {
       setTimeout(() => {
         focusOverlay.classList.remove('active');
         searchContainer.classList.remove('focused');
+        if (dynamicIsland) dynamicIsland.classList.remove('focused');
+        const islandRow = document.querySelector('.island-row');
+        if (islandRow) islandRow.classList.remove('row-focused');
       }, 200);
     });
 
     focusOverlay.addEventListener('click', () => {
       searchInput.blur();
-      document.getElementById('autocomplete').style.display = 'none';
+      if (autocompleteDiv) autocompleteDiv.style.display = 'none';
+    });
+
+    // Consolidated main search input listener
+    searchInput.addEventListener('input', function (e) {
+      const value = e.target.value;
+      const valueLower = value.trim().toLowerCase();
+      selectedIndex = -1;
+
+      // 1. Grid Filtering
+      const gridItems = document.querySelectorAll('.category-section label');
+      const categorySections = document.querySelectorAll('.category-section');
+      
+      if (!valueLower || valueLower.includes(' ')) {
+        gridItems.forEach(label => label.style.display = 'flex');
+        categorySections.forEach(section => section.style.display = 'block');
+      } else {
+        categorySections.forEach(section => {
+          let hasVisible = false;
+          const labels = section.querySelectorAll('label');
+          labels.forEach(label => {
+            const prefix = label.querySelector('input').value.toLowerCase();
+            const name = label.textContent.toLowerCase();
+            if (prefix.includes(valueLower) || name.includes(valueLower)) {
+              label.style.display = 'flex';
+              hasVisible = true;
+            } else {
+              label.style.display = 'none';
+            }
+          });
+          section.style.display = hasVisible ? 'block' : 'none';
+        });
+      }
+
+      // 2. Intelligent Auto-Select on Space
+      // If user typed "g: " (prefix + space), strip it and select.
+      if (value.endsWith(' ')) {
+        const potentialPrefix = value.trim().toLowerCase();
+        for (const key of Object.keys(searchEngines)) {
+          if (potentialPrefix === key.toLowerCase()) {
+            const radio = document.querySelector(`input[name="searchEngine"][value="${key}"]`);
+            if (radio) {
+              radio.checked = true;
+              document.querySelectorAll('input[name="searchEngine"]').forEach(r =>
+                r.parentElement.classList.remove('selected')
+              );
+              radio.parentElement.classList.add('selected');
+            }
+            searchInput.value = ''; // Clear for query
+            if (autocompleteDiv) autocompleteDiv.style.display = 'none';
+            updateSearchSource();
+            return;
+          }
+        }
+      }
+
+      // 3. Meta-prefix handling for 'se:'
+      if (valueLower.startsWith('se:')) {
+        const query = valueLower.substring(3).trim();
+        const matches = Object.keys(searchEngines)
+          .filter(prefix => {
+            const engine = searchEngines[prefix];
+            return prefix.toLowerCase().includes(query) || engine.name.toLowerCase().includes(query);
+          })
+          .map(prefix => ({ prefix, engine: searchEngines[prefix] }));
+        showAutocomplete(matches);
+        updateSearchSource();
+        return;
+      }
+
+      // 4. Autocomplete logic (matches stable18)
+      if (!valueLower || value.includes(' ')) {
+        if (autocompleteDiv) autocompleteDiv.style.display = 'none';
+        updateSearchSource();
+        return;
+      }
+
+      const matches = Object.keys(searchEngines)
+        .filter(prefix => {
+          const engine = searchEngines[prefix];
+          return prefix.toLowerCase().startsWith(valueLower) ||
+            engine.name.toLowerCase().includes(valueLower);
+        })
+        .map(prefix => ({ prefix, engine: searchEngines[prefix] }));
+
+      showAutocomplete(matches);
+      updateSearchSource();
     });

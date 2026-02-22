@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Tools Search</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/svg+xml" href="https://upload.wikimedia.org/wikipedia/commons/a/a9/Vector_search_icon.svg" />
+
+  <link rel="icon" type="image/svg+xml"
+    href="https://upload.wikimedia.org/wikipedia/commons/a/a9/Vector_search_icon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght @400;500;600;700&family=Roboto:wght @400;500;700&family=Source+Code+Pro:wght @400;500;600&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
   <div id="focusOverlay" class="focus-overlay"></div>
   <div id="stars-container">
@@ -21,8 +27,10 @@
 
   <div class="search-container">
     <div class="search-bar">
+
       <!-- ISLAND ROW: site: | island | globe+filetypes -->
-      <div class="island-row" id="islandRow">
+      <div class="island-row">
+
         <!-- LEFT: site: checkbox -->
         <label class="site-pill" title="Restreindre au domaine">
           <input type="checkbox" id="siteCheckbox">
@@ -31,7 +39,8 @@
 
         <!-- CENTER: YouTube-style search row -->
         <div class="yt-search-row">
-          <!-- Input pill: favicon left + input -->
+
+          <!-- Input pill: favicon in dark circle + input -->
           <div id="dynamicIsland" class="dynamic-island">
             <form id="searchForm">
               <div class="engine-indicator">
@@ -43,11 +52,12 @@
           </div>
 
           <!-- External search button (YouTube style) -->
-          <button type="button" class="yt-search-btn" id="ytSearchBtn">
+          <button type="button" class="yt-search-btn" onclick="document.getElementById('searchForm').requestSubmit()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
           </button>
+
         </div>
 
         <!-- RIGHT: globe + filetypes stacked -->
@@ -56,12 +66,14 @@
           <button type="button" id="filetypesBtn">📁</button>
           <button type="button" id="duckBangBtn" style="display: none;">🦆</button>
         </div>
+
       </div>
 
       <!-- SOURCE LINE -->
       <div class="island-controls">
         <div id="searchSource">Entrez une requête pour afficher la source</div>
       </div>
+
     </div>
 
     <div id="youtubeFilters" style="display: none;">
@@ -180,14 +192,11 @@
         <div class="category-title">⚕️ CISMeF - Type de document</div>
         <div class="radio-group">
           <label><input type="radio" name="cismef_scope" value="env=basic&q=" checked> Tous les types</label>
-          <label><input type="radio" name="cismef_scope" value="env=bp&q="> Uniquement les recommandations
-            professionnelles</label>
+          <label><input type="radio" name="cismef_scope" value="env=bp&q="> Uniquement les recommandations professionnelles</label>
           <label><input type="radio" name="cismef_scope" value="env=unf3s&q="> Documents d'enseignement</label>
-          <label><input type="radio" name="cismef_scope" value="env=pat&q="> Documents grand public et les associations
-            de patients</label>
+          <label><input type="radio" name="cismef_scope" value="env=pat&q="> Documents grand public et les associations de patients</label>
           <label><input type="radio" name="cismef_scope" value="env=thm&q="> Thèses et mémoires</label>
-          <label><input type="radio" name="cismef_scope" value="env=ecn&q=a&p="> Épreuves Classantes Nationales (nouveau
-            programme 2022)</label>
+          <label><input type="radio" name="cismef_scope" value="env=ecn&q=a&p="> Épreuves Classantes Nationales (nouveau programme 2022)</label>
         </div>
       </div>
     </div>
@@ -234,6 +243,7 @@
           <label><input type="radio" name="searchEngine" value="bing:">Bing</label>
           <label><input type="radio" name="searchEngine" value="bd:">Baidu</label>
           <label><input type="radio" name="searchEngine" value="gplus:">Google Avancé</label>
+          <label><input type="radio" name="searchEngine" value="se:">Search Engines</label>
         </div>
       </div>
 
@@ -259,8 +269,7 @@
         <div class="category-title">⚕️ Médical / Santé</div>
         <div class="radio-group" id="group3">
           <label><input type="radio" name="searchEngine" value="cismef:">CISMeF</label>
-          <label><input type="radio" name="searchEngine" value="msps:">Ministère de la santé et de la Protection
-            Sociale</label>
+          <label><input type="radio" name="searchEngine" value="msps:">Ministère de la santé et de la Protection Sociale</label>
           <label><input type="radio" name="searchEngine" value="has:">HAS</label>
           <label><input type="radio" name="searchEngine" value="vidal:">VIDAL</label>
           <label><input type="radio" name="searchEngine" value="mesh:">MeSH Browser</label>
@@ -304,7 +313,14 @@
         <label for="keepWikiOpenCheckbox">Garder le wiki ouvert</label>
       </div>
 
-      <h4>🌐 Recherche Générale</h4>
+      <!-- NEW: Wiki Search Bar -->
+      <div class="wiki-search-container" style="margin-bottom: 15px;">
+        <input type="text" id="wikiSearchInput" placeholder="Rechercher un préfixe ou un moteur..." 
+          style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; outline: none;" />
+      </div>
+
+      <div id="wikiItems">
+        <h4>🌐 Recherche Générale</h4>
       <ul>
         <li><b>g:</b> Google</li>
         <li><b>yt:</b> YouTube</li>
@@ -314,6 +330,7 @@
         <li><b>bing:</b> Bing</li>
         <li><b>bd:</b> Baidu</li>
         <li><b>gplus:</b> Google Avancé</li>
+        <li><b>se:</b> Search Engines (Bangs)</li>
       </ul>
 
       <h4>🎓 Académique / Thèses</h4>
@@ -365,14 +382,15 @@
         <li><b>chatgpt:</b> ChatGPT</li>
         <li><b>claude:</b> Claude AI</li>
         <li><b>gemini:</b> Gemini</li>
-        <li><b>gai:</b> Google AI Mode – utilise le mode expérimental udm=50 qui déclenche très souvent la réponse
-          IA/Gemini</li>
+        <li><b>gai:</b> Google AI Mode – utilise le mode expérimental udm=50 qui déclenche très souvent la réponse IA/Gemini</li>
         <li><b>perplexity:</b> Perplexity</li>
         <li><b>copilot:</b> Copilot</li>
         <li><b>cbd:</b> Chat Baidu</li>
         <li><b>ernie:</b> Baidu AI</li>
         <li><b>duckai:</b> Duck.ai</li>
+        <li><b>se:</b> Search Engines (Bangs)</li>
       </ul>
+      </div>
     </div>
 
     <div id="filetypesPopup">
@@ -642,40 +660,19 @@
       <div id="langPopupContent">
         <button class="close-btn" id="closeLangPopup">&times;</button>
         <h2>🌐 Translate Page</h2>
-
-        <!-- NEW: Search Bar -->
         <div class="lang-search-container">
           <input type="text" id="langSearchInput" placeholder="Type language name or code..." autocomplete="off" />
           <div id="langSuggestions"></div>
         </div>
-
-        <!-- Language Buttons -->
         <div class="lang-buttons-grid">
-          <!-- Original button spans full width -->
-          <button class="lang-btn" data-lang="original" title="No Translation">
-            🌐 Original
-          </button>
-          <!-- 6 main languages in 3x2 grid -->
-          <button class="lang-btn" data-lang="en" title="English">
-            English
-          </button>
-          <button class="lang-btn" data-lang="fr" title="French">
-            Français
-          </button>
-          <button class="lang-btn" data-lang="ar" title="Arabic">
-            العربية
-          </button>
-          <button class="lang-btn" data-lang="ru" title="Russian">
-            Русский
-          </button>
-          <button class="lang-btn" data-lang="es" title="Spanish">
-            Español
-          </button>
-          <button class="lang-btn" data-lang="zh" title="Chinese">
-            中文
-          </button>
+          <button class="lang-btn" data-lang="original" title="No Translation">🌐 Original</button>
+          <button class="lang-btn" data-lang="en" title="English">English</button>
+          <button class="lang-btn" data-lang="fr" title="French">Français</button>
+          <button class="lang-btn" data-lang="ar" title="Arabic">العربية</button>
+          <button class="lang-btn" data-lang="ru" title="Russian">Русский</button>
+          <button class="lang-btn" data-lang="es" title="Spanish">Español</button>
+          <button class="lang-btn" data-lang="zh" title="Chinese">中文</button>
         </div>
-
         <p class="lang-info">Press <kbd>ESC</kbd> to close • Translation may not work for all engines</p>
       </div>
     </div>
@@ -684,4 +681,5 @@
   <script src="js/engines.js"></script>
   <script src="js/app.js"></script>
 </body>
+
 </html>

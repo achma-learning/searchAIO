@@ -54,5 +54,6 @@
       'cbd:': { name: 'Chat Baidu', url: 'https://chat.baidu.com/search?word=', domain: 'baidu.com', plusEncoding: true },
       // look for ernie search with terme URL 
       'ernie:': { name: 'Baidu AI*', url: 'https://ernie.baidu.com/', domain: 'baidu.com', promptBased: true },
-      'duckai:': { name: 'Duck.ai', url: 'https://duck.ai/chat?q=', domain: 'duckduckgo.com', plusEncoding: true }
+      'duckai:': { name: 'Duck.ai', url: 'https://duck.ai/chat?q=', domain: 'duckduckgo.com', plusEncoding: true },
+      'se:': { name: 'Search Engines (Bangs)', url: 'https://duckduckgo.com/bangs?q=', domain: 'duckduckgo.com' }
     };
