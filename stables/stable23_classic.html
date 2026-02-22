@@ -2038,12 +2038,19 @@
     </div>
 
     <div id="wikiContent" role="region" aria-label="Wiki des préfixes">
-      <div class="checkbox-container">
-        <input type="checkbox" id="keepWikiOpenCheckbox" />
-        <label for="keepWikiOpenCheckbox">Garder le wiki ouvert</label>
+      <div class="wiki-header" style="padding: 15px; border-bottom: 1px solid #eee;">
+        <div class="checkbox-container" style="margin-bottom: 10px; border: none; padding: 0;">
+          <input type="checkbox" id="keepWikiOpenCheckbox" />
+          <label for="keepWikiOpenCheckbox">Garder le wiki ouvert</label>
+        </div>
+        <div class="wiki-search-container">
+          <input type="text" id="wikiSearchInput" placeholder="Filtrer les préfixes (ex: med, gpat...)" 
+            style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; outline: none; font-size: 13px;" />
+        </div>
       </div>
 
-      <h4>🌐 Recherche Générale</h4>
+      <div id="wikiItems" style="padding: 0 20px 20px;">
+        <h4>🌐 Recherche Générale</h4>
       <ul>
         <li><b>g:</b> Google</li>
         <li><b>yt:</b> YouTube</li>
@@ -3297,11 +3304,12 @@
         searchInput.focus();
       }
 
-      // Ctrl+Shift+K : Clear current url in search bar, and focus on search bar
+      // Ctrl+Shift+K : Clear search bar and focus
       if (e.ctrlKey && e.shiftKey && e.key === 'K') {
         e.preventDefault();
         searchInput.value = '';
         searchInput.focus();
+        updateSearchSource();
       }
 
       // Alt+Up/Down to cycle through search engines
@@ -3337,8 +3345,9 @@
 
       // Ctrl+Shift+C : Copier la recherche actuelle
       if (e.ctrlKey && e.shiftKey && e.key === 'C') {
-        e.preventDefault(); // Prevent default browser behavior for Ctrl+Shift+C
+        e.preventDefault(); 
         copyCurrentSearch();
+        createNotification('Query copied to clipboard!', 'success');
       }
 
       if (e.key === 'Escape') {
@@ -3365,9 +3374,88 @@
       }
     });
 
-    // Event listener for main search input to trigger Yandex translation
+    // Event listener for main search input to trigger UI updates
     searchInput.addEventListener('input', (e) => {
-      // We update the search source and the other displayed boxes on each input
+      const value = e.target.value;
+      const valueLower = value.trim().toLowerCase();
+      selectedIndex = -1;
+
+      // 1. Grid Filtering: Filter radio buttons as user types
+      const categorySections = document.querySelectorAll('.category-section');
+      
+      if (!valueLower || valueLower.includes(' ')) {
+        categorySections.forEach(section => {
+          section.style.display = 'block';
+          section.querySelectorAll('label').forEach(l => l.style.display = 'flex');
+        });
+      } else {
+        categorySections.forEach(section => {
+          let hasVisible = false;
+          section.querySelectorAll('label').forEach(label => {
+            const prefix = label.querySelector('input').value.toLowerCase();
+            const name = label.textContent.toLowerCase();
+            if (prefix.includes(valueLower) || name.includes(valueLower)) {
+              label.style.display = 'flex';
+              hasVisible = true;
+            } else {
+              label.style.display = 'none';
+            }
+          });
+          section.style.display = hasVisible ? 'block' : 'none';
+        });
+      }
+
+      // 2. Meta-prefix handling for 'se:' (Search for search engine)
+      if (valueLower.startsWith('se:')) {
+        const query = valueLower.substring(3).trim();
+        const matches = Object.keys(searchEngines)
+          .filter(prefix => {
+            const engine = searchEngines[prefix];
+            return prefix.toLowerCase().includes(query) ||
+              engine.name.toLowerCase().includes(query);
+          })
+          .map(prefix => ({ prefix, engine: searchEngines[prefix] }));
+        
+        showAutocomplete(matches);
+        updateSearchSource();
+        return;
+      }
+
+      // 3. Detect exact prefix match (e.g. user typed "yt:" or "scholar:")
+      for (const key of Object.keys(searchEngines)) {
+        if (valueLower.startsWith(key.toLowerCase())) {
+          const query = value.trim().substring(key.length).trim();
+          const radio = document.querySelector(`input[name="searchEngine"][value="${key}"]`);
+          if (radio) {
+            radio.checked = true;
+            document.querySelectorAll('input[name="searchEngine"]').forEach(r =>
+              r.parentElement.classList.remove('selected')
+            );
+            radio.parentElement.classList.add('selected');
+          }
+          searchInput.value = query;
+          if (autocompleteDiv) autocompleteDiv.style.display = 'none';
+          updateSearchSource();
+          return;
+        }
+      }
+
+      // 4. Autocomplete logic for prefix suggestions
+      if (!valueLower || valueLower.includes(' ')) {
+        if (autocompleteDiv) autocompleteDiv.style.display = 'none';
+        updateSearchSource();
+        return;
+      }
+
+      const matches = Object.keys(searchEngines)
+        .filter(prefix => {
+          const engine = searchEngines[prefix];
+          return prefix.toLowerCase().startsWith(valueLower) ||
+            engine.name.toLowerCase().includes(valueLower);
+        })
+        .map(prefix => ({ prefix, engine: searchEngines[prefix] }));
+
+      showAutocomplete(matches);
       updateSearchSource();
     });
 
@@ -4066,18 +4154,107 @@
       if (firstSelected) firstSelected.scrollIntoView({ block: 'nearest' });
     }
 
+    // Wiki search functionality
+    const wikiSearchInput = document.getElementById('wikiSearchInput');
+    if (wikiSearchInput) {
+      wikiSearchInput.addEventListener('input', function() {
+        const filter = this.value.toLowerCase().trim();
+        const wikiItems = document.getElementById('wikiItems');
+        if (!wikiItems) return;
+
+        const lists = wikiItems.querySelectorAll('ul');
+        const titles = wikiItems.querySelectorAll('h4');
+
+        lists.forEach((list, index) => {
+          let hasVisibleItems = false;
+          const items = list.querySelectorAll('li');
+          items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(filter)) {
+              item.style.display = '';
+              hasVisibleItems = true;
+            } else {
+              item.style.display = 'none';
+            }
+          });
+
+          // Hide title if no items match in this section
+          if (titles[index]) {
+            titles[index].style.display = hasVisibleItems ? '' : 'none';
+          }
+        });
+      });
+    }
+
     // Update search input listener
     searchInput.addEventListener('input', function (e) {
       const value = e.target.value;
       const valueLower = value.trim().toLowerCase();
       selectedIndex = -1;
 
-      // Detect exact prefix match (e.g. user typed "yt:" or "scholar:")
-      // Strip it immediately, select the engine, clear the prefix from input
+      // 1. Grid Filtering
+      const categorySections = document.querySelectorAll('.category-section');
+      if (!valueLower || valueLower.includes(' ')) {
+        categorySections.forEach(section => {
+          section.style.display = 'block';
+          section.querySelectorAll('label').forEach(l => l.style.display = 'flex');
+        });
+      } else {
+        categorySections.forEach(section => {
+          let hasVisible = false;
+          section.querySelectorAll('label').forEach(label => {
+            const prefix = label.querySelector('input').value.toLowerCase();
+            const name = label.textContent.toLowerCase();
+            if (prefix.includes(valueLower) || name.includes(valueLower)) {
+              label.style.display = 'flex';
+              hasVisible = true;
+            } else {
+              label.style.display = 'none';
+            }
+          });
+          section.style.display = hasVisible ? 'block' : 'none';
+        });
+      }
+
+      // 2. Space-to-Select Logic (Type "g " to select Google)
+      if (value.endsWith(' ')) {
+        const potentialPrefix = value.trim().toLowerCase();
+        for (const key of Object.keys(searchEngines)) {
+          if (potentialPrefix === key.toLowerCase()) {
+            const radio = document.querySelector(`input[name="searchEngine"][value="${key}"]`);
+            if (radio) {
+              radio.checked = true;
+              document.querySelectorAll('input[name="searchEngine"]').forEach(r =>
+                r.parentElement.classList.remove('selected')
+              );
+              radio.parentElement.classList.add('selected');
+            }
+            searchInput.value = ''; // Clear for query
+            if (autocompleteDiv) autocompleteDiv.style.display = 'none';
+            updateSearchSource();
+            return;
+          }
+        }
+      }
+
+      // 3. Meta-prefix handling for 'se:'
+      if (valueLower.startsWith('se:')) {
+        const query = valueLower.substring(3).trim();
+        const matches = Object.keys(searchEngines)
+          .filter(prefix => {
+            const engine = searchEngines[prefix];
+            return prefix.toLowerCase().includes(query) || engine.name.toLowerCase().includes(query);
+          })
+          .map(prefix => ({ prefix, engine: searchEngines[prefix] }));
+        showAutocomplete(matches);
+        updateSearchSource();
+        return;
+      }
+
+      // 4. Exact prefix match (e.g. user typed "yt:" or "scholar:")
       for (const key of Object.keys(searchEngines)) {
         if (valueLower.startsWith(key.toLowerCase())) {
           const query = value.trim().substring(key.length).trim();
-          // Select radio
           const radio = document.querySelector(`input[name="searchEngine"][value="${key}"]`);
           if (radio) {
             radio.checked = true;
@@ -4086,16 +4263,15 @@
             );
             radio.parentElement.classList.add('selected');
           }
-          // Strip prefix from input
           searchInput.value = query;
-          autocompleteDiv.style.display = 'none';
+          if (autocompleteDiv) autocompleteDiv.style.display = 'none';
           updateSearchSource();
           return;
         }
       }
 
-      if (!valueLower || valueLower.includes(' ')) {
-        autocompleteDiv.style.display = 'none';
+      if (!valueLower || value.includes(' ')) {
+        if (autocompleteDiv) autocompleteDiv.style.display = 'none';
         updateSearchSource();
         return;
       }
