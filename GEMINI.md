@@ -70,6 +70,15 @@ The app operates on a Prefix → Resolve → Construct → Route pipeline:
 - **Glassmorphism**: Use of `backdrop-filter: blur()` for autocomplete and overlays.
 - **Focus Overlay**: macOS-style background blurring when the search bar is active.
 - **Smart Autocomplete**: Positioned dynamically (above/below) based on screen space.
+- **Shortcuts popup — full Arch Linux cheatsheet redesign**:
+  - **Dark terminal aesthetic**: (#0d1117 GitHub-dark palette) — intentionally stays dark even in light mode, like a real terminal cheatsheet would.
+  - **macOS-style traffic light dots**: (red/yellow/green) in the header bar with the title `⌨ keybindings — Search Interface`.
+  - **2-column grid**: of sections, each styled like a terminal config block with `#` prefix on section titles.
+  - **kbd key chips**: each key rendered as a physical keyboard key with border-bottom depth effect.
+  - **Logical Sections**: Shortcuts grouped into 4 sections: *Search Bar*, *Engine Navigation*, *Google Site: Mode*, and *Interface*.
+  - **Color-coded descriptions**: green = action, blue = highlight, orange = warning.
+  - **Footer**: shows total binding count + `ESC` to close hint.
+  - **Custom scrollbar**: Scrollable body with custom thin scrollbar.
 
 🚦 AI Behavioral Constraints
 - **Single-File Edits**: ALWAYS edit the root `index.html`.
