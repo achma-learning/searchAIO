@@ -8,3 +8,5 @@ stable13: added * next to search engin that doesn't support search with url, and
 stable16: added favicon inside search engin
 stable17: remove prefix: from view after selection of search since "🌐 Google" display the search engin better than prefix:
 stable18: fix favicon
+
+stable23: focus on first search + add message above the "site:"

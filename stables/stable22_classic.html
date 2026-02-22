@@ -1790,7 +1790,7 @@
           <input type="text" id="searchInput" autocomplete="off" placeholder="Commencez votre recherche ici..." />
         </div>
         <button type="submit">🔍</button>
-        <label class="checkbox-label" id="siteCheckboxLabel" title="Search inside this search engine's site with Google">
+        <label class="checkbox-label">
           <input type="checkbox" id="siteCheckbox">
           site:
         </label>
@@ -3450,7 +3450,7 @@
       '" "': "Searches for an exact phrase match. Example: \"search engine\"",
       'OR': "Returns results with either term. Example: bing OR google",
       'NOT': "Excludes results with this term. Example: search NOT engine",
-      'site:': `<span style="display:flex;align-items:center;gap:6px;"><img src="https://www.google.com/favicon.ico" style="width:14px;height:14px;vertical-align:middle;"> Search inside this site/engine with <strong>Google</strong></span><span style="display:block;margin-top:4px;font-size:11px;opacity:0.8;">Example: site:microsoft.com</span>`,
+      'site:': "Restricts search to a specific site. Example: site:microsoft.com",
       'filetype:': "Restricts to a specific file type. Example: filetype:pdf",
       'inurl:': "Finds the term in the page URL. Example: inurl:blog",
       'inbody:': "Searches only in the body text. Example: inbody:\"microservices\"",
@@ -3566,33 +3566,6 @@
     operatorTooltip.className = 'operator-tooltip';
     document.body.appendChild(operatorTooltip);
 
-    // Tooltip for the site: checkbox in the search bar
-    const siteCheckboxLabel = document.getElementById('siteCheckboxLabel');
-    if (siteCheckboxLabel) {
-      siteCheckboxLabel.addEventListener('mouseenter', function () {
-        const activeName = document.querySelector('input[name="searchEngine"]:checked')?.value || 'this engine';
-        const engineName = searchEngines[activeName]?.name || 'this engine';
-        operatorTooltip.innerHTML = `<span style="display:flex;align-items:center;gap:6px;"><img src="https://www.google.com/favicon.ico" style="width:14px;height:14px;vertical-align:middle;"> Search inside <strong>${engineName}</strong> with Google</span>`;
-        operatorTooltip.style.display = 'block';
-        setTimeout(() => { operatorTooltip.style.opacity = 1; }, 10);
-        const rect = siteCheckboxLabel.getBoundingClientRect();
-        const tooltipRect = operatorTooltip.getBoundingClientRect();
-        let top = rect.top - tooltipRect.height - 8;
-        if (top < 0) top = rect.bottom + 8;
-        let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
-        if (left < 5) left = 5;
-        if (left + tooltipRect.width > window.innerWidth) left = window.innerWidth - tooltipRect.width - 5;
-        operatorTooltip.style.top = `${top}px`;
-        operatorTooltip.style.left = `${left}px`;
-      });
-      siteCheckboxLabel.addEventListener('mouseleave', function () {
-        operatorTooltip.style.opacity = 0;
-        setTimeout(() => {
-          if (operatorTooltip.style.opacity === '0') operatorTooltip.style.display = 'none';
-        }, 200);
-      });
-    }
-
     const operatorDescriptions = {
       '" "': "Searches for an exact phrase match. Example: \"climate change\"",
       'OR': "Returns results with either term. Example: python OR java",
@@ -3600,7 +3573,7 @@
       '*': "Acts as a wildcard for any word. Example: \"best * for productivity\"",
       '( )': "Groups terms for complex queries. Example: (solar OR wind) energy",
       'in': "Converts units or currencies. Example: 100 km in miles",
-      'site:': `<span style="display:flex;align-items:center;gap:6px;"><img src="https://www.google.com/favicon.ico" style="width:14px;height:14px;vertical-align:middle;"> Search inside this site/engine with <strong>Google</strong></span><span style="display:block;margin-top:4px;font-size:11px;opacity:0.8;">Example: site:nytimes.com</span>`,
+      'site:': "Restricts search to a specific site. Example: site:nytimes.com",
       'intitle:': "Finds the term in the page title. Example: intitle:SEO",
       'allintitle:': "Finds all terms in the page title. Example: allintitle:SEO trends",
       'inurl:': "Finds the term in the page URL. Example: inurl:blog",
@@ -3959,9 +3932,6 @@
         return;
       }
 
-      // Auto-select first result so Enter immediately picks it
-      selectedIndex = 0;
-
       // Group matches by category
       const categorizedMatches = {
         general: [],
@@ -3980,7 +3950,6 @@
       const grid = autocompleteDiv.querySelector('.autocomplete-grid');
 
       // Create columns for each category
-      let globalItemIndex = 0;
       ['general', 'academic', 'medical', 'ai'].forEach(category => {
         const column = document.createElement('div');
         column.className = 'autocomplete-column';
@@ -3992,11 +3961,10 @@
           title.textContent = categoryTitles[category];
           column.appendChild(title);
 
-          categorizedMatches[category].forEach((match) => {
-            const flatIndex = globalItemIndex++;
+          categorizedMatches[category].forEach((match, index) => {
             const item = document.createElement('div');
             item.className = 'autocomplete-item';
-            if (flatIndex === selectedIndex) item.classList.add('selected');
+            if (index === selectedIndex) item.classList.add('selected');
 
             // Favicon
             const favicon = document.createElement('img');
@@ -4060,10 +4028,6 @@
       // Show and position
       autocompleteDiv.style.display = 'block';
       positionAutocomplete();
-
-      // Scroll first selected item into view
-      const firstSelected = autocompleteDiv.querySelector('.autocomplete-item.selected');
-      if (firstSelected) firstSelected.scrollIntoView({ block: 'nearest' });
     }
 
     // Update search input listener

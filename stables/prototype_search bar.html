@@ -168,49 +168,224 @@
 
     .search-bar {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
       gap: 10px;
-      flex-wrap: wrap;
       position: relative;
+    }
+
+    /* ── ISLAND ROW: [site:] [island] [globe/filetypes] ── */
+    .island-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    /* LEFT — site: pill */
+    .site-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 7px 14px;
+      cursor: pointer;
+      flex-shrink: 0;
+      color: rgba(255,255,255,0.55);
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .site-pill input[type="checkbox"] {
+      accent-color: #9c5af2;
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
+
+    .site-pill:hover {
+      background: rgba(156,90,242,0.15);
+      border-color: rgba(156,90,242,0.4);
+      color: #fff;
+    }
+
+    .site-pill:has(input:checked) {
+      background: rgba(156,90,242,0.2);
+      border-color: rgba(156,90,242,0.6);
+      color: #c9a6ff;
+    }
+
+    /* ── SEARCH ROW: expands on focus ── */
+    .yt-search-row {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      max-width: 560px;
+      min-width: 0;
+      gap: 0;
+      transition: max-width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Expand row when focused */
+    .island-row.row-focused .yt-search-row {
+      max-width: 780px;
+    }
+
+    /* CENTER — pill input */
+    .dynamic-island {
+      flex: 1;
+      min-width: 0;
+      background: #121212;
+      border: 1px solid #2e2e2e;
+      border-right: none;
+      border-radius: 40px 0 0 40px;
+      position: relative;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Purple focus border + glow */
+    .dynamic-island.focused {
+      border-color: #9c5af2;
+      box-shadow: inset 0 0 0 1px #9c5af2;
+    }
+
+    .dynamic-island.focused ~ .yt-search-btn {
+      border-color: #9c5af2;
+      border-left-color: #2e2e2e;
     }
 
     #searchForm {
       display: flex;
       align-items: center;
-      gap: 10px;
-      width: 100%;
+      padding: 5px 12px 5px 8px;
+      gap: 0;
+      height: 46px;
+    }
+
+    /* Engine indicator — dark circle wrapping favicon */
+    .engine-indicator {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #2a2a2a;
+      display: flex;
+      align-items: center;
       justify-content: center;
-      flex-wrap: wrap;
+      flex-shrink: 0;
+      margin-right: 10px;
+      overflow: hidden;
+      transition: background 0.2s ease;
+    }
+
+    .dynamic-island.focused .engine-indicator {
+      background: #333;
+    }
+
+    /* Favicon fills the circle */
+    #search-prefix-favicon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+      pointer-events: none;
+      display: block;
+    }
+
+    @keyframes faviconSwap {
+      0%   { opacity: 0; transform: scale(0.6); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    #search-prefix-favicon.swapping {
+      animation: faviconSwap 0.18s ease-out forwards;
     }
 
     #searchInput {
-      padding: 12px 16px 12px 42px;
-      font-size: 15px;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      min-width: 300px;
-      width: 100%;
-      background: #fafafa;
-      transition: all 0.3s ease;
+      flex: 1;
+      padding: 4px 8px;
+      font-size: 16px;
+      border: none !important;
+      background: transparent !important;
+      color: #e8eaed !important;
+      outline: none !important;
+      box-shadow: none !important;
       font-family: 'Roboto', sans-serif;
-      font-weight: 500;
+      font-weight: 400;
+      caret-color: #9c5af2;
+      min-width: 0;
     }
 
-    #searchInput:focus {
-      border-color: #9c5af2 !important;
-      /* Purple border */
-      outline: none;
-      background: white;
-
-      /* macOS-style glow ring */
-      box-shadow: 0 0 0 4px rgba(156, 90, 242, 0.4);
+    #searchInput::placeholder {
+      color: #707070;
     }
 
-    .dark-mode #searchInput:focus {
-      border-color: #9c5af2 !important;
-      background: rgba(255, 255, 255, 0.12);
-      box-shadow: 0 0 0 4px rgba(156, 90, 242, 0.3);
+    .dark-mode #searchInput {
+      color: #e8eaed;
+    }
+
+    /* External search button */
+    .yt-search-btn {
+      flex-shrink: 0;
+      width: 60px;
+      height: 46px;
+      background: #1e1e1e;
+      border: 1px solid #2e2e2e;
+      border-left: 1px solid #1e1e1e;
+      border-radius: 0 40px 40px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #909090;
+      transition: background 0.15s ease, border-color 0.3s ease, color 0.2s ease;
+      padding: 0;
+    }
+
+    .yt-search-btn:hover {
+      background: #2e2e2e;
+      color: #e8eaed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .yt-search-btn:active {
+      background: #3a3a3a;
+    }
+
+    /* Hide the invisible internal submit */
+    .island-submit { display: none !important; }
+
+    /* RIGHT — globe + filetypes stacked vertically */
+    .island-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    /* Controls row (source text only) */
+    .island-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+    }
+
+    #searchSource {
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+      font-style: italic;
+      transition: color 0.3s;
+      letter-spacing: 0.3px;
     }
 
     button {
@@ -232,24 +407,41 @@
       transform: translateY(0);
     }
 
-    #searchForm button[type="submit"] {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-    }
-
     #wikiToggleBtn {
       background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
       color: white;
     }
 
     #filetypesBtn {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-      color: white;
+      background: rgba(79,172,254,0.15);
+      color: #4facfe;
+      border: 1px solid rgba(79,172,254,0.3);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    #filetypesBtn:hover {
+      background: rgba(79,172,254,0.3);
+      transform: none;
+      box-shadow: none;
     }
 
     #duckBangBtn {
-      background: linear-gradient(135deg, #DE5833 0%, #F7931E 100%);
-      color: white;
+      background: rgba(222,88,51,0.15);
+      color: #F7931E;
+      border: 1px solid rgba(222,88,51,0.3);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    #duckBangBtn:hover {
+      background: rgba(222,88,51,0.3);
+      transform: none;
+      box-shadow: none;
     }
 
     .checkbox-label {
@@ -259,18 +451,6 @@
       font-size: 14px;
       cursor: pointer;
       user-select: none;
-    }
-
-    #searchSource {
-      font-size: 14px;
-      color: #555;
-      text-align: center;
-      font-weight: 600;
-      min-height: 20px;
-      padding: 8px;
-      border-radius: 6px;
-      background: #f8f9fa;
-      font-family: 'JetBrains Mono', 'Courier New', monospace;
     }
 
     #wikiContent {
@@ -332,132 +512,24 @@
       position: fixed;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) scale(0.96);
-      width: 92%;
-      max-width: 720px;
-      max-height: 82vh;
-      display: flex;
-      flex-direction: column;
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.22), 0 4px 16px rgba(102,126,234,0.12);
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      padding: 24px;
       font-size: 14px;
       color: #333;
+      display: none;
       z-index: 2000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
-      overflow: hidden;
     }
 
     #filetypesPopup.show {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translate(-50%, -50%) scale(1);
-    }
-
-    /* Popup header bar */
-    .ft-popup-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 22px 14px;
-      border-bottom: 1px solid #eee;
-      flex-shrink: 0;
-      background: linear-gradient(135deg, #667eea08, #764ba208);
-    }
-
-    .ft-popup-header h3 {
-      margin: 0;
-      font-size: 1.2em;
-      font-weight: 700;
-      color: #2c3e50;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .ft-popup-header p {
-      margin: 4px 0 0;
-      font-size: 12px;
-      color: #888;
-    }
-
-    .ft-header-left { display: flex; flex-direction: column; }
-
-    .ft-popup-header .close-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: #f1f3f4;
-      border: none;
-      font-size: 18px;
-      cursor: pointer;
-      color: #666;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: all 0.2s;
-    }
-
-    .ft-popup-header .close-btn:hover {
-      background: #e53935;
-      color: white;
-      transform: rotate(90deg);
-      box-shadow: none;
-    }
-
-    /* Scrollable body */
-    .ft-popup-body {
-      overflow-y: auto;
-      flex: 1;
-      padding: 16px 22px;
-    }
-
-    /* Footer with actions */
-    .ft-popup-footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 22px;
-      border-top: 1px solid #eee;
-      flex-shrink: 0;
-      background: #fafbff;
-      gap: 10px;
-    }
-
-    .ft-selected-count {
-      font-size: 13px;
-      color: #667eea;
-      font-weight: 600;
-      font-family: 'JetBrains Mono', monospace;
-    }
-
-    .ft-popup-footer-btns {
-      display: flex;
-      gap: 10px;
-    }
-
-    #clearFiletypes {
-      background: #f1f3f4;
-      color: #555;
-      border: 1px solid #dadce0;
-      font-size: 13px;
-      padding: 9px 18px;
-      border-radius: 8px;
-    }
-
-    #clearFiletypes:hover {
-      background: #e8eaed;
-    }
-
-    #applyFiletypes {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      font-size: 13px;
-      padding: 9px 22px;
-      border-radius: 8px;
+      display: block;
     }
 
     .popup-overlay {
@@ -475,12 +547,67 @@
       display: block;
     }
 
-    /* filetype popup inner styles handled by new structure */
+    #filetypesPopup h3 {
+      margin: 0 0 16px 0;
+      font-size: 1.4em;
+      color: #2c3e50;
+      border-bottom: 3px solid #667eea;
+      padding-bottom: 10px;
+    }
+
+    #filetypesPopup .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 28px;
+      cursor: pointer;
+      color: #999;
+      background: none;
+      border: none;
+      padding: 0;
+      width: auto;
+      height: auto;
+    }
+
+    #filetypesPopup .close-btn:hover {
+      color: #333;
+      transform: none;
+      box-shadow: none;
+    }
+
+    #filetypesPopup ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #filetypesPopup li.category {
+      font-weight: 700;
+      margin-top: 16px;
+      margin-bottom: 8px;
+      color: #667eea;
+      font-size: 1.1em;
+    }
+
+    #filetypesPopup li.item {
+      cursor: pointer;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border-bottom: 1px solid #f0f0f0;
+      transition: all 0.2s ease;
+    }
+
+    #filetypesPopup li.item:hover {
+      background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+      transform: translateX(4px);
+      border-left: 3px solid #667eea;
+    }
 
     #filetype-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 1rem;
     }
 
     .filetype-category h4 {
@@ -514,7 +641,34 @@
       background-color: #2c3e50;
     }
 
-    /* ft-popup-footer defined above */
+    .popup-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .dark-mode .popup-buttons {
+      border-top-color: #455a64;
+    }
+
+    #applyFiletypes {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    #clearFiletypes {
+      background-color: #f1f3f4;
+      border: 1px solid #dadce0;
+    }
+
+    .dark-mode #clearFiletypes {
+      background-color: #303134;
+      color: #e8eaed;
+      border-color: #5f6368;
+    }
 
     .favicon-icon {
       width: 16px;
@@ -523,31 +677,6 @@
       vertical-align: middle;
       border-radius: 2px;
       /* Slightly rounded corners for favicons */
-    }
-
-    /* Active engine favicon indicator — inside the search input, left side */
-    #search-prefix-favicon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      object-fit: cover;
-      z-index: 2;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-    }
-
-    /* Swap animation on engine change */
-    @keyframes faviconSwap {
-      0%   { opacity: 0; transform: translateY(-50%) scale(0.6); }
-      100% { opacity: 1; transform: translateY(-50%) scale(1); }
-    }
-
-    #search-prefix-favicon.swapping {
-      animation: faviconSwap 0.2s ease-out forwards;
     }
 
     /* Responsive */
@@ -580,31 +709,7 @@
       }
     }
 
-    .ft-popup-body::-webkit-scrollbar { width: 6px; }
-    .ft-popup-body::-webkit-scrollbar-track { background: transparent; }
-    .ft-popup-body::-webkit-scrollbar-thumb { background: rgba(102,126,234,0.35); border-radius: 8px; }
-    .ft-popup-body::-webkit-scrollbar-thumb:hover { background: rgba(102,126,234,0.6); }
-
-    .filetype-item input[type=checkbox] {
-      accent-color: #667eea;
-      width: 15px;
-      height: 15px;
-      flex-shrink: 0;
-    }
-
-    /* Checked filetype items get a subtle highlight */
-    .filetype-item label:has(input:checked) {
-      background: linear-gradient(135deg, #667eea12, #764ba212);
-      color: #4a3fa0;
-      font-weight: 600;
-    }
-
-    .dark-mode .filetype-item label:has(input:checked) {
-      background: rgba(100,181,246,0.1);
-      color: #90caf9;
-    }
-
-    /* Scrollbar for wiki/filetype popup */
+    /* Scrollbar styling */
     #wikiContent::-webkit-scrollbar,
     #filetypesPopup::-webkit-scrollbar {
       width: 8px;
@@ -669,7 +774,7 @@
 
     #stars3 {
       background-image: radial-gradient(1px 1px at 80px 50px, #fff, rgba(0, 0, 0, 0)),
-        radial-gradient(2px 2px at 150px 100px, #ddd, rgba(0, 0, 0, 0));
+        radial-gradient(1px 1px at 150px 100px, #ddd, rgba(0, 0, 0, 0));
       background-size: 400px 400px;
       animation-name: move-stars, twinkle;
       animation-duration: 45s, 10s;
@@ -736,19 +841,8 @@
       color: #ffffff;
     }
 
-    .dark-mode #searchInput {
-      background: rgba(255, 255, 255, 0.08);
-      border: 2px solid #2d3e52;
-      color: #b0bec5;
-    }
-
-    .dark-mode #searchInput:focus {
-      border-color: #64b5f6;
-      background: rgba(255, 255, 255, 0.12);
-    }
-
     .dark-mode #searchSource {
-      background: #243447;
+      background: transparent;
       color: #b0bec5;
     }
 
@@ -777,47 +871,17 @@
 
     .dark-mode #filetypesPopup {
       background: #1a2332;
+      border-color: #2d3e52;
       color: #b0bec5;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 4px 16px rgba(100,181,246,0.1);
     }
 
-    .dark-mode .ft-popup-header {
-      border-bottom-color: #2d3e52;
-      background: rgba(100,181,246,0.04);
-    }
-
-    .dark-mode .ft-popup-header h3 {
+    .dark-mode #filetypesPopup h3 {
       color: #64b5f6;
+      border-bottom-color: #64b5f6;
     }
 
-    .dark-mode .ft-popup-header p {
-      color: #78909c;
-    }
-
-    .dark-mode .ft-popup-header .close-btn {
-      background: #243447;
-      color: #b0bec5;
-    }
-
-    .dark-mode .ft-popup-footer {
-      border-top-color: #2d3e52;
-      background: #1e2e40;
-    }
-
-    .dark-mode .ft-popup-body::-webkit-scrollbar-track { background: #1a2332; }
-    .dark-mode .ft-popup-body::-webkit-scrollbar-thumb { background: rgba(100,181,246,0.3); }
-
-    .dark-mode #clearFiletypes {
-      background-color: #303134;
-      color: #e8eaed;
-      border-color: #5f6368;
-    }
-
-    .dark-mode #clearFiletypes:hover { background-color: #3c4043; }
-
-    .dark-mode #searchForm button[type="submit"] {
-      background: linear-gradient(135deg, #4285f4, #34a853);
-      box-shadow: 0 4px 12px rgba(66, 133, 244, 0.4);
+    .dark-mode #filetypesPopup li.item:hover {
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
     }
 
     .dark-mode #wikiToggleBtn {
@@ -1164,16 +1228,9 @@
       border: 1px solid #555;
     }
 
-    .autocomplete-container {
-      position: relative;
-      flex: 1;
-      max-width: 500px;
-      min-width: 300px;
-    }
-
     #autocomplete {
       position: fixed;
-      /* iOS Floating Island - Glassmorphism */
+      z-index: 9999;
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(20px) saturate(180%);
       -webkit-backdrop-filter: blur(20px) saturate(180%);
@@ -1357,55 +1414,52 @@
 
     /* Language Icon - Beautiful Circular Button */
     .lang-icon {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);
+      background: rgba(66,133,244,0.15);
+      border: 1px solid rgba(66,133,244,0.3);
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      color: white;
-      font-size: 20px;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
+      color: #4285f4;
+      font-size: 18px;
+      transition: all 0.2s ease;
       user-select: none;
-      border: none;
     }
 
     .lang-icon:hover {
-      transform: translateY(-2px) scale(1.05);
-      box-shadow: 0 4px 16px rgba(66, 133, 244, 0.5);
-      background: linear-gradient(135deg, #3367d6 0%, #2d8f46 100%);
+      background: rgba(66,133,244,0.3);
+      border-color: rgba(66,133,244,0.6);
+      transform: scale(1.08);
     }
 
     .lang-icon.language-selected {
-      background: white;
-      color: #4285f4;
-      border: 2px solid #4285f4;
+      background: rgba(66,133,244,0.2);
+      color: #fff;
+      border: 1px solid #4285f4;
       font-weight: 700;
-      font-size: 13px;
+      font-size: 11px;
       font-family: 'Courier New', monospace;
-      box-shadow: 0 2px 8px rgba(66, 133, 244, 0.4);
     }
 
     .lang-icon.language-selected:hover {
-      background: #f8f9fa;
-      border-color: #3367d6;
-      color: #3367d6;
+      background: rgba(66,133,244,0.35);
     }
 
     .dark-mode .lang-icon {
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      box-shadow: 0 2px 8px rgba(30, 60, 114, 0.5);
+      background: rgba(30,60,114,0.3);
+      border-color: rgba(100,181,246,0.3);
+      color: #64b5f6;
     }
 
     .dark-mode .lang-icon:hover {
-      background: linear-gradient(135deg, #2a5298, #3a6bb8);
+      background: rgba(30,60,114,0.5);
     }
 
     .dark-mode .lang-icon.language-selected {
-      background: #1a2332;
+      background: rgba(30,60,114,0.4);
       color: #64b5f6;
       border-color: #64b5f6;
     }
@@ -1769,7 +1823,231 @@
     .notification.info {
       border-left: 4px solid #2196F3;
     }
-  </style>
+
+    /* ============================================ */
+    /* DYNAMIC ISLAND & MODERN SEARCH BAR */
+    /* ============================================ */
+
+    /* ── ISLAND ROW: [site:] [island] [globe/filetypes] ── */
+    .island-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    /* LEFT — site: pill */
+    .site-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,0,0,0.55);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 20px;
+      padding: 7px 14px;
+      cursor: pointer;
+      flex-shrink: 0;
+      color: rgba(255,255,255,0.55);
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .site-pill input[type="checkbox"] {
+      accent-color: #9c5af2;
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
+
+    .site-pill:hover {
+      background: rgba(156,90,242,0.15);
+      border-color: rgba(156,90,242,0.4);
+      color: #fff;
+    }
+
+    .site-pill:has(input:checked) {
+      background: rgba(156,90,242,0.2);
+      border-color: rgba(156,90,242,0.6);
+      color: #c9a6ff;
+    }
+
+    /* ── SEARCH ROW: expands on focus ── */
+    .yt-search-row {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      max-width: 560px;
+      min-width: 0;
+      gap: 0;
+      transition: max-width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .island-row.row-focused .yt-search-row {
+      max-width: 780px;
+    }
+
+    /* CENTER — pill input */
+    .dynamic-island {
+      flex: 1;
+      min-width: 0;
+      background: #121212;
+      border: 1px solid #2e2e2e;
+      border-right: none;
+      border-radius: 40px 0 0 40px;
+      position: relative;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .dynamic-island.focused {
+      border-color: #9c5af2;
+      box-shadow: inset 0 0 0 1px #9c5af2;
+    }
+
+    #searchForm {
+      display: flex;
+      align-items: center;
+      padding: 5px 12px 5px 8px;
+      gap: 0;
+      height: 46px;
+    }
+
+    .engine-indicator {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #2a2a2a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-right: 10px;
+      overflow: hidden;
+      transition: background 0.2s ease;
+    }
+
+    .dynamic-island.focused .engine-indicator {
+      background: #333;
+    }
+
+    #search-prefix-favicon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+      pointer-events: none;
+      display: block;
+    }
+
+    @keyframes faviconSwap {
+      0%   { opacity: 0; transform: scale(0.6); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    #search-prefix-favicon.swapping {
+      animation: faviconSwap 0.18s ease-out forwards;
+    }
+
+    #searchInput {
+      flex: 1;
+      padding: 4px 8px;
+      font-size: 16px;
+      border: none !important;
+      background: transparent !important;
+      color: #e8eaed !important;
+      outline: none !important;
+      box-shadow: none !important;
+      caret-color: #9c5af2;
+    }
+
+    .yt-search-btn {
+      flex-shrink: 0;
+      width: 60px;
+      height: 46px;
+      background: #1e1e1e;
+      border: 1px solid #2e2e2e;
+      border-left: 1px solid #1e1e1e;
+      border-radius: 0 40px 40px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #909090;
+      transition: background 0.15s ease, border-color 0.3s ease, color 0.2s ease;
+      padding: 0;
+    }
+
+    .yt-search-btn:hover {
+      background: #2e2e2e;
+      color: #e8eaed;
+    }
+
+    .island-right {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .island-controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+    }
+
+    #searchSource {
+      font-size: 12px;
+      color: #888;
+      font-style: italic;
+    }
+
+    .wiki-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+    }
+
+    .wiki-table th,
+    .wiki-table td {
+      border: 1px solid #ddd;
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .wiki-table th {
+      background-color: #f2f2f2;
+    }
+
+    .wiki-table code {
+      background: #f0f0ff;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .dark-mode .wiki-table,
+    .dark-mode .wiki-table th,
+    .dark-mode .wiki-table td {
+      border-color: #455a64;
+    }
+
+    .dark-mode .wiki-table th {
+      background-color: #243447;
+    }
+
+    .dark-mode .wiki-table code {
+      background: #243447;
+      color: #82aaff;
+    }
+
+</style>
 </head>
 
 <body>
@@ -1783,24 +2061,53 @@
 
   <div class="search-container">
     <div class="search-bar">
-      <form id="searchForm">
-        <div id="searchSource">Entrez une requête pour afficher la source</div>
-        <div class="autocomplete-container">
-          <img id="search-prefix-favicon" src="https://www.google.com/s2/favicons?sz=64&domain=google.com" alt="favicon" title="Moteur actif">
-          <input type="text" id="searchInput" autocomplete="off" placeholder="Commencez votre recherche ici..." />
-        </div>
-        <button type="submit">🔍</button>
-        <label class="checkbox-label" id="siteCheckboxLabel" title="Search inside this search engine's site with Google">
+
+      <!-- ISLAND ROW: site: | island | globe+filetypes -->
+      <div class="island-row">
+
+        <!-- LEFT: site: checkbox -->
+        <label class="site-pill" title="Restreindre au domaine">
           <input type="checkbox" id="siteCheckbox">
-          site:
+          <span>site:</span>
         </label>
 
-        <!-- NEW: Language translation icon -->
-        <div id="langIcon" class="lang-icon" title="Select output language">🌐</div>
+        <!-- CENTER: YouTube-style search row -->
+        <div class="yt-search-row">
 
-        <button type="button" id="filetypesBtn">📁 Filetypes</button>
-        <button type="button" id="duckBangBtn" style="display: none;">🦆 !bang</button>
-      </form>
+          <!-- Input pill: favicon in dark circle + input -->
+          <div id="dynamicIsland" class="dynamic-island">
+            <form id="searchForm">
+              <div class="engine-indicator">
+                <img id="search-prefix-favicon" src="https://www.google.com/s2/favicons?sz=64&domain=google.com" alt="favicon" title="Moteur actif">
+              </div>
+              <input type="text" id="searchInput" autocomplete="off" placeholder="Rechercher..." />
+              <button type="submit" class="island-submit" tabindex="-1" aria-hidden="true" style="display:none"></button>
+            </form>
+          </div>
+
+          <!-- External search button (YouTube style) -->
+          <button type="button" class="yt-search-btn" onclick="document.getElementById('searchForm').requestSubmit()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </button>
+
+        </div>
+
+        <!-- RIGHT: globe + filetypes stacked -->
+        <div class="island-right">
+          <div id="langIcon" class="lang-icon" title="Select output language">🌐</div>
+          <button type="button" id="filetypesBtn">📁</button>
+          <button type="button" id="duckBangBtn" style="display: none;">🦆</button>
+        </div>
+
+      </div>
+
+      <!-- SOURCE LINE -->
+      <div class="island-controls">
+        <div id="searchSource">Entrez une requête pour afficher la source</div>
+      </div>
+
     </div>
 
     <div id="youtubeFilters" style="display: none;">
@@ -1919,14 +2226,11 @@
         <div class="category-title">⚕️ CISMeF - Type de document</div>
         <div class="radio-group">
           <label><input type="radio" name="cismef_scope" value="env=basic&q=" checked> Tous les types</label>
-          <label><input type="radio" name="cismef_scope" value="env=bp&q="> Uniquement les recommandations
-            professionnelles</label>
+          <label><input type="radio" name="cismef_scope" value="env=bp&q="> Uniquement les recommandations professionnelles</label>
           <label><input type="radio" name="cismef_scope" value="env=unf3s&q="> Documents d'enseignement</label>
-          <label><input type="radio" name="cismef_scope" value="env=pat&q="> Documents grand public et les associations
-            de patients</label>
+          <label><input type="radio" name="cismef_scope" value="env=pat&q="> Documents grand public et les associations de patients</label>
           <label><input type="radio" name="cismef_scope" value="env=thm&q="> Thèses et mémoires</label>
-          <label><input type="radio" name="cismef_scope" value="env=ecn&q=a&p="> Épreuves Classantes Nationales (nouveau
-            programme 2022)</label>
+          <label><input type="radio" name="cismef_scope" value="env=ecn&q=a&p="> Épreuves Classantes Nationales (nouveau programme 2022)</label>
         </div>
       </div>
     </div>
@@ -1973,6 +2277,7 @@
           <label><input type="radio" name="searchEngine" value="bing:">Bing</label>
           <label><input type="radio" name="searchEngine" value="bd:">Baidu</label>
           <label><input type="radio" name="searchEngine" value="gplus:">Google Avancé</label>
+          <label><input type="radio" name="searchEngine" value="se:">Search Engines</label>
         </div>
       </div>
 
@@ -1998,8 +2303,7 @@
         <div class="category-title">⚕️ Médical / Santé</div>
         <div class="radio-group" id="group3">
           <label><input type="radio" name="searchEngine" value="cismef:">CISMeF</label>
-          <label><input type="radio" name="searchEngine" value="msps:">Ministère de la santé et de la Protection
-            Sociale</label>
+          <label><input type="radio" name="searchEngine" value="msps:">Ministère de la santé et de la Protection Sociale</label>
           <label><input type="radio" name="searchEngine" value="has:">HAS</label>
           <label><input type="radio" name="searchEngine" value="vidal:">VIDAL</label>
           <label><input type="radio" name="searchEngine" value="mesh:">MeSH Browser</label>
@@ -2043,7 +2347,14 @@
         <label for="keepWikiOpenCheckbox">Garder le wiki ouvert</label>
       </div>
 
-      <h4>🌐 Recherche Générale</h4>
+      <!-- NEW: Wiki Search Bar -->
+      <div class="wiki-search-container" style="margin-bottom: 15px;">
+        <input type="text" id="wikiSearchInput" placeholder="Rechercher un préfixe ou un moteur..." 
+          style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #ddd; outline: none;" />
+      </div>
+
+      <div id="wikiItems">
+        <h4>🌐 Recherche Générale</h4>
       <ul>
         <li><b>g:</b> Google</li>
         <li><b>yt:</b> YouTube</li>
@@ -2053,6 +2364,7 @@
         <li><b>bing:</b> Bing</li>
         <li><b>bd:</b> Baidu</li>
         <li><b>gplus:</b> Google Avancé</li>
+        <li><b>se:</b> Search Engines (Bangs)</li>
       </ul>
 
       <h4>🎓 Académique / Thèses</h4>
@@ -2104,16 +2416,27 @@
         <li><b>chatgpt:</b> ChatGPT</li>
         <li><b>claude:</b> Claude AI</li>
         <li><b>gemini:</b> Gemini</li>
-        <li><b>gai:</b> Google AI Mode – utilise le mode expérimental udm=50 qui déclenche très souvent la réponse
-          IA/Gemini</li>
+        <li><b>gai:</b> Google AI Mode – utilise le mode expérimental udm=50 qui déclenche très souvent la réponse IA/Gemini</li>
         <li><b>perplexity:</b> Perplexity</li>
         <li><b>copilot:</b> Copilot</li>
         <li><b>cbd:</b> Chat Baidu</li>
         <li><b>ernie:</b> Baidu AI</li>
         <li><b>duckai:</b> Duck.ai</li>
+        <li><b>se:</b> Search Engines (Bangs)</li>
       </ul>
+      </div>
     </div>
 
+    <div id="filetypesPopup">
+      <button class="close-btn" id="closeFiletypes">&times;</button>
+      <h3>📁 Select Filetypes</h3>
+      <p>Select one or more filetypes. Multiple selections will be joined by OR.</p>
+      <div class="popup-buttons">
+        <button type="button" id="clearFiletypes">Clear</button>
+        <button type="button" id="applyFiletypes">Apply</button>
+      </div>
+      <div id="filetype-grid"></div>
+    </div>
     <div id="googleWikiPopup" style="display: none;">
       <button class="close-btn" id="closeGoogleWikiBtn">&times;</button>
       <h3><span class="favicon-icon"
@@ -2371,66 +2694,86 @@
       <div id="langPopupContent">
         <button class="close-btn" id="closeLangPopup">&times;</button>
         <h2>🌐 Translate Page</h2>
-
-        <!-- NEW: Search Bar -->
         <div class="lang-search-container">
           <input type="text" id="langSearchInput" placeholder="Type language name or code..." autocomplete="off" />
           <div id="langSuggestions"></div>
         </div>
-
-        <!-- Language Buttons -->
         <div class="lang-buttons-grid">
-          <!-- Original button spans full width -->
-          <button class="lang-btn" data-lang="original" title="No Translation">
-            🌐 Original
-          </button>
-          <!-- 6 main languages in 3x2 grid -->
-          <button class="lang-btn" data-lang="en" title="English">
-            English
-          </button>
-          <button class="lang-btn" data-lang="fr" title="French">
-            Français
-          </button>
-          <button class="lang-btn" data-lang="ar" title="Arabic">
-            العربية
-          </button>
-          <button class="lang-btn" data-lang="ru" title="Russian">
-            Русский
-          </button>
-          <button class="lang-btn" data-lang="es" title="Spanish">
-            Español
-          </button>
-          <button class="lang-btn" data-lang="zh" title="Chinese">
-            中文
-          </button>
+          <button class="lang-btn" data-lang="original" title="No Translation">🌐 Original</button>
+          <button class="lang-btn" data-lang="en" title="English">English</button>
+          <button class="lang-btn" data-lang="fr" title="French">Français</button>
+          <button class="lang-btn" data-lang="ar" title="Arabic">العربية</button>
+          <button class="lang-btn" data-lang="ru" title="Russian">Русский</button>
+          <button class="lang-btn" data-lang="es" title="Spanish">Español</button>
+          <button class="lang-btn" data-lang="zh" title="Chinese">中文</button>
         </div>
-
         <p class="lang-info">Press <kbd>ESC</kbd> to close • Translation may not work for all engines</p>
       </div>
     </div>
   </div>
 
-  <!-- Filetype popup lives at body level for correct fixed positioning -->
-  <div id="filetypesPopup" role="dialog" aria-modal="true" aria-labelledby="ft-popup-title">
-    <div class="ft-popup-header">
-      <div class="ft-header-left">
-        <h3 id="ft-popup-title">📁 Select Filetypes</h3>
-        <p>Select one or more — multiple choices are joined by OR</p>
-      </div>
-      <button class="close-btn" id="closeFiletypes" aria-label="Close">✕</button>
-    </div>
-    <div class="ft-popup-body">
-      <div id="filetype-grid"></div>
-    </div>
-    <div class="ft-popup-footer">
-      <span class="ft-selected-count" id="ft-selected-count">0 selected</span>
-      <div class="ft-popup-footer-btns">
-        <button type="button" id="clearFiletypes">Clear all</button>
-        <button type="button" id="applyFiletypes">✓ Apply</button>
-      </div>
-    </div>
-  </div>
+  <script>
+    const searchEngines = {
+      'g:': { name: 'Google', url: 'https://www.google.com/search?q=', domain: 'google.com' },
+      'yt:': { name: 'YouTube', url: 'https://www.youtube.com/results?search_query=', domain: 'youtube.com' },
+      'brave:': { name: 'Brave Search', url: 'https://search.brave.com/search?q=', domain: 'brave.com' },
+      'ddg:': { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=', domain: 'duckduckgo.com' },
+      'yan:': { name: 'Yandex', url: 'https://yandex.com/search/?text=', domain: 'yandex.com' },
+      'bing:': { name: 'Bing', url: 'https://www.bing.com/search?q=', domain: 'bing.com' },
+      'bd:': { name: 'Baidu', url: 'https://www.baidu.com/s?wd=', domain: 'baidu.com' },
+      'gplus:': { name: 'Google Avancé', url: 'https://www.google.com/advanced_search?q=', domain: 'google.com' },
+      'gai:': { name: 'Google AI Mode', url: 'https://www.google.com/search?udm=50&q=', domain: 'google.com' },
+      'scholar:': { name: 'Google Scholar', url: 'https://scholar.google.com/scholar?q=', domain: 'google.com' },
+      'pubmed:': { name: 'PubMed', url: 'https://pubmed.ncbi.nlm.nih.gov/?term=', domain: 'ncbi.nlm.nih.gov' },
+      'arxiv:': { name: 'arXiv', url: 'https://arxiv.org/search/?query=', domain: 'arxiv.org' },
+      'gpat:': { name: 'Google Patents', url: 'https://patents.google.com/', domain: 'patents.google.com', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/patents.google.com-favicon.ico' },
+      'these2.0:': { name: 'These2.0', url: 'https://thesefmpm.vercel.app/search?page=1&search=', domain: 'thesefmpm.vercel.app' },
+      'cismef-th:': { name: 'CISMeF Thèses', url: 'https://doccismef.chu-rouen.fr/dc/#env=thm&q=', domain: 'doccismef.chu-rouen.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.cismef.org-favicon.ico' },
+      'these-ma:': { name: 'Toubkal', url: 'https://toubkal.imist.ma/search?query=', domain: 'toubkal.imist.ma' },
+      'these-fr:': { name: 'Theses.fr', url: 'https://theses.fr/resultats?filtres=%255BStatut%25253D%252522soutenue%252522~Statut%25253D%252522Accessibles%252520en%252520ligne%252522%255D&q=', domain: 'theses.fr' },
+      'rgate:': { name: 'ResearchGate', url: 'https://www.researchgate.net/search/publication?q=', domain: 'researchgate.net' },
+      'ndltd:': { name: 'NDLTD', url: 'http://search.ndltd.org/search.php?q=', domain: 'ndltd.org' },
+      'bdedu:': { name: 'Baidu Academic (Xueshu)', url: 'https://xueshu.baidu.com/ndscholar/browse/search?wd=', domain: 'baidu.com', plusEncoding: true },
+      'proinserm:': { name: 'Pro Inserm', url: 'https://pro.inserm.fr/?s=', domain: 'pro.inserm.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/pro.inserm.fr-favicon.png' },
+      'cismef:': { name: 'CISMeF', url: 'https://doccismef.chu-rouen.fr/dc/#', domain: 'doccismef.chu-rouen.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.cismef.org-favicon.ico' },
+      // look for functional MSPS search url
+      'msps:': { name: 'Ministère de la santé et de la Protection Sociale', url: 'https://www.google.com/search?q=site:sante.gov.ma ', domain: 'sante.gov.ma', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.sante.gov.ma-favicon.png' },
+      'has:': { name: 'HAS', url: 'https://www.has-sante.fr/jcms/fc_2875171/fr/resultat-de-recherche?text=', domain: 'has-sante.fr' },
+      'vidal:': { name: 'VIDAL', url: 'https://www.vidal.fr/recherche.html?query=', domain: 'vidal.fr' },
+      'cismef-bp:': { name: 'CISMeF Bonnes Pratiques', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=bp&q=' },
+      'cismef-edu:': { name: 'CISMeF Éducation', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=unf3s&q=' },
+      'cismef-edn:': { name: 'CISMeF ECN', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=ecn&q=a&p=' },
+      'cismef-pat:': { name: 'CISMeF Patients', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=pat&q=' },
+      'lissa:': { name: 'LISSA', url: 'https://www.lissa.fr/dc/#env=lissa&q=', domain: 'lissa.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.lissa.fr-favicon.ico' },
+      'anm:': { name: 'Académie nationale de médecine', url: 'http://91.209.229.113/search?titre=', domain: '91.209.229.113' },
+      'hetop:': { name: 'HETOP', url: 'https://www.hetop.eu/hetop/fr/#q=', domain: 'hetop.eu' },
+      'nejm:': { name: 'New England Journal of Medicine', url: 'https://www.nejm.org/search?q=', domain: 'nejm.org' },
+      'rp:': { name: 'Radiopaedia', url: 'https://radiopaedia.org/search?q=', domain: 'radiopaedia.org' },
+      'utd:': { name: 'UpToDate', url: 'https://www.uptodate.com/contents/search?search=', domain: 'uptodate.com' },
+      'coch:': { name: 'Cochrane Library', url: 'https://www.cochranelibrary.com/search?q=', domain: 'cochranelibrary.com' },
+      'medscape:': { name: 'Medscape', url: 'https://search.medscape.com/search/fr/', domain: 'medscape.com' },
+      'openmd:': { name: 'OpenMD', url: 'https://openmd.com/search?q=', domain: 'openmd.com' },
+      'mesh:': { name: 'MeSH Browser', url: 'https://meshb.nlm.nih.gov/search?searchInField=allTerms&searchString=', domain: 'nlm.nih.gov' },
+      'dd:': { name: 'Diseases Database', url: 'http://www.diseasesdatabase.com/item_choice.asp?strUserInput=', domain: 'diseasesdatabase.com' },
+      'webmd:': { name: 'WebMD', url: 'https://www.webmd.com/search?query=', domain: 'webmd.com' },
+      'nih:': { name: 'NIH', url: 'https://search.usa.gov/search?utf8=%E2%9C%93&affiliate=nih&query=', domain: 'nih.gov', favicon: 'https://www.google.com/s2/favicons?sz=32&domain=nlm.nih.gov' },
+      'drugs:': { name: 'Drugs.com', url: 'https://www.drugs.com/search.php?searchterm=', domain: 'drugs.com' },
+      'cdc:': { name: 'CDC', url: 'https://search.cdc.gov/search/?query=', domain: 'cdc.gov' },
+      'wolf:': { name: 'Wolfram Alpha', url: 'https://www.wolframalpha.com/input?i=', domain: 'wolframalpha.com' },
+      'chatgpt:': { name: 'ChatGPT*', url: 'https://chatgpt.com/?prompt=', domain: 'chatgpt.com', promptBased: true },
+      'claude:': { name: 'Claude AI*', url: 'https://claude.ai/new?q=', domain: 'claude.ai', promptBased: true },
+      'gemini:': { name: 'Gemini*', url: 'https://gemini.google.com/app?q=', domain: 'gemini.google.com/', promptBased: true },
+      'gai:': { name: 'Google AI Mode', url: 'https://www.google.com/search?udm=50&q=', domain: 'google.com' },
+      'perplexity:': { name: 'Perplexity', url: 'https://www.perplexity.ai/search?q=', domain: 'perplexity.ai' },
+      'copilot:': { name: 'Copilot*', url: 'https://copilot.microsoft.com/?q=', domain: 'microsoft.com', promptBased: true },
+      'cbd:': { name: 'Chat Baidu', url: 'https://chat.baidu.com/search?word=', domain: 'baidu.com', plusEncoding: true },
+      // look for ernie search with terme URL 
+      'ernie:': { name: 'Baidu AI*', url: 'https://ernie.baidu.com/', domain: 'baidu.com', promptBased: true },
+      'duckai:': { name: 'Duck.ai', url: 'https://duck.ai/chat?q=', domain: 'duckduckgo.com', plusEncoding: true },
+      'se:': { name: 'Search Engines (Bangs)', url: 'https://duckduckgo.com/bangs?q=', domain: 'duckduckgo.com' }
+    };
 
+</script>
   <script>
     let operatorHandlersInitialized = false;
     const filetypesWiki = {
@@ -2508,64 +2851,7 @@
     // AI-Assisted Comment: This object maps search prefixes (e.g., 'g:') to their corresponding search engine details.
     // Each entry contains the search engine's name and the base URL for constructing search queries.
     // The script uses this map to determine which search engine to use based on user input or selection.
-    const searchEngines = {
-      'g:': { name: 'Google', url: 'https://www.google.com/search?q=', domain: 'google.com' },
-      'yt:': { name: 'YouTube', url: 'https://www.youtube.com/results?search_query=', domain: 'youtube.com' },
-      'brave:': { name: 'Brave Search', url: 'https://search.brave.com/search?q=', domain: 'brave.com' },
-      'ddg:': { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=', domain: 'duckduckgo.com' },
-      'yan:': { name: 'Yandex', url: 'https://yandex.com/search/?text=', domain: 'yandex.com' },
-      'bing:': { name: 'Bing', url: 'https://www.bing.com/search?q=', domain: 'bing.com' },
-      'bd:': { name: 'Baidu', url: 'https://www.baidu.com/s?wd=', domain: 'baidu.com' },
-      'gplus:': { name: 'Google Avancé', url: 'https://www.google.com/advanced_search?q=', domain: 'google.com' },
-      'gai:': { name: 'Google AI Mode', url: 'https://www.google.com/search?udm=50&q=', domain: 'google.com' },
-      'scholar:': { name: 'Google Scholar', url: 'https://scholar.google.com/scholar?q=', domain: 'google.com' },
-      'pubmed:': { name: 'PubMed', url: 'https://pubmed.ncbi.nlm.nih.gov/?term=', domain: 'ncbi.nlm.nih.gov' },
-      'arxiv:': { name: 'arXiv', url: 'https://arxiv.org/search/?query=', domain: 'arxiv.org' },
-      'gpat:': { name: 'Google Patents', url: 'https://patents.google.com/', domain: 'patents.google.com', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/patents.google.com-favicon.ico' },
-      'these2.0:': { name: 'These2.0', url: 'https://thesefmpm.vercel.app/search?page=1&search=', domain: 'thesefmpm.vercel.app' },
-      'cismef-th:': { name: 'CISMeF Thèses', url: 'https://doccismef.chu-rouen.fr/dc/#env=thm&q=', domain: 'doccismef.chu-rouen.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.cismef.org-favicon.ico' },
-      'these-ma:': { name: 'Toubkal', url: 'https://toubkal.imist.ma/search?query=', domain: 'toubkal.imist.ma' },
-      'these-fr:': { name: 'Theses.fr', url: 'https://theses.fr/resultats?filtres=%255BStatut%25253D%252522soutenue%252522~Statut%25253D%252522Accessibles%252520en%252520ligne%252522%255D&q=', domain: 'theses.fr' },
-      'rgate:': { name: 'ResearchGate', url: 'https://www.researchgate.net/search/publication?q=', domain: 'researchgate.net' },
-      'ndltd:': { name: 'NDLTD', url: 'http://search.ndltd.org/search.php?q=', domain: 'ndltd.org' },
-      'bdedu:': { name: 'Baidu Academic (Xueshu)', url: 'https://xueshu.baidu.com/ndscholar/browse/search?wd=', domain: 'baidu.com', plusEncoding: true },
-      'proinserm:': { name: 'Pro Inserm', url: 'https://pro.inserm.fr/?s=', domain: 'pro.inserm.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/pro.inserm.fr-favicon.png' },
-      'cismef:': { name: 'CISMeF', url: 'https://doccismef.chu-rouen.fr/dc/#', domain: 'doccismef.chu-rouen.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.cismef.org-favicon.ico' },
-      // look for functional MSPS search url
-      'msps:': { name: 'Ministère de la santé et de la Protection Sociale', url: 'https://www.google.com/search?q=site:sante.gov.ma ', domain: 'sante.gov.ma', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.sante.gov.ma-favicon.png' },
-      'has:': { name: 'HAS', url: 'https://www.has-sante.fr/jcms/fc_2875171/fr/resultat-de-recherche?text=', domain: 'has-sante.fr' },
-      'vidal:': { name: 'VIDAL', url: 'https://www.vidal.fr/recherche.html?query=', domain: 'vidal.fr' },
-      'cismef-bp:': { name: 'CISMeF Bonnes Pratiques', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=bp&q=' },
-      'cismef-edu:': { name: 'CISMeF Éducation', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=unf3s&q=' },
-      'cismef-edn:': { name: 'CISMeF ECN', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=ecn&q=a&p=' },
-      'cismef-pat:': { name: 'CISMeF Patients', isAlias: true, aliasFor: 'cismef:', filterValue: 'env=pat&q=' },
-      'lissa:': { name: 'LISSA', url: 'https://www.lissa.fr/dc/#env=lissa&q=', domain: 'lissa.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.lissa.fr-favicon.ico' },
-      'anm:': { name: 'Académie nationale de médecine', url: 'http://91.209.229.113/search?titre=', domain: '91.209.229.113' },
-      'hetop:': { name: 'HETOP', url: 'https://www.hetop.eu/hetop/fr/#q=', domain: 'hetop.eu' },
-      'nejm:': { name: 'New England Journal of Medicine', url: 'https://www.nejm.org/search?q=', domain: 'nejm.org' },
-      'rp:': { name: 'Radiopaedia', url: 'https://radiopaedia.org/search?q=', domain: 'radiopaedia.org' },
-      'utd:': { name: 'UpToDate', url: 'https://www.uptodate.com/contents/search?search=', domain: 'uptodate.com' },
-      'coch:': { name: 'Cochrane Library', url: 'https://www.cochranelibrary.com/search?q=', domain: 'cochranelibrary.com' },
-      'medscape:': { name: 'Medscape', url: 'https://search.medscape.com/search/fr/', domain: 'medscape.com' },
-      'openmd:': { name: 'OpenMD', url: 'https://openmd.com/search?q=', domain: 'openmd.com' },
-      'mesh:': { name: 'MeSH Browser', url: 'https://meshb.nlm.nih.gov/search?searchInField=allTerms&searchString=', domain: 'nlm.nih.gov' },
-      'dd:': { name: 'Diseases Database', url: 'http://www.diseasesdatabase.com/item_choice.asp?strUserInput=', domain: 'diseasesdatabase.com' },
-      'webmd:': { name: 'WebMD', url: 'https://www.webmd.com/search?query=', domain: 'webmd.com' },
-      'nih:': { name: 'NIH', url: 'https://search.usa.gov/search?utf8=%E2%9C%93&affiliate=nih&query=', domain: 'nih.gov', favicon: 'https://www.google.com/s2/favicons?sz=32&domain=nlm.nih.gov' },
-      'drugs:': { name: 'Drugs.com', url: 'https://www.drugs.com/search.php?searchterm=', domain: 'drugs.com' },
-      'cdc:': { name: 'CDC', url: 'https://search.cdc.gov/search/?query=', domain: 'cdc.gov' },
-      'wolf:': { name: 'Wolfram Alpha', url: 'https://www.wolframalpha.com/input?i=', domain: 'wolframalpha.com' },
-      'chatgpt:': { name: 'ChatGPT*', url: 'https://chatgpt.com/?prompt=', domain: 'chatgpt.com', promptBased: true },
-      'claude:': { name: 'Claude AI*', url: 'https://claude.ai/new?q=', domain: 'claude.ai', promptBased: true },
-      'gemini:': { name: 'Gemini*', url: 'https://gemini.google.com/app?q=', domain: 'gemini.google.com/', promptBased: true },
-      'gai:': { name: 'Google AI Mode', url: 'https://www.google.com/search?udm=50&q=', domain: 'google.com' },
-      'perplexity:': { name: 'Perplexity', url: 'https://www.perplexity.ai/search?q=', domain: 'perplexity.ai' },
-      'copilot:': { name: 'Copilot*', url: 'https://copilot.microsoft.com/?q=', domain: 'microsoft.com', promptBased: true },
-      'cbd:': { name: 'Chat Baidu', url: 'https://chat.baidu.com/search?word=', domain: 'baidu.com', plusEncoding: true },
-      // look for ernie search with terme URL 
-      'ernie:': { name: 'Baidu AI*', url: 'https://ernie.baidu.com/', domain: 'baidu.com', promptBased: true },
-      'duckai:': { name: 'Duck.ai', url: 'https://duck.ai/chat?q=', domain: 'duckduckgo.com', plusEncoding: true }
-    };
+    // searchEngines will be loaded from engines.js
 
     // AI-Assisted Comment: These constants store references to various DOM elements.
     // Caching these elements in variables improves performance by avoiding repeated DOM lookups.
@@ -2596,6 +2882,7 @@
     const keyboardShortcutsBtn = document.getElementById('keyboardShortcutsBtn'); // New button
     const keyboardShortcutsPopup = document.getElementById('keyboardShortcutsPopup');
     const closeShortcutsBtn = document.getElementById('closeShortcutsBtn');
+    const wikiSearchInput = document.getElementById('wikiSearchInput');
 
     // Yandex Translation elements
     const yandexTranslationBox = document.getElementById('yandexTranslationBox');
@@ -2693,6 +2980,37 @@
 
     keyboardShortcutsBtn.addEventListener('click', openShortcutsPopup);
     closeShortcutsBtn.addEventListener('click', closeShortcutsPopup);
+
+    // Wiki search functionality
+    if (wikiSearchInput) {
+      wikiSearchInput.addEventListener('input', function() {
+        const filter = this.value.toLowerCase().trim();
+        const wikiItems = document.getElementById('wikiItems');
+        if (!wikiItems) return;
+
+        const lists = wikiItems.querySelectorAll('ul');
+        const titles = wikiItems.querySelectorAll('h4');
+
+        lists.forEach((list, index) => {
+          let hasVisibleItems = false;
+          const items = list.querySelectorAll('li');
+          items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(filter)) {
+              item.style.display = '';
+              hasVisibleItems = true;
+            } else {
+              item.style.display = 'none';
+            }
+          });
+
+          // Hide title if no items match in this section
+          if (titles[index]) {
+            titles[index].style.display = hasVisibleItems ? '' : 'none';
+          }
+        });
+      });
+    }
 
     // Translation API function (using MyMemory - free, no key required)
     async function translateText(text, sourceLang, targetLang) {
@@ -2847,7 +3165,14 @@
           searchPrefixFavicon.classList.add('swapping');
         } else if (!faviconUrl) {
           // Fallback to Google favicon
-          searchPrefixFavicon.src = 'https://www.google.com/s2/favicons?sz=64&domain=google.com';
+          if (!searchPrefixFavicon.src.includes('google.com')) {
+            searchPrefixFavicon.classList.remove('swapping');
+            void searchPrefixFavicon.offsetWidth;
+            searchPrefixFavicon.src = 'https://www.google.com/s2/favicons?sz=64&domain=google.com';
+            searchPrefixFavicon.alt = 'Google';
+            searchPrefixFavicon.title = 'Google (défaut)';
+            searchPrefixFavicon.classList.add('swapping');
+          }
         }
         // Sync radio buttons
         document.querySelectorAll('input[name="searchEngine"]').forEach(radio => {
@@ -2856,7 +3181,7 @@
           radio.parentElement.classList.toggle('selected', isEffective);
         });
       } else {
-        // No engine — show Google as default
+        // No engine determined
         source = "Entrez une requête pour afficher la source";
         color = "#555";
         if (!searchPrefixFavicon.src.includes('google.com')) {
@@ -2934,7 +3259,7 @@
         // Strip any existing prefix from the input, keep only the query
         let val = searchInput.value.trim();
         for (const key of Object.keys(searchEngines)) {
-          if (val.startsWith(key)) {
+          if (val.toLowerCase().startsWith(key.toLowerCase())) {
             val = val.substring(key.length).trim();
             break;
           }
@@ -3109,12 +3434,6 @@
       window.open('https://mosermichael.github.io/duckduckbang/html/main.html', 'duckBangWindow', 'width=800,height=600,scrollbars=yes,resizable=yes');
     });
 
-    function updateFtCounter() {
-      const count = document.querySelectorAll('.filetype-checkbox:checked').length;
-      const el = document.getElementById('ft-selected-count');
-      if (el) el.textContent = count === 0 ? '0 selected' : `${count} selected`;
-    }
-
     function renderFiletypesCheckboxes() {
       const grid = document.getElementById('filetype-grid');
       grid.innerHTML = '';
@@ -3163,8 +3482,6 @@
             checkbox.checked = true;
           }
 
-          checkbox.addEventListener('change', updateFtCounter);
-
           label.appendChild(checkbox);
           label.append(` ${labelText}`);
 
@@ -3174,8 +3491,6 @@
         categoryDiv.appendChild(itemsContainer);
         grid.appendChild(categoryDiv);
       }
-
-      updateFtCounter();
     }
 
     function getCurrentlySelectedFiletypes() {
@@ -3216,7 +3531,6 @@
 
     function clearFiletypeSelection() {
       document.querySelectorAll('.filetype-checkbox').forEach(cb => cb.checked = false);
-      updateFtCounter();
     }
 
     function openFiletypesPopup() {
@@ -3365,9 +3679,90 @@
       }
     });
 
-    // Event listener for main search input to trigger Yandex translation
-    searchInput.addEventListener('input', (e) => {
-      // We update the search source and the other displayed boxes on each input
+    // Event listener for main search input to trigger UI updates
+    // (Consolidated logic for grid filtering, autocomplete, and engine selection)
+    searchInput.addEventListener('input', function (e) {
+      const value = e.target.value;
+      const valueLower = value.trim().toLowerCase();
+      selectedIndex = -1;
+
+      // 1. Grid Filtering: Filter radio buttons as user types
+      const gridItems = document.querySelectorAll('.category-section label');
+      const categorySections = document.querySelectorAll('.category-section');
+      
+      if (!valueLower || valueLower.includes(' ')) {
+        gridItems.forEach(label => label.style.display = 'flex');
+        categorySections.forEach(section => section.style.display = 'block');
+      } else {
+        categorySections.forEach(section => {
+          let hasVisible = false;
+          const labels = section.querySelectorAll('label');
+          labels.forEach(label => {
+            const prefix = label.querySelector('input').value.toLowerCase();
+            const name = label.textContent.toLowerCase();
+            if (prefix.includes(valueLower) || name.includes(valueLower)) {
+              label.style.display = 'flex';
+              hasVisible = true;
+            } else {
+              label.style.display = 'none';
+            }
+          });
+          section.style.display = hasVisible ? 'block' : 'none';
+        });
+      }
+
+      // 2. Meta-prefix handling for 'se:' (Search for search engine)
+      if (valueLower.startsWith('se:')) {
+        const query = valueLower.substring(3).trim();
+        const matches = Object.keys(searchEngines)
+          .filter(prefix => {
+            const engine = searchEngines[prefix];
+            return prefix.toLowerCase().includes(query) ||
+              engine.name.toLowerCase().includes(query);
+          })
+          .map(prefix => ({ prefix, engine: searchEngines[prefix] }));
+        
+        showAutocomplete(matches);
+        updateSearchSource();
+        return;
+      }
+
+      // 3. Detect exact prefix match (e.g. user typed "yt:" or "scholar:")
+      // Strip it immediately and select the engine
+      for (const key of Object.keys(searchEngines)) {
+        if (valueLower.startsWith(key.toLowerCase())) {
+          const query = value.trim().substring(key.length).trim();
+          const radio = document.querySelector(`input[name="searchEngine"][value="${key}"]`);
+          if (radio) {
+            radio.checked = true;
+            document.querySelectorAll('input[name="searchEngine"]').forEach(r =>
+              r.parentElement.classList.remove('selected')
+            );
+            radio.parentElement.classList.add('selected');
+          }
+          searchInput.value = query;
+          if (autocompleteDiv) autocompleteDiv.style.display = 'none';
+          updateSearchSource();
+          return;
+        }
+      }
+
+      // 4. Autocomplete logic
+      if (!valueLower || valueLower.includes(' ')) {
+        if (autocompleteDiv) autocompleteDiv.style.display = 'none';
+        updateSearchSource();
+        return;
+      }
+
+      const matches = Object.keys(searchEngines)
+        .filter(prefix => {
+          const engine = searchEngines[prefix];
+          return prefix.toLowerCase().startsWith(valueLower) ||
+            engine.name.toLowerCase().includes(valueLower);
+        })
+        .map(prefix => ({ prefix, engine: searchEngines[prefix] }));
+
+      showAutocomplete(matches);
       updateSearchSource();
     });
 
@@ -3450,7 +3845,7 @@
       '" "': "Searches for an exact phrase match. Example: \"search engine\"",
       'OR': "Returns results with either term. Example: bing OR google",
       'NOT': "Excludes results with this term. Example: search NOT engine",
-      'site:': `<span style="display:flex;align-items:center;gap:6px;"><img src="https://www.google.com/favicon.ico" style="width:14px;height:14px;vertical-align:middle;"> Search inside this site/engine with <strong>Google</strong></span><span style="display:block;margin-top:4px;font-size:11px;opacity:0.8;">Example: site:microsoft.com</span>`,
+      'site:': "Restricts search to a specific site. Example: site:microsoft.com",
       'filetype:': "Restricts to a specific file type. Example: filetype:pdf",
       'inurl:': "Finds the term in the page URL. Example: inurl:blog",
       'inbody:': "Searches only in the body text. Example: inbody:\"microservices\"",
@@ -3566,33 +3961,6 @@
     operatorTooltip.className = 'operator-tooltip';
     document.body.appendChild(operatorTooltip);
 
-    // Tooltip for the site: checkbox in the search bar
-    const siteCheckboxLabel = document.getElementById('siteCheckboxLabel');
-    if (siteCheckboxLabel) {
-      siteCheckboxLabel.addEventListener('mouseenter', function () {
-        const activeName = document.querySelector('input[name="searchEngine"]:checked')?.value || 'this engine';
-        const engineName = searchEngines[activeName]?.name || 'this engine';
-        operatorTooltip.innerHTML = `<span style="display:flex;align-items:center;gap:6px;"><img src="https://www.google.com/favicon.ico" style="width:14px;height:14px;vertical-align:middle;"> Search inside <strong>${engineName}</strong> with Google</span>`;
-        operatorTooltip.style.display = 'block';
-        setTimeout(() => { operatorTooltip.style.opacity = 1; }, 10);
-        const rect = siteCheckboxLabel.getBoundingClientRect();
-        const tooltipRect = operatorTooltip.getBoundingClientRect();
-        let top = rect.top - tooltipRect.height - 8;
-        if (top < 0) top = rect.bottom + 8;
-        let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
-        if (left < 5) left = 5;
-        if (left + tooltipRect.width > window.innerWidth) left = window.innerWidth - tooltipRect.width - 5;
-        operatorTooltip.style.top = `${top}px`;
-        operatorTooltip.style.left = `${left}px`;
-      });
-      siteCheckboxLabel.addEventListener('mouseleave', function () {
-        operatorTooltip.style.opacity = 0;
-        setTimeout(() => {
-          if (operatorTooltip.style.opacity === '0') operatorTooltip.style.display = 'none';
-        }, 200);
-      });
-    }
-
     const operatorDescriptions = {
       '" "': "Searches for an exact phrase match. Example: \"climate change\"",
       'OR': "Returns results with either term. Example: python OR java",
@@ -3600,7 +3968,7 @@
       '*': "Acts as a wildcard for any word. Example: \"best * for productivity\"",
       '( )': "Groups terms for complex queries. Example: (solar OR wind) energy",
       'in': "Converts units or currencies. Example: 100 km in miles",
-      'site:': `<span style="display:flex;align-items:center;gap:6px;"><img src="https://www.google.com/favicon.ico" style="width:14px;height:14px;vertical-align:middle;"> Search inside this site/engine with <strong>Google</strong></span><span style="display:block;margin-top:4px;font-size:11px;opacity:0.8;">Example: site:nytimes.com</span>`,
+      'site:': "Restricts search to a specific site. Example: site:nytimes.com",
       'intitle:': "Finds the term in the page title. Example: intitle:SEO",
       'allintitle:': "Finds all terms in the page title. Example: allintitle:SEO trends",
       'inurl:': "Finds the term in the page URL. Example: inurl:blog",
@@ -3890,7 +4258,11 @@
     // Autocomplete functionality
     const autocompleteDiv = document.createElement('div');
     autocompleteDiv.id = 'autocomplete';
-    searchInput.parentElement.appendChild(autocompleteDiv);
+    if (dynamicIsland) {
+      dynamicIsland.appendChild(autocompleteDiv);
+    } else {
+      searchInput.parentElement.appendChild(autocompleteDiv);
+    }
 
     let selectedIndex = -1;
 
@@ -3902,7 +4274,7 @@
         'nejm:', 'rp:', 'utd:', 'coch:', 'medscape:', 'openmd:', 'dd:', 'webmd:',
         'nih:', 'drugs:', 'cdc:', 'cismef-bp:', 'cismef-edu:', 'cismef-edn:', 'cismef-pat:'],
       'ai': ['wolf:', 'chatgpt:', 'claude:', 'gemini:', 'gai:', 'perplexity:',
-        'copilot:', 'cbd:', 'ernie:', 'duckai:']
+        'copilot:', 'cbd:', 'ernie:', 'duckai:', 'se:']
     };
 
     const categoryTitles = {
@@ -3923,34 +4295,30 @@
 
     // SMART POSITIONING FUNCTION
     function positionAutocomplete() {
-      const inputRect = searchInput.getBoundingClientRect();
-      const searchContainer = document.querySelector('.search-container');
+      const ytRow = document.querySelector('.yt-search-row');
+      const island = document.getElementById('dynamicIsland');
+      const anchor = ytRow || island;
+      if (!anchor) return;
 
-      if (!searchContainer) return;
-
-      const containerRect = searchContainer.getBoundingClientRect();
+      const rect = anchor.getBoundingClientRect();
       const autocompleteHeight = 400;
-      const gap = 10;
+      const gap = 8;
 
-      const spaceAbove = inputRect.top;
-      const spaceBelow = window.innerHeight - inputRect.bottom;
-      const showAbove = spaceAbove > autocompleteHeight + gap || spaceAbove > spaceBelow;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      const showAbove = spaceAbove > autocompleteHeight + gap && spaceAbove > spaceBelow;
 
       if (showAbove) {
-        autocompleteDiv.style.bottom = (window.innerHeight - inputRect.top + gap) + 'px';
+        autocompleteDiv.style.bottom = (window.innerHeight - rect.top + gap) + 'px';
         autocompleteDiv.style.top = 'auto';
       } else {
-        autocompleteDiv.style.top = (inputRect.bottom + gap) + 'px';
+        autocompleteDiv.style.top = (rect.bottom + gap) + 'px';
         autocompleteDiv.style.bottom = 'auto';
       }
 
-      // Match search-container width (accounting for padding)
-      const containerWidth = containerRect.width - 60; // 30px padding on each side
-      autocompleteDiv.style.width = containerWidth + 'px';
-      autocompleteDiv.style.maxWidth = containerWidth + 'px';
-
-      // Center horizontally within container
-      autocompleteDiv.style.left = (containerRect.left + 30) + 'px';
+      autocompleteDiv.style.width = rect.width + 'px';
+      autocompleteDiv.style.maxWidth = rect.width + 'px';
+      autocompleteDiv.style.left = rect.left + 'px';
     }
 
     function showAutocomplete(matches) {
@@ -3958,9 +4326,6 @@
         autocompleteDiv.style.display = 'none';
         return;
       }
-
-      // Auto-select first result so Enter immediately picks it
-      selectedIndex = 0;
 
       // Group matches by category
       const categorizedMatches = {
@@ -3980,7 +4345,6 @@
       const grid = autocompleteDiv.querySelector('.autocomplete-grid');
 
       // Create columns for each category
-      let globalItemIndex = 0;
       ['general', 'academic', 'medical', 'ai'].forEach(category => {
         const column = document.createElement('div');
         column.className = 'autocomplete-column';
@@ -3992,11 +4356,10 @@
           title.textContent = categoryTitles[category];
           column.appendChild(title);
 
-          categorizedMatches[category].forEach((match) => {
-            const flatIndex = globalItemIndex++;
+          categorizedMatches[category].forEach((match, index) => {
             const item = document.createElement('div');
             item.className = 'autocomplete-item';
-            if (flatIndex === selectedIndex) item.classList.add('selected');
+            if (index === selectedIndex) item.classList.add('selected');
 
             // Favicon
             const favicon = document.createElement('img');
@@ -4035,17 +4398,23 @@
                 );
                 radio.parentElement.classList.add('selected');
               }
-              // Strip the prefix from the input, keep only the query part
+              
+              // Robust Prefix Stripping:
+              // If user typed "schol" and clicked "scholar:", we clear the input.
+              // If user typed "scholar:query" and clicked "scholar:", we keep "query".
               const currentValue = searchInput.value.trim();
-              let query = currentValue;
-              for (const key of Object.keys(searchEngines)) {
-                if (currentValue.toLowerCase().startsWith(key.toLowerCase())) {
-                  query = currentValue.substring(key.length).trim();
-                  break;
-                }
+              let query = '';
+              
+              if (currentValue.toLowerCase().startsWith(match.prefix.toLowerCase())) {
+                query = currentValue.substring(match.prefix.length).trim();
+              } else if (match.prefix.toLowerCase().startsWith(currentValue.toLowerCase())) {
+                query = ''; // Partial match, just clear it to start query fresh
+              } else {
+                query = currentValue; // Should not happen with current filter
               }
+              
               searchInput.value = query;
-              autocompleteDiv.style.display = 'none';
+              if (autocompleteDiv) autocompleteDiv.style.display = 'none';
               updateSearchSource();
               searchInput.focus();
             });
@@ -4061,41 +4430,140 @@
       autocompleteDiv.style.display = 'block';
       positionAutocomplete();
 
-      // Scroll first selected item into view
-      const firstSelected = autocompleteDiv.querySelector('.autocomplete-item.selected');
-      if (firstSelected) firstSelected.scrollIntoView({ block: 'nearest' });
+      // Auto-highlight first item
+      const allItems = autocompleteDiv.querySelectorAll('.autocomplete-item');
+      if (allItems.length > 0) {
+        selectedIndex = 0;
+        allItems[0].classList.add('selected');
+      }
     }
 
-    // Update search input listener
+    searchInput.addEventListener('keydown', function (e) {
+      if (!autocompleteDiv || autocompleteDiv.style.display === 'none') return;
+      const items = autocompleteDiv.querySelectorAll('.autocomplete-item');
+      if (items.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+        items.forEach((item, i) => item.classList.toggle('selected', i === selectedIndex));
+        items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        selectedIndex = Math.max(selectedIndex - 1, 0);
+        items.forEach((item, i) => item.classList.toggle('selected', i === selectedIndex));
+        items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter') {
+        if (selectedIndex >= 0) {
+          e.preventDefault();
+          items[selectedIndex]?.click();
+        } else if (items.length > 0) {
+          // Auto-select top match if none selected
+          e.preventDefault();
+          items[0]?.click();
+        }
+      } else if (e.key === 'Escape') {
+        autocompleteDiv.style.display = 'none';
+      }
+    });
+
+    const focusOverlay = document.getElementById('focusOverlay');
+    const searchContainer = document.querySelector('.search-container');
+    const dynamicIsland = document.getElementById('dynamicIsland');
+
+    searchInput.addEventListener('focus', () => {
+      focusOverlay.classList.add('active');
+      searchContainer.classList.add('focused');
+      if (dynamicIsland) dynamicIsland.classList.add('focused');
+      const islandRow = document.querySelector('.island-row');
+      if (islandRow) islandRow.classList.add('row-focused');
+    });
+
+    searchInput.addEventListener('blur', () => {
+      setTimeout(() => {
+        focusOverlay.classList.remove('active');
+        searchContainer.classList.remove('focused');
+        if (dynamicIsland) dynamicIsland.classList.remove('focused');
+        const islandRow = document.querySelector('.island-row');
+        if (islandRow) islandRow.classList.remove('row-focused');
+      }, 200);
+    });
+
+    focusOverlay.addEventListener('click', () => {
+      searchInput.blur();
+      if (autocompleteDiv) autocompleteDiv.style.display = 'none';
+    });
+
+    // Consolidated main search input listener
     searchInput.addEventListener('input', function (e) {
       const value = e.target.value;
       const valueLower = value.trim().toLowerCase();
       selectedIndex = -1;
 
-      // Detect exact prefix match (e.g. user typed "yt:" or "scholar:")
-      // Strip it immediately, select the engine, clear the prefix from input
-      for (const key of Object.keys(searchEngines)) {
-        if (valueLower.startsWith(key.toLowerCase())) {
-          const query = value.trim().substring(key.length).trim();
-          // Select radio
-          const radio = document.querySelector(`input[name="searchEngine"][value="${key}"]`);
-          if (radio) {
-            radio.checked = true;
-            document.querySelectorAll('input[name="searchEngine"]').forEach(r =>
-              r.parentElement.classList.remove('selected')
-            );
-            radio.parentElement.classList.add('selected');
+      // 1. Grid Filtering
+      const gridItems = document.querySelectorAll('.category-section label');
+      const categorySections = document.querySelectorAll('.category-section');
+      
+      if (!valueLower || valueLower.includes(' ')) {
+        gridItems.forEach(label => label.style.display = 'flex');
+        categorySections.forEach(section => section.style.display = 'block');
+      } else {
+        categorySections.forEach(section => {
+          let hasVisible = false;
+          const labels = section.querySelectorAll('label');
+          labels.forEach(label => {
+            const prefix = label.querySelector('input').value.toLowerCase();
+            const name = label.textContent.toLowerCase();
+            if (prefix.includes(valueLower) || name.includes(valueLower)) {
+              label.style.display = 'flex';
+              hasVisible = true;
+            } else {
+              label.style.display = 'none';
+            }
+          });
+          section.style.display = hasVisible ? 'block' : 'none';
+        });
+      }
+
+      // 2. Intelligent Auto-Select on Space
+      // If user typed "g: " (prefix + space), strip it and select.
+      if (value.endsWith(' ')) {
+        const potentialPrefix = value.trim().toLowerCase();
+        for (const key of Object.keys(searchEngines)) {
+          if (potentialPrefix === key.toLowerCase()) {
+            const radio = document.querySelector(`input[name="searchEngine"][value="${key}"]`);
+            if (radio) {
+              radio.checked = true;
+              document.querySelectorAll('input[name="searchEngine"]').forEach(r =>
+                r.parentElement.classList.remove('selected')
+              );
+              radio.parentElement.classList.add('selected');
+            }
+            searchInput.value = ''; // Clear for query
+            if (autocompleteDiv) autocompleteDiv.style.display = 'none';
+            updateSearchSource();
+            return;
           }
-          // Strip prefix from input
-          searchInput.value = query;
-          autocompleteDiv.style.display = 'none';
-          updateSearchSource();
-          return;
         }
       }
 
-      if (!valueLower || valueLower.includes(' ')) {
-        autocompleteDiv.style.display = 'none';
+      // 3. Meta-prefix handling for 'se:'
+      if (valueLower.startsWith('se:')) {
+        const query = valueLower.substring(3).trim();
+        const matches = Object.keys(searchEngines)
+          .filter(prefix => {
+            const engine = searchEngines[prefix];
+            return prefix.toLowerCase().includes(query) || engine.name.toLowerCase().includes(query);
+          })
+          .map(prefix => ({ prefix, engine: searchEngines[prefix] }));
+        showAutocomplete(matches);
+        updateSearchSource();
+        return;
+      }
+
+      // 4. Autocomplete logic (matches stable18)
+      if (!valueLower || value.includes(' ')) {
+        if (autocompleteDiv) autocompleteDiv.style.display = 'none';
         updateSearchSource();
         return;
       }
@@ -4112,67 +4580,7 @@
       updateSearchSource();
     });
 
-    searchInput.addEventListener('keydown', function (e) {
-      const items = autocompleteDiv.querySelectorAll('.autocomplete-item');
-
-      if (autocompleteDiv.style.display === 'none' || items.length === 0) return;
-
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
-        items.forEach((item, i) => item.classList.toggle('selected', i === selectedIndex));
-        items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        selectedIndex = Math.max(selectedIndex - 1, 0);
-        items.forEach((item, i) => item.classList.toggle('selected', i === selectedIndex));
-        items[selectedIndex]?.scrollIntoView({ block: 'nearest' });
-      } else if (e.key === 'Enter' && selectedIndex >= 0) {
-        e.preventDefault();
-        items[selectedIndex]?.click();
-      } else if (e.key === 'Escape') {
-        autocompleteDiv.style.display = 'none';
-      }
-    });
-
-    document.addEventListener('click', function (e) {
-      if (!searchInput.contains(e.target) && !autocompleteDiv.contains(e.target)) {
-        autocompleteDiv.style.display = 'none';
-      }
-    });
-
-    // Reposition on window resize or scroll
-    window.addEventListener('resize', () => {
-      if (autocompleteDiv.style.display === 'block') {
-        positionAutocomplete();
-      }
-    });
-
-    window.addEventListener('scroll', () => {
-      if (autocompleteDiv.style.display === 'block') {
-        positionAutocomplete();
-      }
-    });
-    const focusOverlay = document.getElementById('focusOverlay');
-    const searchContainer = document.querySelector('.search-container');
-
-    searchInput.addEventListener('focus', () => {
-      focusOverlay.classList.add('active');
-      searchContainer.classList.add('focused');
-    });
-
-    searchInput.addEventListener('blur', () => {
-      setTimeout(() => {
-        focusOverlay.classList.remove('active');
-        searchContainer.classList.remove('focused');
-      }, 200);
-    });
-
-    focusOverlay.addEventListener('click', () => {
-      searchInput.blur();
-      document.getElementById('autocomplete').style.display = 'none';
-    });
-  </script>
+</script>
 </body>
 
 </html>
