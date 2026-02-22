@@ -299,7 +299,6 @@
     /* Active: show Google favicon, hide gray G */
     .site-btn.active .site-btn-g-off { display: none; }
     .site-btn.active .site-btn-g-on { display: inline-block; }
-    .site-btn.active .site-btn-g-on { filter: brightness(0) invert(1); }
     .site-btn-logo {
       width: 14px;
       height: 14px;
@@ -1270,52 +1269,175 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 90%;
-      max-width: 720px;
-      background: white;
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-      padding: 24px;
+      width: 92%;
+      max-width: 780px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(99,179,237,0.08);
+      padding: 0;
       z-index: 2005;
-      /* Higher than overlay (2000) */
+      overflow: hidden;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
       display: none;
     }
 
     #keyboardShortcutsPopup.show {
       display: block !important;
-      /* Force display when .show class is added */
     }
 
-    .dark-mode #keyboardShortcutsPopup {
-      background: #1a2332;
-      border-color: #2d3e52;
-      color: #d0d8e0;
+    /* Wide section spans full grid width */
+    .cheat-section-wide {
+      grid-column: 1 / -1;
     }
 
-    #keyboardShortcutsPopup .close-btn {
-      position: absolute;
-      top: 12px;
-      right: 16px;
-      font-size: 32px;
-      cursor: pointer;
-      color: #888;
-      background: none;
-      border: none;
-      padding: 0;
-      width: auto;
-      height: auto;
+    /* Arch-style terminal header bar */
+    .cheat-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+    }
+    .cheat-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+    }
+    .cheat-dot.red    { background: #ff5f57; }
+    .cheat-dot.yellow { background: #ffbd2e; }
+    .cheat-dot.green  { background: #28c941; }
+    .cheat-title {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      color: #8b949e;
+      letter-spacing: 0.08em;
+      margin-right: 36px; /* offset for dots */
+    }
+    .cheat-title span { color: #58a6ff; }
+
+    /* Body */
+    .cheat-body {
+      padding: 20px;
+      max-height: 72vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #30363d #0d1117;
+    }
+    .cheat-body::-webkit-scrollbar { width: 6px; }
+    .cheat-body::-webkit-scrollbar-track { background: #0d1117; }
+    .cheat-body::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+
+    /* Two-column grid of sections */
+    .cheat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 580px) { .cheat-grid { grid-template-columns: 1fr; } }
+
+    .cheat-section {
+      background: #161b22;
+      border: 1px solid #21262d;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .cheat-section-title {
+      padding: 7px 12px;
+      background: #1c2128;
+      border-bottom: 1px solid #21262d;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #58a6ff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cheat-section-title::before {
+      content: '#';
+      color: #3fb950;
+    }
+    .cheat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 12px;
+      border-bottom: 1px solid #21262d1a;
+      gap: 12px;
+      transition: background 0.1s;
+    }
+    .cheat-row:last-child { border-bottom: none; }
+    .cheat-row:hover { background: #21262d; }
+
+    .cheat-keys {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+    .kbd {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 7px;
+      background: #21262d;
+      border: 1px solid #444c56;
+      border-bottom: 2px solid #444c56;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #e6edf3;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+    .kbd-sep {
+      color: #484f58;
+      font-size: 11px;
+      padding: 0 1px;
+    }
+    .cheat-desc {
+      font-size: 11.5px;
+      color: #8b949e;
+      text-align: right;
+      line-height: 1.4;
+    }
+    .cheat-desc .hl { color: #e6edf3; }
+    .cheat-desc .hl-green { color: #3fb950; }
+    .cheat-desc .hl-blue { color: #79c0ff; }
+    .cheat-desc .hl-orange { color: #d29922; }
+
+    /* Footer hint */
+    .cheat-footer {
+      padding: 8px 16px;
+      background: #161b22;
+      border-top: 1px solid #30363d;
+      font-size: 10.5px;
+      color: #484f58;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cheat-esc {
+      display: inline-block;
+      padding: 1px 6px;
+      background: #21262d;
+      border: 1px solid #444c56;
+      border-bottom: 2px solid #444c56;
+      border-radius: 3px;
+      font-size: 10px;
+      color: #8b949e;
+      font-family: inherit;
+    }
+    #cheat-shortcut-count, .cheat-count {
+      color: #3fb950;
+      font-size: 10px;
     }
 
-    #keyboardShortcutsPopup .close-btn:hover {
-      color: #333;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .dark-mode #keyboardShortcutsPopup .close-btn:hover {
-      color: #eee;
-    }
+    /* Light mode — keep dark theme for cheatsheet (intentional terminal look) */
+    /* but allow override if user prefers */
 
     #googleWikiPopup h3 {
       margin-top: 0;
@@ -1375,26 +1497,59 @@
 
     .operator-tooltip {
       position: fixed;
-      /* Use fixed to position relative to viewport */
-      background-color: #333;
-      color: #fff;
-      padding: 8px 12px;
-      border-radius: 6px;
+      background: #fff;
+      color: #202124;
+      padding: 12px 14px 10px;
+      border-radius: 10px;
       font-size: 13px;
       z-index: 10000;
       pointer-events: none;
       display: none;
       opacity: 0;
-      transition: opacity 0.2s ease;
-      max-width: 250px;
-      text-align: center;
+      transition: opacity 0.18s ease;
+      max-width: 240px;
+      min-width: 190px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.1);
+      border: 1px solid #e8eaed;
+      text-align: left;
+      line-height: 1.45;
+    }
+    .op-tip-desc {
+      font-size: 13px;
+      color: #202124;
+      font-weight: 500;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .op-tip-example {
+      font-size: 11.5px;
+      color: #70757a;
+      display: block;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      margin-bottom: 8px;
+    }
+    .op-tip-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      border-top: 1px solid #f1f3f4;
+      padding-top: 6px;
+      margin-top: 2px;
+    }
+    .op-tip-footer img {
+      width: 16px;
+      height: 16px;
     }
 
     .dark-mode .operator-tooltip {
-      background-color: #e0e0e0;
-      color: #1a1a1a;
-      border: 1px solid #555;
+      background: #2d2d2d;
+      color: #e8eaed;
+      border-color: #444;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.5);
     }
+    .dark-mode .op-tip-desc { color: #e8eaed; }
+    .dark-mode .op-tip-example { color: #9aa0a6; }
+    .dark-mode .op-tip-footer { border-color: #444; }
 
     .autocomplete-container {
       position: relative;
@@ -2620,13 +2775,7 @@
       </div>
     </div>
 
-    <div id="keyboardShortcutsPopup" style="display: none;">
-      <button class="close-btn" id="closeShortcutsBtn">&times;</button>
-      <h3>⌨️ Keyboard Shortcuts</h3>
-      <div id="shortcuts-content" style="max-height: 50vh; overflow-y: auto;">
-        <!-- Shortcuts will be loaded here -->
-      </div>
-    </div>
+
 
     <div class="bottom-buttons" style="text-align: center; margin-top: 24px;">
       <button type="button" id="wikiToggleBtn">📖 Wiki</button>
@@ -2699,6 +2848,107 @@
         <button type="button" id="clearFiletypes">Clear all</button>
         <button type="button" id="applyFiletypes">✓ Apply</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Shortcuts cheatsheet lives at body level for correct fixed positioning -->
+  <div id="keyboardShortcutsPopup" role="dialog" aria-modal="true" aria-label="Keyboard Shortcuts">
+    <!-- Terminal-style header -->
+    <div class="cheat-header">
+      <span class="cheat-dot red" id="cheat-close-dot" title="Close" style="cursor:pointer;"></span>
+      <span class="cheat-dot yellow"></span>
+      <span class="cheat-dot green"></span>
+      <div class="cheat-title">⌨&nbsp;<span>keybindings</span> — Search Interface</div>
+    </div>
+
+    <!-- Cheatsheet body — static content, no JS rendering needed -->
+    <div class="cheat-body">
+      <div class="cheat-grid">
+
+        <!-- Search Bar -->
+        <div class="cheat-section">
+          <div class="cheat-section-title">🔍 Search Bar</div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Ctrl</span><span class="kbd-sep">+</span><span class="kbd">K</span></div>
+            <div class="cheat-desc"><span class="hl">Focus</span> the search bar</div>
+          </div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Ctrl</span><span class="kbd-sep">+</span><span class="kbd">Shift</span><span class="kbd-sep">+</span><span class="kbd">K</span></div>
+            <div class="cheat-desc"><span class="hl-orange">Clear</span> the search bar</div>
+          </div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Ctrl</span><span class="kbd-sep">+</span><span class="kbd">Shift</span><span class="kbd-sep">+</span><span class="kbd">C</span></div>
+            <div class="cheat-desc"><span class="hl">Copy</span> current query to clipboard</div>
+          </div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Enter</span></div>
+            <div class="cheat-desc"><span class="hl-green">Launch</span> search in new tab</div>
+          </div>
+        </div>
+
+        <!-- Engine Navigation -->
+        <div class="cheat-section">
+          <div class="cheat-section-title">🧭 Engine Navigation</div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Alt</span><span class="kbd-sep">+</span><span class="kbd">↑</span><span class="kbd-sep">/</span><span class="kbd">↓</span></div>
+            <div class="cheat-desc">Cycle through search engines</div>
+          </div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Alt</span><span class="kbd-sep">+</span><span class="kbd">1–4</span></div>
+            <div class="cheat-desc">Jump to engine <span class="hl-blue">category</span></div>
+          </div>
+        </div>
+
+        <!-- Google Site: Mode -->
+        <div class="cheat-section">
+          <div class="cheat-section-title">🟢 Google Site: Mode</div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Alt</span><span class="kbd-sep">+</span><span class="kbd">G</span></div>
+            <div class="cheat-desc"><span class="hl-green">One-shot</span> Google search (no toggle)</div>
+          </div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Alt</span><span class="kbd-sep">+</span><span class="kbd">Shift</span><span class="kbd-sep">+</span><span class="kbd">G</span></div>
+            <div class="cheat-desc"><span class="hl-blue">Toggle</span> site: on / off</div>
+          </div>
+        </div>
+
+        <!-- Translation -->
+        <div class="cheat-section">
+          <div class="cheat-section-title">🌐 Translation</div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Alt</span><span class="kbd-sep">+</span><span class="kbd">T</span></div>
+            <div class="cheat-desc"><span class="hl">Open</span> translate popup</div>
+          </div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Alt</span><span class="kbd-sep">+</span><span class="kbd">O</span></div>
+            <div class="cheat-desc">Search in <span class="hl-green">original</span> language</div>
+          </div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Alt</span><span class="kbd-sep">+</span><span class="kbd">F/E/A/S/R/C</span></div>
+            <div class="cheat-desc">Set language → <span class="hl-blue">FR/EN/AR/ES/RU/ZH</span></div>
+          </div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Alt</span><span class="kbd-sep">+</span><span class="kbd">Shift</span><span class="kbd-sep">+</span><span class="kbd">O</span></div>
+            <div class="cheat-desc"><span class="hl-orange">Reset</span> translation</div>
+          </div>
+        </div>
+
+        <!-- Interface — full width -->
+        <div class="cheat-section cheat-section-wide">
+          <div class="cheat-section-title">🖥 Interface</div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Esc</span></div>
+            <div class="cheat-desc">Close any open popup</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="cheat-footer">
+      <div><span class="cheat-esc">ESC</span>&nbsp;to close &nbsp;·&nbsp; all shortcuts work globally</div>
+      <span class="cheat-count">15 bindings</span>
     </div>
   </div>
 
@@ -2904,48 +3154,6 @@
     function openShortcutsPopup() {
       keyboardShortcutsPopup.classList.add('show');
       popupOverlay.classList.add('show');
-
-      const shortcutsContent = document.getElementById('shortcuts-content');
-      shortcutsContent.innerHTML = ''; // Clear previous content
-
-      const shortcuts = [
-        { keys: 'Ctrl + K', description: 'Focus on the search bar' },
-        { keys: 'Ctrl + Shift + K', description: 'Clear the search bar' },
-        { keys: 'Alt + ↑/↓', description: 'Cycle through search engines' },
-        { keys: 'Alt + 1-4', description: 'Switch search engine category' },
-        { keys: 'Ctrl + Shift + C', description: 'Copy the current search query' },
-        { keys: 'Alt + G', description: 'Perform a one-shot Google Search for the current search engine (site:)' },
-        { keys: 'Esc', description: 'Close any open pop-up' }
-      ];
-
-      const table = document.createElement('table');
-      table.className = 'wiki-table';
-
-      const thead = document.createElement('thead');
-      thead.innerHTML = `
-            <tr>
-                <th>Shortcut</th>
-                <th>Action</th>
-            </tr>
-        `;
-
-      const tbody = document.createElement('tbody');
-      shortcuts.forEach(shortcut => {
-        const row = document.createElement('tr');
-        const keysCell = document.createElement('td');
-        const descCell = document.createElement('td');
-        keysCell.innerHTML = `<code>${shortcut.keys}</code>`;
-        descCell.textContent = shortcut.description;
-        row.appendChild(keysCell);
-        row.appendChild(descCell);
-        tbody.appendChild(row);
-      });
-
-      table.appendChild(thead);
-      table.appendChild(tbody);
-      shortcutsContent.appendChild(table);
-
-      // Optional: Improve accessibility
       keyboardShortcutsPopup.setAttribute('aria-hidden', 'false');
     }
 
@@ -2959,12 +3167,15 @@
         popupOverlay.classList.remove('show');
       }
 
-      // Optional: Improve accessibility
       keyboardShortcutsPopup.setAttribute('aria-hidden', 'true');
     }
 
     keyboardShortcutsBtn.addEventListener('click', openShortcutsPopup);
-    closeShortcutsBtn.addEventListener('click', closeShortcutsPopup);
+    if (closeShortcutsBtn) closeShortcutsBtn.addEventListener('click', closeShortcutsPopup);
+
+    // Red dot closes the popup
+    const cheatCloseDot = document.getElementById('cheat-close-dot');
+    if (cheatCloseDot) cheatCloseDot.addEventListener('click', closeShortcutsPopup);
 
     // Translation API function (using MyMemory - free, no key required)
     async function translateText(text, sourceLang, targetLang) {
@@ -3703,8 +3914,8 @@
         copyCurrentSearch();
       }
 
-      // Alt+G : One-shot Google site: search for current engine
-      if (e.altKey && e.key === 'g') {
+      // Alt+G : One-shot Google site: search for current engine (no toggle)
+      if (e.altKey && !e.shiftKey && e.key === 'g') {
         e.preventDefault();
         const selectedRadio = document.querySelector('input[name="searchEngine"]:checked');
         const query = searchInput.value.trim();
@@ -3712,18 +3923,64 @@
           let siteUrl = searchEngines[selectedRadio.value].url;
           try {
             siteUrl = new URL(siteUrl).hostname;
-          } catch {
+          } catch (err) {
             siteUrl = siteUrl.replace(/^https?:\/\//, '').split(/[/?#]/)[0];
           }
           const googleQuery = encodeURIComponent(`site:${siteUrl} ${query}`);
           window.open('https://www.google.com/search?q=' + googleQuery, '_blank');
-          // Flash the siteBtn briefly to indicate the action without toggling state
+          // Flash siteBtn briefly without permanently toggling
           siteBtn.classList.add('active');
+          if (typeof syncGoogleRing === 'function') syncGoogleRing();
           setTimeout(() => {
             if (siteBtn.getAttribute('aria-pressed') !== 'true') {
               siteBtn.classList.remove('active');
+              if (typeof syncGoogleRing === 'function') syncGoogleRing();
             }
           }, 600);
+        }
+      }
+
+      // Alt+Shift+G : Toggle site: on/off
+      if (e.altKey && e.shiftKey && (e.key === 'G' || e.key === 'g')) {
+        e.preventDefault();
+        const isActive = siteBtn.classList.toggle('active');
+        siteBtn.setAttribute('aria-pressed', isActive);
+        if (typeof syncGoogleRing === 'function') syncGoogleRing();
+      }
+
+      // Alt+T : Open translate popup (globe icon)
+      if (e.altKey && !e.shiftKey && e.key === 't') {
+        e.preventDefault();
+        if (langPopup.classList.contains('show')) {
+          closeLangPopupFn();
+        } else {
+          openLangPopup();
+        }
+      }
+
+      // Alt+Shift+O : Set language to original/default (no translation)
+      if (e.altKey && e.shiftKey && (e.key === 'O' || e.key === 'o')) {
+        e.preventDefault();
+        updateLangIcon('original');
+      }
+
+      // Language quick-select shortcuts (Alt + letter)
+      if (e.altKey && !e.shiftKey) {
+        const langMap = {
+          'o': 'original',  // Alt+O : open in default language
+          'f': 'fr',        // Alt+F : French
+          'e': 'en',        // Alt+E : English
+          'a': 'ar',        // Alt+A : Arabic
+          's': 'es',        // Alt+S : Spanish
+          'r': 'ru',        // Alt+R : Russian
+          'c': 'zh',        // Alt+C : Chinese
+        };
+        // skip letters already bound to other actions
+        const skip = new Set(['g', 't', 'k']);
+        const key = e.key.toLowerCase();
+        if (langMap[key] && !skip.has(key)) {
+          e.preventDefault();
+          updateLangIcon(langMap[key]);
         }
       }
 
@@ -3962,7 +4219,7 @@
     siteBtn.addEventListener('mouseenter', function () {
       const activeName = document.querySelector('input[name="searchEngine"]:checked')?.value || '';
       const engineName = (activeName && searchEngines[activeName]?.name) || 'this engine';
-      operatorTooltip.innerHTML = `<span style="display:flex;align-items:center;gap:6px;">Search <strong>${engineName}</strong> using Google Search&nbsp;<img src="https://www.google.com/favicon.ico" style="width:14px;height:14px;vertical-align:middle;"></span>`;
+      operatorTooltip.innerHTML = buildOpTip(`Search <strong>${engineName}</strong> using Google Search`, `site:${(()=>{const r=document.querySelector('input[name="searchEngine"]:checked');return r&&window.searchEngines&&window.searchEngines[r.value]?new URL(window.searchEngines[r.value].url).hostname.replace('www.',''):'example.com';})()}`);
       operatorTooltip.style.display = 'block';
       setTimeout(() => { operatorTooltip.style.opacity = 1; }, 10);
       const rect = siteBtn.getBoundingClientRect();
@@ -3982,29 +4239,35 @@
       }, 200);
     });
 
+    // Build structured tooltip HTML: description + example + Google logo bottom-right
+    function buildOpTip(desc, example) {
+      const exLine = example ? `<span class="op-tip-example">${example}</span>` : '';
+      return `<span class="op-tip-desc">${desc}</span>${exLine}<div class="op-tip-footer"><img src="https://www.google.com/favicon.ico" alt="Google"></div>`;
+    }
+
     const operatorDescriptions = {
-      '" "': "Searches for an exact phrase match. Example: \"climate change\"",
-      'OR': "Returns results with either term. Example: python OR java",
-      '-': "Excludes results with this term. Example: apple -fruit",
-      '*': "Acts as a wildcard for any word. Example: \"best * for productivity\"",
-      '( )': "Groups terms for complex queries. Example: (solar OR wind) energy",
-      'in': "Converts units or currencies. Example: 100 km in miles",
-      'site:': `<span style="display:flex;align-items:center;gap:6px;"><img src="https://www.google.com/favicon.ico" style="width:14px;height:14px;vertical-align:middle;"> Search inside this site/engine with <strong>Google</strong></span><span style="display:block;margin-top:4px;font-size:11px;opacity:0.8;">Example: site:nytimes.com</span>`,
-      'intitle:': "Finds the term in the page title. Example: intitle:SEO",
-      'allintitle:': "Finds all terms in the page title. Example: allintitle:SEO trends",
-      'inurl:': "Finds the term in the page URL. Example: inurl:blog",
-      'allinurl:': "Finds all terms in the URL. Example: allinurl:blog seo",
-      'intext:': "Searches only in the body text. Example: intext:\"quantum computing\"",
-      'allintext:': "Finds all terms in the body text. Example: allintext:AI ethics",
-      'filetype:': "Restricts to a specific file type. Example: filetype:pdf",
-      'related:': "Finds sites similar to a given domain. Example: related:mozilla.org",
-      'define:': "Displays the definition of a word. Example: define:serendipity",
-      'source:': "In Google News, filters by outlet. Example: AI source:bbc",
-      'stocks:': "Fetches stock information. Example: stocks:GOOGL",
-      'weather:': "Shows weather for a location. Example: weather:Tokyo",
-      'before:': "Filters results before a date (YYYY-MM-DD). Example: iPhone before:2023-01-01",
-      'after:': "Filters results after a date (YYYY-MM-DD). Example: iPhone after:2023-09-01",
-      'AROUND()': "Finds terms within N words of each other. Example: \"electric cars\" AROUND(5) battery"
+      '" "':    buildOpTip('Search for an <strong>exact phrase</strong>', 'Example: "climate change"'),
+      'OR':       buildOpTip('Results containing <strong>either</strong> term', 'Example: python OR java'),
+      '-':        buildOpTip('<strong>Exclude</strong> results with this term', 'Example: apple -fruit'),
+      '*':        buildOpTip('<strong>Wildcard</strong> — matches any word', 'Example: "best * for productivity"'),
+      '( )':      buildOpTip('<strong>Group</strong> terms for complex queries', 'Example: (solar OR wind) energy'),
+      'in':       buildOpTip('<strong>Convert</strong> units or currencies', 'Example: 100 km in miles'),
+      'site:':    buildOpTip('Search inside a <strong>specific site</strong>', 'Example: site:nytimes.com'),
+      'intitle:': buildOpTip('Term must appear in the <strong>page title</strong>', 'Example: intitle:SEO'),
+      'allintitle:': buildOpTip('<strong>All terms</strong> must be in the page title', 'Example: allintitle:SEO trends'),
+      'inurl:':   buildOpTip('Term must appear in the <strong>page URL</strong>', 'Example: inurl:blog'),
+      'allinurl:': buildOpTip('<strong>All terms</strong> must be in the URL', 'Example: allinurl:blog seo'),
+      'intext:':  buildOpTip('Term must appear in the <strong>body text</strong>', 'Example: intext:"quantum computing"'),
+      'allintext:': buildOpTip('<strong>All terms</strong> must be in the body text', 'Example: allintext:AI ethics'),
+      'filetype:': buildOpTip('Restrict to a specific <strong>file type</strong>', 'Example: filetype:pdf'),
+      'related:': buildOpTip('Find sites <strong>similar</strong> to a domain', 'Example: related:mozilla.org'),
+      'define:':  buildOpTip('Show the <strong>definition</strong> of a word', 'Example: define:serendipity'),
+      'source:':  buildOpTip('In Google News, filter by <strong>outlet</strong>', 'Example: AI source:bbc'),
+      'stocks:':  buildOpTip('Fetch <strong>stock information</strong>', 'Example: stocks:GOOGL'),
+      'weather:': buildOpTip('Show <strong>weather</strong> for a location', 'Example: weather:Tokyo'),
+      'before:':  buildOpTip('Filter results <strong>before</strong> a date', 'Example: iPhone before:2023-01-01'),
+      'after:':   buildOpTip('Filter results <strong>after</strong> a date', 'Example: iPhone after:2023-09-01'),
+      'AROUND()': buildOpTip('Terms within <strong>N words</strong> of each other', 'Example: "electric cars" AROUND(5) battery'),
     };
 
     function createNotification(message, type = 'info') {

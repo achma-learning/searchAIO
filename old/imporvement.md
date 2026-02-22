@@ -22,9 +22,5 @@ Based on the analysis of `index.html` and experiments in `experiment-alpha/`, he
 - **Null Safety**: Implement optional chaining (`?.`) or explicit null checks before accessing engine properties like `domain` or `favicon`.
 - **Favicon Fallback**: Add an `onerror` handler to favicon images to provide a generic search icon if the domain favicon fails to load.
 
-## 5. Build Workflow
-- **Continuous Modularization**: Keep the `src/` structure.
-- **Automated Build**: Ensure `python3 build.py` is run after these updates to sync the root `index.html`.
-
 ---
 *Note: Priority should be given to the Dynamic Island transition as it provides the most significant visual impact.*
