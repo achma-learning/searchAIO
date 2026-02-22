@@ -261,6 +261,67 @@
       user-select: none;
     }
 
+    .site-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 2px solid #ddd;
+      border-radius: 20px;
+      background: #f8f9fa;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .site-btn:hover {
+      border-color: #4285f4;
+      color: #4285f4;
+      background: #e8f0fe;
+    }
+    .site-btn.active {
+      background: #4285f4;
+      border-color: #4285f4;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(66,133,244,0.4);
+    }
+    /* Inactive: gray letter G */
+    .site-btn-g-off {
+      font-size: 13px;
+      font-weight: 900;
+      color: #aaa;
+      font-family: 'Arial', sans-serif;
+      line-height: 1;
+    }
+    .site-btn-g-on { display: none; }
+    /* Active: show Google favicon, hide gray G */
+    .site-btn.active .site-btn-g-off { display: none; }
+    .site-btn.active .site-btn-g-on { display: inline-block; }
+    .site-btn.active .site-btn-g-on { filter: brightness(0) invert(1); }
+    .site-btn-logo {
+      width: 14px;
+      height: 14px;
+      vertical-align: middle;
+    }
+    .dark-mode .site-btn {
+      background: #2a3a4a;
+      border-color: #4a5a6a;
+      color: #aab;
+    }
+    .dark-mode .site-btn:hover {
+      border-color: #64b5f6;
+      color: #64b5f6;
+      background: #1a3a5a;
+    }
+    .dark-mode .site-btn.active {
+      background: #1565c0;
+      border-color: #64b5f6;
+      color: #fff;
+    }
+    .dark-mode .site-btn-g-off { color: #556; }
+
     #searchSource {
       font-size: 14px;
       color: #555;
@@ -276,15 +337,201 @@
     #wikiContent {
       background: white;
       border: 2px solid #e0e0e0;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      border-radius: 14px;
+      padding: 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
       font-size: 14px;
       color: #333;
-      max-height: 400px;
-      overflow-y: auto;
+      overflow: hidden;
       display: none;
     }
+
+    /* Wiki header */
+    .wiki-header {
+      background: linear-gradient(135deg, #667eea11 0%, #764ba211 100%);
+      border-bottom: 1px solid #e8e8f0;
+      padding: 14px 16px 0;
+    }
+    .wiki-header-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .wiki-keep-open {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #888;
+      white-space: nowrap;
+    }
+    .wiki-keep-open input { cursor: pointer; }
+    .wiki-search-wrap {
+      flex: 1;
+      min-width: 160px;
+      display: flex;
+      align-items: center;
+      background: white;
+      border: 1.5px solid #d0d0e0;
+      border-radius: 8px;
+      padding: 4px 10px;
+      gap: 6px;
+      transition: border-color 0.2s;
+    }
+    .wiki-search-wrap:focus-within {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102,126,234,0.12);
+    }
+    .wiki-search-icon { font-size: 12px; opacity: 0.5; }
+    #wikiSearchInput {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 13px;
+      background: transparent;
+      color: #333;
+    }
+    #wikiSearchClear {
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 11px;
+      color: #aaa;
+      padding: 0;
+      line-height: 1;
+      display: none;
+    }
+    #wikiSearchClear:hover { color: #555; }
+
+    /* Category tabs */
+    .wiki-cat-tabs {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      padding-bottom: 0;
+      scrollbar-width: none;
+    }
+    .wiki-cat-tabs::-webkit-scrollbar { display: none; }
+    .wiki-cat-tab {
+      padding: 7px 14px;
+      border: none;
+      background: transparent;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #888;
+      cursor: pointer;
+      border-radius: 8px 8px 0 0;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -1px;
+    }
+    .wiki-cat-tab:hover { color: #667eea; background: rgba(102,126,234,0.06); }
+    .wiki-cat-tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+      background: white;
+    }
+
+    /* Grid of engine sections */
+    .wiki-grid {
+      padding: 16px;
+      max-height: 340px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .wiki-section { display: block; }
+    .wiki-section.hidden { display: none; }
+
+    .wiki-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #667eea;
+      margin-bottom: 8px;
+    }
+
+    /* Engine chips */
+    .wiki-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .wiki-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 20px;
+      border: 1.5px solid #e0e0f0;
+      background: #f8f8ff;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-size: 12.5px;
+    }
+    .wiki-chip:hover {
+      border-color: #667eea;
+      background: #eef0ff;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(102,126,234,0.2);
+    }
+    .wiki-chip.chip-highlight {
+      border-color: #667eea;
+      background: #667eea;
+    }
+    .wiki-chip.chip-highlight .wiki-chip-prefix,
+    .wiki-chip.chip-highlight .wiki-chip-name { color: white; }
+    .wiki-chip.chip-match-hidden { display: none; }
+
+    .wiki-chip-prefix {
+      font-family: 'JetBrains Mono','Courier New', monospace;
+      font-weight: 700;
+      font-size: 12px;
+      color: #667eea;
+    }
+    .wiki-chip-name {
+      color: #555;
+      font-size: 12px;
+    }
+
+    /* Empty state */
+    .wiki-empty {
+      text-align: center;
+      padding: 24px;
+      color: #aaa;
+      font-size: 13px;
+    }
+
+    /* Hint bar */
+    .wiki-hint {
+      padding: 8px 16px;
+      background: #f8f9ff;
+      border-top: 1px solid #eee;
+      font-size: 11.5px;
+      color: #999;
+    }
+
+    /* Dark mode */
+    .dark-mode #wikiContent { background: #1e2d3d; border-color: #2a3a4a; }
+    .dark-mode .wiki-header { background: #1a2a3a; border-color: #2a3a4a; }
+    .dark-mode .wiki-keep-open { color: #666; }
+    .dark-mode .wiki-search-wrap { background: #2a3a4a; border-color: #3a4a5a; }
+    .dark-mode #wikiSearchInput { color: #ddd; }
+    .dark-mode .wiki-cat-tab { color: #666; }
+    .dark-mode .wiki-cat-tab:hover { color: #64b5f6; background: rgba(100,181,246,0.06); }
+    .dark-mode .wiki-cat-tab.active { color: #64b5f6; border-bottom-color: #64b5f6; background: #1e2d3d; }
+    .dark-mode .wiki-section-title { color: #64b5f6; }
+    .dark-mode .wiki-chip { background: #2a3a4a; border-color: #3a4a5a; }
+    .dark-mode .wiki-chip:hover { border-color: #64b5f6; background: #1a3a5a; }
+    .dark-mode .wiki-chip-prefix { color: #64b5f6; }
+    .dark-mode .wiki-chip-name { color: #aab; }
+    .dark-mode .wiki-hint { background: #1a2a3a; border-color: #2a3a4a; color: #666; }
 
     #wikiContent h4 {
       margin-top: 16px;
@@ -758,21 +1005,6 @@
     #cismefFilters .category-title {
       font-family: 'Roboto', -apple-system, BlinkMSystemFont, 'Segoe UI', Arial, sans-serif;
       font-weight: 700;
-    }
-
-    .dark-mode #wikiContent {
-      background: #1a2332;
-      border-color: #2d3e52;
-      color: #b0bec5;
-    }
-
-    .dark-mode #wikiContent h4 {
-      color: #64b5f6;
-    }
-
-    .dark-mode #wikiContent b {
-      color: #64b5f6;
-      background: #243447;
     }
 
     .dark-mode #filetypesPopup {
@@ -1785,15 +2017,16 @@
     <div class="search-bar">
       <form id="searchForm">
         <div id="searchSource">Entrez une requête pour afficher la source</div>
+        <button type="button" id="siteBtn" class="site-btn" aria-pressed="false">
+          <span class="site-btn-g site-btn-g-off">G</span>
+          <img src="https://www.google.com/favicon.ico" alt="Google" class="site-btn-logo site-btn-g-on">
+          site:
+        </button>
         <div class="autocomplete-container">
           <img id="search-prefix-favicon" src="https://www.google.com/s2/favicons?sz=64&domain=google.com" alt="favicon" title="Moteur actif">
           <input type="text" id="searchInput" autocomplete="off" placeholder="Commencez votre recherche ici..." />
         </div>
         <button type="submit">🔍</button>
-        <label class="checkbox-label" id="siteCheckboxLabel" title="Search inside this search engine's site with Google">
-          <input type="checkbox" id="siteCheckbox">
-          site:
-        </label>
 
         <!-- NEW: Language translation icon -->
         <div id="langIcon" class="lang-icon" title="Select output language">🌐</div>
@@ -2038,80 +2271,118 @@
     </div>
 
     <div id="wikiContent" role="region" aria-label="Wiki des préfixes">
-      <div class="checkbox-container">
-        <input type="checkbox" id="keepWikiOpenCheckbox" />
-        <label for="keepWikiOpenCheckbox">Garder le wiki ouvert</label>
+      <!-- Wiki Header: keep-open + search bar + category filters -->
+      <div class="wiki-header">
+        <div class="wiki-header-top">
+          <div class="wiki-keep-open">
+            <input type="checkbox" id="keepWikiOpenCheckbox" />
+            <label for="keepWikiOpenCheckbox">Garder ouvert</label>
+          </div>
+          <div class="wiki-search-wrap">
+            <span class="wiki-search-icon">🔍</span>
+            <input type="text" id="wikiSearchInput" placeholder="Filter engines… (type prefix or name)" autocomplete="off" spellcheck="false" />
+            <button type="button" id="wikiSearchClear" aria-label="Clear filter">✕</button>
+          </div>
+        </div>
+        <div class="wiki-cat-tabs" role="tablist" aria-label="Filter by category">
+          <button class="wiki-cat-tab active" data-cat="all" role="tab" aria-selected="true">All</button>
+          <button class="wiki-cat-tab" data-cat="general" role="tab" aria-selected="false">🌐 General</button>
+          <button class="wiki-cat-tab" data-cat="academic" role="tab" aria-selected="false">🎓 Academic</button>
+          <button class="wiki-cat-tab" data-cat="medical" role="tab" aria-selected="false">⚕️ Medical</button>
+          <button class="wiki-cat-tab" data-cat="ai" role="tab" aria-selected="false">🤖 AI</button>
+        </div>
       </div>
 
-      <h4>🌐 Recherche Générale</h4>
-      <ul>
-        <li><b>g:</b> Google</li>
-        <li><b>yt:</b> YouTube</li>
-        <li><b>brave:</b> Brave Search</li>
-        <li><b>ddg:</b> DuckDuckGo</li>
-        <li><b>yan:</b> Yandex</li>
-        <li><b>bing:</b> Bing</li>
-        <li><b>bd:</b> Baidu</li>
-        <li><b>gplus:</b> Google Avancé</li>
-      </ul>
+      <!-- Engine cards grid -->
+      <div id="wikiGrid" class="wiki-grid">
+        <!-- General -->
+        <div class="wiki-section" data-section="general">
+          <div class="wiki-section-title">🌐 Recherche Générale</div>
+          <div class="wiki-chips">
+            <div class="wiki-chip" data-prefix="g:" data-cat="general" data-name="Google"><span class="wiki-chip-prefix">g:</span><span class="wiki-chip-name">Google</span></div>
+            <div class="wiki-chip" data-prefix="yt:" data-cat="general" data-name="YouTube"><span class="wiki-chip-prefix">yt:</span><span class="wiki-chip-name">YouTube</span></div>
+            <div class="wiki-chip" data-prefix="brave:" data-cat="general" data-name="Brave Search"><span class="wiki-chip-prefix">brave:</span><span class="wiki-chip-name">Brave Search</span></div>
+            <div class="wiki-chip" data-prefix="ddg:" data-cat="general" data-name="DuckDuckGo"><span class="wiki-chip-prefix">ddg:</span><span class="wiki-chip-name">DuckDuckGo</span></div>
+            <div class="wiki-chip" data-prefix="yan:" data-cat="general" data-name="Yandex"><span class="wiki-chip-prefix">yan:</span><span class="wiki-chip-name">Yandex</span></div>
+            <div class="wiki-chip" data-prefix="bing:" data-cat="general" data-name="Bing"><span class="wiki-chip-prefix">bing:</span><span class="wiki-chip-name">Bing</span></div>
+            <div class="wiki-chip" data-prefix="bd:" data-cat="general" data-name="Baidu"><span class="wiki-chip-prefix">bd:</span><span class="wiki-chip-name">Baidu</span></div>
+            <div class="wiki-chip" data-prefix="gplus:" data-cat="general" data-name="Google Avancé"><span class="wiki-chip-prefix">gplus:</span><span class="wiki-chip-name">Google Avancé</span></div>
+          </div>
+        </div>
 
-      <h4>🎓 Académique / Thèses</h4>
-      <ul>
-        <li><b>scholar:</b> Google Scholar</li>
-        <li><b>pubmed:</b> PubMed</li>
-        <li><b>arxiv:</b> arXiv</li>
-        <li><b>gpat:</b> Google Patents</li>
-        <li><b>these2.0:</b> These2.0</li>
-        <li><b>cismef-th:</b> CISMeF Thèses</li>
-        <li><b>these-ma:</b> Toubkal</li>
-        <li><b>these-fr:</b> Theses.fr</li>
-        <li><b>rgate:</b> ResearchGate</li>
-        <li><b>ndltd:</b> NDLTD</li>
-        <li><b>proinserm:</b> Pro Inserm</li>
-        <li><b>bdedu:</b> Baidu Scholar (Xueshu)</li>
-      </ul>
+        <!-- Academic -->
+        <div class="wiki-section" data-section="academic">
+          <div class="wiki-section-title">🎓 Académique / Thèses</div>
+          <div class="wiki-chips">
+            <div class="wiki-chip" data-prefix="scholar:" data-cat="academic" data-name="Google Scholar"><span class="wiki-chip-prefix">scholar:</span><span class="wiki-chip-name">Google Scholar</span></div>
+            <div class="wiki-chip" data-prefix="pubmed:" data-cat="academic" data-name="PubMed"><span class="wiki-chip-prefix">pubmed:</span><span class="wiki-chip-name">PubMed</span></div>
+            <div class="wiki-chip" data-prefix="arxiv:" data-cat="academic" data-name="arXiv"><span class="wiki-chip-prefix">arxiv:</span><span class="wiki-chip-name">arXiv</span></div>
+            <div class="wiki-chip" data-prefix="gpat:" data-cat="academic" data-name="Google Patents"><span class="wiki-chip-prefix">gpat:</span><span class="wiki-chip-name">Google Patents</span></div>
+            <div class="wiki-chip" data-prefix="these2.0:" data-cat="academic" data-name="These2.0"><span class="wiki-chip-prefix">these2.0:</span><span class="wiki-chip-name">These2.0</span></div>
+            <div class="wiki-chip" data-prefix="cismef-th:" data-cat="academic" data-name="CISMeF Thèses"><span class="wiki-chip-prefix">cismef-th:</span><span class="wiki-chip-name">CISMeF Thèses</span></div>
+            <div class="wiki-chip" data-prefix="these-ma:" data-cat="academic" data-name="Toubkal"><span class="wiki-chip-prefix">these-ma:</span><span class="wiki-chip-name">Toubkal</span></div>
+            <div class="wiki-chip" data-prefix="these-fr:" data-cat="academic" data-name="Theses.fr"><span class="wiki-chip-prefix">these-fr:</span><span class="wiki-chip-name">Theses.fr</span></div>
+            <div class="wiki-chip" data-prefix="rgate:" data-cat="academic" data-name="ResearchGate"><span class="wiki-chip-prefix">rgate:</span><span class="wiki-chip-name">ResearchGate</span></div>
+            <div class="wiki-chip" data-prefix="ndltd:" data-cat="academic" data-name="NDLTD"><span class="wiki-chip-prefix">ndltd:</span><span class="wiki-chip-name">NDLTD</span></div>
+            <div class="wiki-chip" data-prefix="proinserm:" data-cat="academic" data-name="Pro Inserm"><span class="wiki-chip-prefix">proinserm:</span><span class="wiki-chip-name">Pro Inserm</span></div>
+            <div class="wiki-chip" data-prefix="bdedu:" data-cat="academic" data-name="Baidu Scholar"><span class="wiki-chip-prefix">bdedu:</span><span class="wiki-chip-name">Baidu Scholar</span></div>
+          </div>
+        </div>
 
-      <h4>⚕️ Médical / Santé</h4>
-      <ul>
-        <li><b>cismef:</b> CISMeF (recherche globale)</li>
-        <li><b>cismef-bp:</b> CISMeF (Bonnes Pratiques)</li>
-        <li><b>cismef-edu:</b> CISMeF (Éducation)</li>
-        <li><b>cismef-edn:</b> CISMeF (ECN)</li>
-        <li><b>cismef-pat:</b> CISMeF (Patients)</li>
-        <li><b>msps:</b> Ministère de la santé et de la Protection Sociale</li>
-        <li><b>has:</b> HAS</li>
-        <li><b>vidal:</b> VIDAL</li>
-        <li><b>mesh:</b> MeSH Browser</li>
-        <li><b>lissa:</b> LISSA</li>
-        <li><b>anm:</b> Académie nationale de médecine</li>
-        <li><b>hetop:</b> HETOP</li>
-        <li><b>nejm:</b> New England Journal of Medicine</li>
-        <li><b>rp:</b> Radiopaedia</li>
-        <li><b>utd:</b> UpToDate</li>
-        <li><b>coch:</b> Cochrane Library</li>
-        <li><b>medscape:</b> Medscape</li>
-        <li><b>openmd:</b> OpenMD</li>
-        <li><b>dd:</b> Diseases Database</li>
-        <li><b>webmd:</b> WebMD</li>
-        <li><b>nih:</b> NIH</li>
-        <li><b>drugs:</b> Drugs.com</li>
-        <li><b>cdc:</b> CDC</li>
-      </ul>
+        <!-- Medical -->
+        <div class="wiki-section" data-section="medical">
+          <div class="wiki-section-title">⚕️ Médical / Santé</div>
+          <div class="wiki-chips">
+            <div class="wiki-chip" data-prefix="cismef:" data-cat="medical" data-name="CISMeF"><span class="wiki-chip-prefix">cismef:</span><span class="wiki-chip-name">CISMeF</span></div>
+            <div class="wiki-chip" data-prefix="cismef-bp:" data-cat="medical" data-name="CISMeF Bonnes Pratiques"><span class="wiki-chip-prefix">cismef-bp:</span><span class="wiki-chip-name">CISMeF BP</span></div>
+            <div class="wiki-chip" data-prefix="cismef-edu:" data-cat="medical" data-name="CISMeF Éducation"><span class="wiki-chip-prefix">cismef-edu:</span><span class="wiki-chip-name">CISMeF Édu</span></div>
+            <div class="wiki-chip" data-prefix="cismef-edn:" data-cat="medical" data-name="CISMeF ECN"><span class="wiki-chip-prefix">cismef-edn:</span><span class="wiki-chip-name">CISMeF ECN</span></div>
+            <div class="wiki-chip" data-prefix="cismef-pat:" data-cat="medical" data-name="CISMeF Patients"><span class="wiki-chip-prefix">cismef-pat:</span><span class="wiki-chip-name">CISMeF Pat.</span></div>
+            <div class="wiki-chip" data-prefix="msps:" data-cat="medical" data-name="Ministère Santé Maroc"><span class="wiki-chip-prefix">msps:</span><span class="wiki-chip-name">Min. Santé MA</span></div>
+            <div class="wiki-chip" data-prefix="has:" data-cat="medical" data-name="HAS"><span class="wiki-chip-prefix">has:</span><span class="wiki-chip-name">HAS</span></div>
+            <div class="wiki-chip" data-prefix="vidal:" data-cat="medical" data-name="VIDAL"><span class="wiki-chip-prefix">vidal:</span><span class="wiki-chip-name">VIDAL</span></div>
+            <div class="wiki-chip" data-prefix="mesh:" data-cat="medical" data-name="MeSH Browser"><span class="wiki-chip-prefix">mesh:</span><span class="wiki-chip-name">MeSH Browser</span></div>
+            <div class="wiki-chip" data-prefix="lissa:" data-cat="medical" data-name="LISSA"><span class="wiki-chip-prefix">lissa:</span><span class="wiki-chip-name">LISSA</span></div>
+            <div class="wiki-chip" data-prefix="anm:" data-cat="medical" data-name="Académie Médecine"><span class="wiki-chip-prefix">anm:</span><span class="wiki-chip-name">Acad. Médecine</span></div>
+            <div class="wiki-chip" data-prefix="hetop:" data-cat="medical" data-name="HETOP"><span class="wiki-chip-prefix">hetop:</span><span class="wiki-chip-name">HETOP</span></div>
+            <div class="wiki-chip" data-prefix="nejm:" data-cat="medical" data-name="NEJM"><span class="wiki-chip-prefix">nejm:</span><span class="wiki-chip-name">NEJM</span></div>
+            <div class="wiki-chip" data-prefix="rp:" data-cat="medical" data-name="Radiopaedia"><span class="wiki-chip-prefix">rp:</span><span class="wiki-chip-name">Radiopaedia</span></div>
+            <div class="wiki-chip" data-prefix="utd:" data-cat="medical" data-name="UpToDate"><span class="wiki-chip-prefix">utd:</span><span class="wiki-chip-name">UpToDate</span></div>
+            <div class="wiki-chip" data-prefix="coch:" data-cat="medical" data-name="Cochrane Library"><span class="wiki-chip-prefix">coch:</span><span class="wiki-chip-name">Cochrane</span></div>
+            <div class="wiki-chip" data-prefix="medscape:" data-cat="medical" data-name="Medscape"><span class="wiki-chip-prefix">medscape:</span><span class="wiki-chip-name">Medscape</span></div>
+            <div class="wiki-chip" data-prefix="openmd:" data-cat="medical" data-name="OpenMD"><span class="wiki-chip-prefix">openmd:</span><span class="wiki-chip-name">OpenMD</span></div>
+            <div class="wiki-chip" data-prefix="dd:" data-cat="medical" data-name="Diseases Database"><span class="wiki-chip-prefix">dd:</span><span class="wiki-chip-name">Diseases DB</span></div>
+            <div class="wiki-chip" data-prefix="webmd:" data-cat="medical" data-name="WebMD"><span class="wiki-chip-prefix">webmd:</span><span class="wiki-chip-name">WebMD</span></div>
+            <div class="wiki-chip" data-prefix="nih:" data-cat="medical" data-name="NIH"><span class="wiki-chip-prefix">nih:</span><span class="wiki-chip-name">NIH</span></div>
+            <div class="wiki-chip" data-prefix="drugs:" data-cat="medical" data-name="Drugs.com"><span class="wiki-chip-prefix">drugs:</span><span class="wiki-chip-name">Drugs.com</span></div>
+            <div class="wiki-chip" data-prefix="cdc:" data-cat="medical" data-name="CDC"><span class="wiki-chip-prefix">cdc:</span><span class="wiki-chip-name">CDC</span></div>
+          </div>
+        </div>
 
-      <h4>🤖 IA / Avancé</h4>
-      <ul>
-        <li><b>wolf:</b> Wolfram Alpha</li>
-        <li><b>chatgpt:</b> ChatGPT</li>
-        <li><b>claude:</b> Claude AI</li>
-        <li><b>gemini:</b> Gemini</li>
-        <li><b>gai:</b> Google AI Mode – utilise le mode expérimental udm=50 qui déclenche très souvent la réponse
-          IA/Gemini</li>
-        <li><b>perplexity:</b> Perplexity</li>
-        <li><b>copilot:</b> Copilot</li>
-        <li><b>cbd:</b> Chat Baidu</li>
-        <li><b>ernie:</b> Baidu AI</li>
-        <li><b>duckai:</b> Duck.ai</li>
-      </ul>
+        <!-- AI -->
+        <div class="wiki-section" data-section="ai">
+          <div class="wiki-section-title">🤖 IA / Avancé</div>
+          <div class="wiki-chips">
+            <div class="wiki-chip" data-prefix="wolf:" data-cat="ai" data-name="Wolfram Alpha"><span class="wiki-chip-prefix">wolf:</span><span class="wiki-chip-name">Wolfram Alpha</span></div>
+            <div class="wiki-chip" data-prefix="chatgpt:" data-cat="ai" data-name="ChatGPT"><span class="wiki-chip-prefix">chatgpt:</span><span class="wiki-chip-name">ChatGPT</span></div>
+            <div class="wiki-chip" data-prefix="claude:" data-cat="ai" data-name="Claude AI"><span class="wiki-chip-prefix">claude:</span><span class="wiki-chip-name">Claude AI</span></div>
+            <div class="wiki-chip" data-prefix="gemini:" data-cat="ai" data-name="Gemini"><span class="wiki-chip-prefix">gemini:</span><span class="wiki-chip-name">Gemini</span></div>
+            <div class="wiki-chip" data-prefix="gai:" data-cat="ai" data-name="Google AI Mode"><span class="wiki-chip-prefix">gai:</span><span class="wiki-chip-name">Google AI</span></div>
+            <div class="wiki-chip" data-prefix="perplexity:" data-cat="ai" data-name="Perplexity"><span class="wiki-chip-prefix">perplexity:</span><span class="wiki-chip-name">Perplexity</span></div>
+            <div class="wiki-chip" data-prefix="copilot:" data-cat="ai" data-name="Copilot"><span class="wiki-chip-prefix">copilot:</span><span class="wiki-chip-name">Copilot</span></div>
+            <div class="wiki-chip" data-prefix="cbd:" data-cat="ai" data-name="Chat Baidu"><span class="wiki-chip-prefix">cbd:</span><span class="wiki-chip-name">Chat Baidu</span></div>
+            <div class="wiki-chip" data-prefix="ernie:" data-cat="ai" data-name="Baidu AI"><span class="wiki-chip-prefix">ernie:</span><span class="wiki-chip-name">Baidu AI</span></div>
+            <div class="wiki-chip" data-prefix="duckai:" data-cat="ai" data-name="Duck.ai"><span class="wiki-chip-prefix">duckai:</span><span class="wiki-chip-name">Duck.ai</span></div>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div id="wikiEmptyState" class="wiki-empty" style="display:none;">
+          <span>No engines match "<span id="wikiEmptyQuery"></span>"</span>
+        </div>
+      </div>
+
+      <div class="wiki-hint">💡 Click a chip to select that engine · Type the prefix directly in the search bar</div>
     </div>
 
     <div id="googleWikiPopup" style="display: none;">
@@ -2577,7 +2848,7 @@
     const keepWikiOpenCheckbox = document.getElementById('keepWikiOpenCheckbox');
     const filetypesBtn = document.getElementById('filetypesBtn');
     const filetypesPopup = document.getElementById('filetypesPopup');
-    const siteCheckbox = document.getElementById('siteCheckbox');
+    const siteBtn = document.getElementById('siteBtn');
     const popupOverlay = document.getElementById('popupOverlay');
     const closeFiletypes = document.getElementById('closeFiletypes');
     const bangsBtn = document.getElementById('bangsBtn');
@@ -2643,6 +2914,7 @@
         { keys: 'Alt + ↑/↓', description: 'Cycle through search engines' },
         { keys: 'Alt + 1-4', description: 'Switch search engine category' },
         { keys: 'Ctrl + Shift + C', description: 'Copy the current search query' },
+        { keys: 'Alt + G', description: 'Perform a one-shot Google Search for the current search engine (site:)' },
         { keys: 'Esc', description: 'Close any open pop-up' }
       ];
 
@@ -2978,7 +3250,7 @@
         query = value;
       }
 
-      if (siteCheckbox.checked) {
+      if (siteBtn.classList.contains('active')) {
         const selectedRadio = document.querySelector('input[name="searchEngine"]:checked');
         if (selectedRadio && searchEngines[selectedRadio.value]) {
           let siteUrl = searchEngines[selectedRadio.value].url;
@@ -3087,8 +3359,98 @@
       } else {
         wikiContent.style.display = 'block';
         wikiContent.focus();
+        // Focus wiki search on open
+        const wsi = document.getElementById('wikiSearchInput');
+        if (wsi) setTimeout(() => wsi.focus(), 50);
       }
     });
+
+    // ── Wiki power-user filter logic ──────────────────────────────────────
+    (function initWikiFilters() {
+      const wikiSearchInput = document.getElementById('wikiSearchInput');
+      const wikiSearchClear = document.getElementById('wikiSearchClear');
+      const wikiEmptyState = document.getElementById('wikiEmptyState');
+      const wikiEmptyQuery = document.getElementById('wikiEmptyQuery');
+      const catTabs = document.querySelectorAll('.wiki-cat-tab');
+      const sections = document.querySelectorAll('.wiki-section');
+      let activeCategory = 'all';
+
+      function applyFilters() {
+        const q = wikiSearchInput.value.trim().toLowerCase();
+        wikiSearchClear.style.display = q ? 'block' : 'none';
+        let anyVisible = false;
+
+        sections.forEach(section => {
+          const sectionCat = section.dataset.section;
+          const catOk = activeCategory === 'all' || activeCategory === sectionCat;
+
+          if (!catOk) { section.classList.add('hidden'); return; }
+
+          const chips = section.querySelectorAll('.wiki-chip');
+          let sectionHasVisible = false;
+          chips.forEach(chip => {
+            const prefix = chip.dataset.prefix.toLowerCase();
+            const name = chip.dataset.name.toLowerCase();
+            const matches = !q || prefix.includes(q) || name.includes(q);
+            chip.classList.toggle('chip-match-hidden', !matches);
+            if (matches) sectionHasVisible = true;
+          });
+
+          section.classList.toggle('hidden', !sectionHasVisible);
+          if (sectionHasVisible) anyVisible = true;
+        });
+
+        if (wikiEmptyState) {
+          wikiEmptyState.style.display = anyVisible ? 'none' : 'block';
+          if (wikiEmptyQuery) wikiEmptyQuery.textContent = q;
+        }
+      }
+
+      // Keyboard filter
+      wikiSearchInput.addEventListener('input', applyFilters);
+      wikiSearchClear.addEventListener('click', () => {
+        wikiSearchInput.value = '';
+        wikiSearchInput.focus();
+        applyFilters();
+      });
+      // Prevent form submission from wiki search
+      wikiSearchInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') e.stopPropagation();
+      });
+
+      // Category tabs
+      catTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          catTabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+          tab.classList.add('active');
+          tab.setAttribute('aria-selected', 'true');
+          activeCategory = tab.dataset.cat;
+          applyFilters();
+        });
+      });
+
+      // Click chip → select that engine radio & close wiki
+      document.querySelectorAll('.wiki-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const prefix = chip.dataset.prefix;
+          const radio = document.querySelector(`input[name="searchEngine"][value="${prefix}"]`);
+          if (radio) {
+            radio.checked = true;
+            document.querySelectorAll('input[name="searchEngine"]').forEach(r => r.parentElement.classList.remove('selected'));
+            radio.parentElement.classList.add('selected');
+            updateSearchSource();
+          }
+          // Pulse the chip
+          chip.classList.add('chip-highlight');
+          setTimeout(() => chip.classList.remove('chip-highlight'), 600);
+          // Close wiki unless "keep open"
+          if (!keepWikiOpenCheckbox.checked) {
+            setTimeout(() => { wikiContent.style.display = 'none'; }, 300);
+          }
+          searchInput.focus();
+        });
+      });
+    })();
 
     bangsBtn.addEventListener('click', () => {
       // Reference official resource for DuckDuckGo !bangs
@@ -3341,6 +3703,30 @@
         copyCurrentSearch();
       }
 
+      // Alt+G : One-shot Google site: search for current engine
+      if (e.altKey && e.key === 'g') {
+        e.preventDefault();
+        const selectedRadio = document.querySelector('input[name="searchEngine"]:checked');
+        const query = searchInput.value.trim();
+        if (selectedRadio && searchEngines[selectedRadio.value] && query) {
+          let siteUrl = searchEngines[selectedRadio.value].url;
+          try {
+            siteUrl = new URL(siteUrl).hostname;
+          } catch {
+            siteUrl = siteUrl.replace(/^https?:\/\//, '').split(/[/?#]/)[0];
+          }
+          const googleQuery = encodeURIComponent(`site:${siteUrl} ${query}`);
+          window.open('https://www.google.com/search?q=' + googleQuery, '_blank');
+          // Flash the siteBtn briefly to indicate the action without toggling state
+          siteBtn.classList.add('active');
+          setTimeout(() => {
+            if (siteBtn.getAttribute('aria-pressed') !== 'true') {
+              siteBtn.classList.remove('active');
+            }
+          }, 600);
+        }
+      }
+
       if (e.key === 'Escape') {
         if (filetypesPopup.classList.contains('show')) {
           closeFiletypesPopup();
@@ -3566,32 +3952,35 @@
     operatorTooltip.className = 'operator-tooltip';
     document.body.appendChild(operatorTooltip);
 
-    // Tooltip for the site: checkbox in the search bar
-    const siteCheckboxLabel = document.getElementById('siteCheckboxLabel');
-    if (siteCheckboxLabel) {
-      siteCheckboxLabel.addEventListener('mouseenter', function () {
-        const activeName = document.querySelector('input[name="searchEngine"]:checked')?.value || 'this engine';
-        const engineName = searchEngines[activeName]?.name || 'this engine';
-        operatorTooltip.innerHTML = `<span style="display:flex;align-items:center;gap:6px;"><img src="https://www.google.com/favicon.ico" style="width:14px;height:14px;vertical-align:middle;"> Search inside <strong>${engineName}</strong> with Google</span>`;
-        operatorTooltip.style.display = 'block';
-        setTimeout(() => { operatorTooltip.style.opacity = 1; }, 10);
-        const rect = siteCheckboxLabel.getBoundingClientRect();
-        const tooltipRect = operatorTooltip.getBoundingClientRect();
-        let top = rect.top - tooltipRect.height - 8;
-        if (top < 0) top = rect.bottom + 8;
-        let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
-        if (left < 5) left = 5;
-        if (left + tooltipRect.width > window.innerWidth) left = window.innerWidth - tooltipRect.width - 5;
-        operatorTooltip.style.top = `${top}px`;
-        operatorTooltip.style.left = `${left}px`;
-      });
-      siteCheckboxLabel.addEventListener('mouseleave', function () {
-        operatorTooltip.style.opacity = 0;
-        setTimeout(() => {
-          if (operatorTooltip.style.opacity === '0') operatorTooltip.style.display = 'none';
-        }, 200);
-      });
-    }
+    // Toggle siteBtn active state
+    siteBtn.addEventListener('click', function () {
+      const isActive = siteBtn.classList.toggle('active');
+      siteBtn.setAttribute('aria-pressed', isActive);
+    });
+
+    // Tooltip for site: button
+    siteBtn.addEventListener('mouseenter', function () {
+      const activeName = document.querySelector('input[name="searchEngine"]:checked')?.value || '';
+      const engineName = (activeName && searchEngines[activeName]?.name) || 'this engine';
+      operatorTooltip.innerHTML = `<span style="display:flex;align-items:center;gap:6px;">Search <strong>${engineName}</strong> using Google Search&nbsp;<img src="https://www.google.com/favicon.ico" style="width:14px;height:14px;vertical-align:middle;"></span>`;
+      operatorTooltip.style.display = 'block';
+      setTimeout(() => { operatorTooltip.style.opacity = 1; }, 10);
+      const rect = siteBtn.getBoundingClientRect();
+      const tooltipRect = operatorTooltip.getBoundingClientRect();
+      let top = rect.top - tooltipRect.height - 8;
+      if (top < 0) top = rect.bottom + 8;
+      let left = rect.left + (rect.width / 2) - (tooltipRect.width / 2);
+      if (left < 5) left = 5;
+      if (left + tooltipRect.width > window.innerWidth) left = window.innerWidth - tooltipRect.width - 5;
+      operatorTooltip.style.top = `${top}px`;
+      operatorTooltip.style.left = `${left}px`;
+    });
+    siteBtn.addEventListener('mouseleave', function () {
+      operatorTooltip.style.opacity = 0;
+      setTimeout(() => {
+        if (operatorTooltip.style.opacity === '0') operatorTooltip.style.display = 'none';
+      }, 200);
+    });
 
     const operatorDescriptions = {
       '" "': "Searches for an exact phrase match. Example: \"climate change\"",
