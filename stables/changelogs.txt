@@ -10,3 +10,4 @@ stable17: remove prefix: from view after selection of search since "🌐 Google"
 stable18: fix favicon
 
 stable23: focus on first search + add message above the "site:"
+stable26: updated the shortcuts button
