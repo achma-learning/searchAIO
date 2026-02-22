@@ -1269,52 +1269,155 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 90%;
-      max-width: 720px;
-      background: white;
-      border: 2px solid #e0e0e0;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
-      padding: 24px;
+      width: 92%;
+      max-width: 780px;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(99,179,237,0.1);
+      padding: 0;
       z-index: 2005;
-      /* Higher than overlay (2000) */
       display: none;
+      overflow: hidden;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
     }
 
     #keyboardShortcutsPopup.show {
       display: block !important;
-      /* Force display when .show class is added */
     }
 
-    .dark-mode #keyboardShortcutsPopup {
-      background: #1a2332;
-      border-color: #2d3e52;
-      color: #d0d8e0;
+    /* Arch-style terminal header bar */
+    .cheat-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
     }
+    .cheat-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+    }
+    .cheat-dot.red    { background: #ff5f57; }
+    .cheat-dot.yellow { background: #ffbd2e; }
+    .cheat-dot.green  { background: #28c941; }
+    .cheat-title {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      color: #8b949e;
+      letter-spacing: 0.08em;
+      margin-right: 36px; /* offset for dots */
+    }
+    .cheat-title span { color: #58a6ff; }
 
-    #keyboardShortcutsPopup .close-btn {
-      position: absolute;
-      top: 12px;
-      right: 16px;
-      font-size: 32px;
-      cursor: pointer;
-      color: #888;
-      background: none;
-      border: none;
-      padding: 0;
-      width: auto;
-      height: auto;
+    /* Body */
+    .cheat-body {
+      padding: 20px;
+      max-height: 72vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #30363d #0d1117;
     }
+    .cheat-body::-webkit-scrollbar { width: 6px; }
+    .cheat-body::-webkit-scrollbar-track { background: #0d1117; }
+    .cheat-body::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
 
-    #keyboardShortcutsPopup .close-btn:hover {
-      color: #333;
-      transform: none;
-      box-shadow: none;
+    /* Two-column grid of sections */
+    .cheat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
     }
+    @media (max-width: 580px) { .cheat-grid { grid-template-columns: 1fr; } }
 
-    .dark-mode #keyboardShortcutsPopup .close-btn:hover {
-      color: #eee;
+    .cheat-section {
+      background: #161b22;
+      border: 1px solid #21262d;
+      border-radius: 6px;
+      overflow: hidden;
     }
+    .cheat-section-title {
+      padding: 7px 12px;
+      background: #1c2128;
+      border-bottom: 1px solid #21262d;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #58a6ff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cheat-section-title::before {
+      content: '#';
+      color: #3fb950;
+    }
+    .cheat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 12px;
+      border-bottom: 1px solid #21262d1a;
+      gap: 12px;
+      transition: background 0.1s;
+    }
+    .cheat-row:last-child { border-bottom: none; }
+    .cheat-row:hover { background: #21262d; }
+
+    .cheat-keys {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+    .kbd {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 7px;
+      background: #21262d;
+      border: 1px solid #444c56;
+      border-bottom: 2px solid #444c56;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #e6edf3;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+    .kbd-sep {
+      color: #484f58;
+      font-size: 11px;
+      padding: 0 1px;
+    }
+    .cheat-desc {
+      font-size: 11.5px;
+      color: #8b949e;
+      text-align: right;
+      line-height: 1.4;
+    }
+    .cheat-desc .hl { color: #e6edf3; }
+    .cheat-desc .hl-green { color: #3fb950; }
+    .cheat-desc .hl-blue { color: #79c0ff; }
+    .cheat-desc .hl-orange { color: #d29922; }
+
+    /* Footer hint */
+    .cheat-footer {
+      padding: 8px 16px;
+      background: #161b22;
+      border-top: 1px solid #30363d;
+      font-size: 10.5px;
+      color: #484f58;
+      display: flex;
+      justify-content: space-between;
+    }
+    .cheat-footer span { color: #3fb950; }
+
+    /* Light mode — keep dark theme for cheatsheet (intentional terminal look) */
+    /* but allow override if user prefers */
 
     #googleWikiPopup h3 {
       margin-top: 0;
@@ -2619,11 +2722,26 @@
       </div>
     </div>
 
-    <div id="keyboardShortcutsPopup" style="display: none;">
-      <button class="close-btn" id="closeShortcutsBtn">&times;</button>
-      <h3>⌨️ Keyboard Shortcuts</h3>
-      <div id="shortcuts-content" style="max-height: 50vh; overflow-y: auto;">
-        <!-- Shortcuts will be loaded here -->
+    <div id="keyboardShortcutsPopup">
+      <!-- Terminal-style header -->
+      <div class="cheat-header">
+        <span class="cheat-dot red"></span>
+        <span class="cheat-dot yellow"></span>
+        <span class="cheat-dot green"></span>
+        <div class="cheat-title">⌨ <span>keybindings</span> — Search Interface</div>
+      </div>
+
+      <!-- Cheatsheet body -->
+      <div class="cheat-body">
+        <div class="cheat-grid" id="cheat-grid">
+          <!-- populated by JS -->
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="cheat-footer">
+        <span>ESC</span>&nbsp;to close &nbsp;|&nbsp; all shortcuts work globally
+        <span id="cheat-shortcut-count"></span>
       </div>
     </div>
 
@@ -2903,49 +3021,106 @@
     function openShortcutsPopup() {
       keyboardShortcutsPopup.classList.add('show');
       popupOverlay.classList.add('show');
+      keyboardShortcutsPopup.setAttribute('aria-hidden', 'false');
 
-      const shortcutsContent = document.getElementById('shortcuts-content');
-      shortcutsContent.innerHTML = ''; // Clear previous content
+      const grid = document.getElementById('cheat-grid');
+      grid.innerHTML = '';
 
-      const shortcuts = [
-        { keys: 'Ctrl + K', description: 'Focus on the search bar' },
-        { keys: 'Ctrl + Shift + K', description: 'Clear the search bar' },
-        { keys: 'Alt + ↑/↓', description: 'Cycle through search engines' },
-        { keys: 'Alt + 1-4', description: 'Switch search engine category' },
-        { keys: 'Ctrl + Shift + C', description: 'Copy the current search query' },
-        { keys: 'Alt + G', description: 'Perform a one-shot Google Search for the current search engine (site:)' },
-        { keys: 'Esc', description: 'Close any open pop-up' }
+      // Sections with grouped shortcuts
+      const sections = [
+        {
+          title: 'Search Bar',
+          icon: '🔍',
+          rows: [
+            { keys: [['Ctrl','K']], desc: '<span class="hl">Focus</span> the search bar' },
+            { keys: [['Ctrl','Shift','K']], desc: '<span class="hl-orange">Clear</span> the search bar' },
+            { keys: [['Ctrl','Shift','C']], desc: '<span class="hl">Copy</span> current query to clipboard' },
+            { keys: [['Enter']], desc: '<span class="hl-green">Launch</span> search in new tab' },
+          ]
+        },
+        {
+          title: 'Engine Navigation',
+          icon: '🧭',
+          rows: [
+            { keys: [['Alt','↑'], ['Alt','↓']], desc: 'Cycle through search engines', sep: '/' },
+            { keys: [['Alt','1–4']], desc: 'Jump to engine <span class="hl-blue">category</span>' },
+          ]
+        },
+        {
+          title: 'Google Site: Mode',
+          icon: '🟢',
+          rows: [
+            { keys: [['Alt','G']], desc: '<span class="hl-green">One-shot</span> Google search (no toggle)' },
+            { keys: [['Alt','Shift','G']], desc: '<span class="hl-blue">Toggle</span> site: on / off' },
+          ]
+        },
+        {
+          title: 'Interface',
+          icon: '🖥',
+          rows: [
+            { keys: [['Esc']], desc: 'Close any open popup' },
+          ]
+        },
       ];
 
-      const table = document.createElement('table');
-      table.className = 'wiki-table';
+      // Count total shortcuts
+      let total = 0;
+      sections.forEach(s => total += s.rows.length);
+      document.getElementById('cheat-shortcut-count').textContent = total + ' bindings';
 
-      const thead = document.createElement('thead');
-      thead.innerHTML = `
-            <tr>
-                <th>Shortcut</th>
-                <th>Action</th>
-            </tr>
-        `;
+      sections.forEach(section => {
+        const sec = document.createElement('div');
+        sec.className = 'cheat-section';
 
-      const tbody = document.createElement('tbody');
-      shortcuts.forEach(shortcut => {
-        const row = document.createElement('tr');
-        const keysCell = document.createElement('td');
-        const descCell = document.createElement('td');
-        keysCell.innerHTML = `<code>${shortcut.keys}</code>`;
-        descCell.textContent = shortcut.description;
-        row.appendChild(keysCell);
-        row.appendChild(descCell);
-        tbody.appendChild(row);
+        const title = document.createElement('div');
+        title.className = 'cheat-section-title';
+        title.textContent = section.icon + ' ' + section.title;
+        sec.appendChild(title);
+
+        section.rows.forEach(row => {
+          const div = document.createElement('div');
+          div.className = 'cheat-row';
+
+          // Keys
+          const keysDiv = document.createElement('div');
+          keysDiv.className = 'cheat-keys';
+
+          if (Array.isArray(row.keys[0])) {
+            // Multiple combos
+            row.keys.forEach((combo, ci) => {
+              if (ci > 0) {
+                const sep = document.createElement('span');
+                sep.className = 'kbd-sep';
+                sep.textContent = row.sep || '+';
+                keysDiv.appendChild(sep);
+              }
+              combo.forEach((k, ki) => {
+                if (ki > 0) {
+                  const plus = document.createElement('span');
+                  plus.className = 'kbd-sep';
+                  plus.textContent = '+';
+                  keysDiv.appendChild(plus);
+                }
+                const kbd = document.createElement('span');
+                kbd.className = 'kbd';
+                kbd.textContent = k;
+                keysDiv.appendChild(kbd);
+              });
+            });
+          }
+
+          // Description
+          const desc = document.createElement('div');
+          desc.className = 'cheat-desc';
+          desc.innerHTML = row.desc;
+
+          div.appendChild(keysDiv);
+          div.appendChild(desc);
+          sec.appendChild(div);
+        });
+
+        grid.appendChild(sec);
       });
-
-      table.appendChild(thead);
-      table.appendChild(tbody);
-      shortcutsContent.appendChild(table);
-
-      // Optional: Improve accessibility
-      keyboardShortcutsPopup.setAttribute('aria-hidden', 'false');
     }
 
     function closeShortcutsPopup() {
@@ -2963,7 +3138,7 @@
     }
 
     keyboardShortcutsBtn.addEventListener('click', openShortcutsPopup);
-    closeShortcutsBtn.addEventListener('click', closeShortcutsPopup);
+    if (closeShortcutsBtn) closeShortcutsBtn.addEventListener('click', closeShortcutsPopup);
 
     // Translation API function (using MyMemory - free, no key required)
     async function translateText(text, sourceLang, targetLang) {
@@ -3702,8 +3877,8 @@
         copyCurrentSearch();
       }
 
-      // Alt+G : One-shot Google site: search for current engine
-      if (e.altKey && e.key === 'g') {
+      // Alt+G : One-shot Google site: search for current engine (no toggle)
+      if (e.altKey && !e.shiftKey && e.key === 'g') {
         e.preventDefault();
         const selectedRadio = document.querySelector('input[name="searchEngine"]:checked');
         const query = searchInput.value.trim();
@@ -3711,19 +3886,29 @@
           let siteUrl = searchEngines[selectedRadio.value].url;
           try {
             siteUrl = new URL(siteUrl).hostname;
-          } catch {
+          } catch (err) {
             siteUrl = siteUrl.replace(/^https?:\/\//, '').split(/[/?#]/)[0];
           }
           const googleQuery = encodeURIComponent(`site:${siteUrl} ${query}`);
           window.open('https://www.google.com/search?q=' + googleQuery, '_blank');
-          // Flash the siteBtn briefly to indicate the action without toggling state
+          // Flash siteBtn briefly without permanently toggling
           siteBtn.classList.add('active');
+          if (typeof syncGoogleRing === 'function') syncGoogleRing();
           setTimeout(() => {
             if (siteBtn.getAttribute('aria-pressed') !== 'true') {
               siteBtn.classList.remove('active');
+              if (typeof syncGoogleRing === 'function') syncGoogleRing();
             }
           }, 600);
         }
+      }
+
+      // Alt+Shift+G : Toggle site: on/off
+      if (e.altKey && e.shiftKey && (e.key === 'G' || e.key === 'g')) {
+        e.preventDefault();
+        const isActive = siteBtn.classList.toggle('active');
+        siteBtn.setAttribute('aria-pressed', isActive);
+        if (typeof syncGoogleRing === 'function') syncGoogleRing();
       }
 
       if (e.key === 'Escape') {
