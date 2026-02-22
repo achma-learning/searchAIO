@@ -11,3 +11,4 @@ stable18: fix favicon
 
 stable23: focus on first search + add message above the "site:"
 stable26: updated the shortcuts button
+stable27: fixed shortcut button + added some new shortcuts
