@@ -14,3 +14,4 @@ stable26: updated the shortcuts button
 stable27: fixed shortcut button + added some new shortcuts
 stable27.2: added google favicon to google search operator tooltip
 stable28 (2): change from prefix: to :prefix
+stable29: add chinease translate 

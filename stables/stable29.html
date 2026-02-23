@@ -1983,194 +1983,6 @@
     .notification.info    { border-left: 4px solid #2196F3; }
 
     /* ============================================ */
-    /* ============================================ */
-    /* YANDEX TRANSLATION BOX                       */
-    /* ============================================ */
-
-    #yandexTranslationBox {
-      display: none;
-      margin-bottom: 0;
-    }
-
-    #yandexTranslationBox .category-title {
-      border-bottom-color: #ff0000;
-    }
-
-    .yandex-hint {
-      font-size: 12px;
-      color: #888;
-      font-style: italic;
-      margin-bottom: 10px;
-      padding: 6px 10px;
-      background: rgba(255, 0, 0, 0.05);
-      border-left: 3px solid #ff0000;
-      border-radius: 0 4px 4px 0;
-      line-height: 1.5;
-    }
-
-    .yandex-controls-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 10px;
-    }
-
-    #yandexSourceLang {
-      padding: 8px 10px;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-      background: white;
-      color: #333;
-      font-size: 13px;
-      cursor: pointer;
-      flex-shrink: 0;
-      min-width: 150px;
-      transition: border-color 0.2s;
-    }
-
-    #yandexSourceLang:focus {
-      outline: none;
-      border-color: #ff0000;
-      box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.1);
-    }
-
-    #yandexSourceText {
-      flex: 1;
-      padding: 8px 12px;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-      font-size: 13px;
-      background: white;
-      color: #333;
-      transition: border-color 0.2s;
-      min-width: 200px;
-    }
-
-    #yandexSourceText:focus {
-      outline: none;
-      border-color: #ff0000;
-      box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.1);
-    }
-
-    #yandexSourceText::placeholder { color: #aaa; font-style: italic; }
-
-    #yandexTargetText {
-      width: 100%;
-      min-height: 70px;
-      padding: 10px 12px;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-      font-size: 13px;
-      background: #fafafa;
-      color: #333;
-      resize: vertical;
-      margin-bottom: 10px;
-      box-sizing: border-box;
-      transition: border-color 0.2s;
-    }
-
-    #yandexTargetText:focus {
-      outline: none;
-      border-color: #ff0000;
-    }
-
-    .yandex-buttons-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    #yandexOpenBtn {
-      background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      padding: 7px 14px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    #yandexOpenBtn:hover {
-      background: linear-gradient(135deg, #dd0000 0%, #aa0000 100%);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(255, 0, 0, 0.4);
-    }
-
-    #yandexOpenBtn:active { transform: translateY(0); }
-
-    #yandexTranslateStatus {
-      font-size: 12px;
-      min-height: 18px;
-      margin-top: 8px;
-      padding-left: 2px;
-      transition: color 0.2s;
-    }
-
-    #yandexTranslateStatus.loading { color: #ff9800; }
-    #yandexTranslateStatus.success { color: #4caf50; }
-    #yandexTranslateStatus.error   { color: #f44336; }
-
-    /* Dark mode — Yandex */
-    .dark-mode #yandexTranslationBox .category-title {
-      color: #ef9a9a;
-      border-bottom-color: #ef9a9a;
-    }
-
-    .dark-mode .yandex-hint {
-      background: rgba(239, 154, 154, 0.08);
-      border-left-color: #ef9a9a;
-      color: #90a4ae;
-    }
-
-    .dark-mode #yandexSourceLang {
-      background: #1a2332;
-      border-color: #2d3e52;
-      color: #b0bec5;
-    }
-
-    .dark-mode #yandexSourceLang:focus {
-      border-color: #ef9a9a;
-      box-shadow: 0 0 0 3px rgba(239, 154, 154, 0.15);
-    }
-
-    .dark-mode #yandexSourceText {
-      background: #1a2332;
-      border-color: #2d3e52;
-      color: #b0bec5;
-    }
-
-    .dark-mode #yandexSourceText:focus {
-      border-color: #ef9a9a;
-      box-shadow: 0 0 0 3px rgba(239, 154, 154, 0.15);
-    }
-
-    .dark-mode #yandexSourceText::placeholder { color: #546e7a; }
-
-    .dark-mode #yandexTargetText {
-      background: #0f1924;
-      border-color: #2d3e52;
-      color: #b0bec5;
-    }
-
-    .dark-mode #yandexOpenBtn {
-      background: linear-gradient(135deg, #8b0000 0%, #5d0000 100%);
-      box-shadow: 0 2px 8px rgba(139, 0, 0, 0.4);
-    }
-
-    .dark-mode #yandexOpenBtn:hover {
-      background: linear-gradient(135deg, #a00000 0%, #6e0000 100%);
-      box-shadow: 0 4px 14px rgba(160, 0, 0, 0.5);
-    }
-
-    .dark-mode #yandexTranslateStatus { color: #78909c; }
-
     /* BAIDU FANYI TRANSLATION BOX                  */
     /* ============================================ */
 
@@ -2512,44 +2324,30 @@
     <!-- Yandex Translation Box -->
     <div id="yandexTranslationBox" style="display: none;">
       <div class="category-section">
-        <div class="category-title">🇷🇺 Yandex Translate — Русский</div>
-
-        <div class="yandex-hint">
-          💡 Type your text below — it auto-translates to <strong>Russian</strong> via MyMemory API (500 ms debounce). Leave the text empty to open Yandex Translate directly.
+        <div class="category-title">🇷🇺 Translate to Russian</div>
+        <div id="yandexTranslateContent">
+          <div class="yandex-translate-row" style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;">
+            <label for="yandexSourceLang" style="font-weight: 500;">From:</label>
+            <select id="yandexSourceLang"
+              style="padding: 8px; border-radius: 6px; border: 1px solid #ddd; width: auto;">
+              <option value="en" selected>English</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+              <option value="es">Spanish</option>
+              <option value="ar">Arabic</option>
+              <option value="zh">Chinese</option>
+            </select>
+            <input type="text" id="yandexSourceText" placeholder="Enter text to translate..."
+              style="flex-grow: 1; padding: 8px; border-radius: 6px; border: 1px solid #ddd;">
+          </div>
+          <textarea id="yandexTargetText" readonly placeholder="Russian translation..."
+            style="width: 100%; min-height: 80px; padding: 8px; border-radius: 6px; border: 1px solid #ddd; resize: vertical; margin-bottom: 10px;"></textarea>
+          <div id="yandexTranslateButtons" style="display: flex; gap: 10px;">
+            <button id="yandexInsertBtn" class="operator-btn">Insert</button>
+            <button id="yandexCopyBtn" class="operator-btn">Copy</button>
+          </div>
+          <div id="yandexTranslateStatus" style="font-size: 12px; color: #666; min-height: 18px; margin-top: 10px;"></div>
         </div>
-
-        <div class="yandex-controls-row">
-          <select id="yandexSourceLang" title="Source language">
-            <option value="en" selected>English → Russian</option>
-            <option value="fr">French → Russian</option>
-            <option value="de">German → Russian</option>
-            <option value="es">Spanish → Russian</option>
-            <option value="ar">Arabic → Russian</option>
-            <option value="zh">Chinese → Russian</option>
-            <option value="it">Italian → Russian</option>
-            <option value="pt">Portuguese → Russian</option>
-          </select>
-          <input
-            type="text"
-            id="yandexSourceText"
-            placeholder="Enter text to translate… (or leave empty to open Yandex Translate)"
-            autocomplete="off"
-          />
-        </div>
-
-        <textarea
-          id="yandexTargetText"
-          readonly
-          placeholder="Russian translation will appear here…"
-        ></textarea>
-
-        <div class="yandex-buttons-row">
-          <button type="button" id="yandexOpenBtn">🔗 Open in Yandex Translate</button>
-          <button type="button" id="yandexInsertBtn" class="operator-btn">↩ Insert into search</button>
-          <button type="button" id="yandexCopyBtn" class="operator-btn">📋 Copy</button>
-        </div>
-
-        <div id="yandexTranslateStatus"></div>
       </div>
     </div>
 
@@ -3187,7 +2985,6 @@
     const yandexSourceLang      = document.getElementById('yandexSourceLang');
     const yandexSourceText      = document.getElementById('yandexSourceText');
     const yandexTargetText      = document.getElementById('yandexTargetText');
-    const yandexOpenBtn         = document.getElementById('yandexOpenBtn');
     const yandexInsertBtn       = document.getElementById('yandexInsertBtn');
     const yandexCopyBtn         = document.getElementById('yandexCopyBtn');
     const yandexTranslateStatus = document.getElementById('yandexTranslateStatus');
@@ -3246,91 +3043,70 @@
     document.getElementById('cheat-close-dot').addEventListener('click', closeShortcutsPopup);
 
     // ============================================
-    // YANDEX TRANSLATION  (MyMemory API, 500 ms debounce)
+    // YANDEX TRANSLATION
     // ============================================
-
     async function translateText(text, sourceLang, targetLang) {
       if (!text.trim()) return '';
       const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
       const response = await fetch(url);
-      const data     = await response.json();
+      const data = await response.json();
       if (data.responseStatus === 200) return data.responseData.translatedText;
       throw new Error(data.responseDetails || 'Translation failed');
-    }
-
-    /**
-     * Build the Yandex Translate URL.
-     * Format: https://translate.yandex.com/en/translator/English-Russian
-     * With optional ?text=… when there is source text.
-     */
-    const YANDEX_LANG_NAMES = {
-      en: 'English', fr: 'French', de: 'German', es: 'Spanish',
-      ar: 'Arabic',  zh: 'Chinese', it: 'Italian', pt: 'Portuguese'
-    };
-
-    function buildYandexTranslateUrl() {
-      const src     = yandexSourceLang.value;
-      const text    = yandexSourceText.value.trim();
-      const srcName = YANDEX_LANG_NAMES[src] || 'English';
-      const base    = `https://translate.yandex.com/en/translator/${srcName}-Russian`;
-      return text ? `${base}?text=${encodeURIComponent(text)}` : base;
-    }
-
-    function setYandexStatus(msg, type = '') {
-      yandexTranslateStatus.textContent = msg;
-      yandexTranslateStatus.className   = type;
     }
 
     let yandexTranslationTimeout;
 
     function scheduleYandexTranslation() {
       clearTimeout(yandexTranslationTimeout);
+      if (!yandexSourceLang || !yandexSourceText || !yandexTargetText) return;
+      const sourceLang      = yandexSourceLang.value;
       const textToTranslate = yandexSourceText.value;
       if (!textToTranslate.trim()) {
         yandexTargetText.value = '';
-        setYandexStatus('');
+        if (yandexTranslateStatus) yandexTranslateStatus.textContent = '';
         return;
       }
-      setYandexStatus('Translating…', 'loading');
+      if (yandexTranslateStatus) {
+        yandexTranslateStatus.textContent = 'Translating…';
+        yandexTranslateStatus.className = 'loading';
+      }
       yandexTranslationTimeout = setTimeout(async () => {
         try {
-          const translated = await translateText(textToTranslate, yandexSourceLang.value, 'ru');
+          const translated = await translateText(textToTranslate, sourceLang, 'ru');
           yandexTargetText.value = translated;
-          setYandexStatus('✓ Translation complete', 'success');
-          setTimeout(() => { if (yandexTranslateStatus.textContent.includes('complete')) setYandexStatus(''); }, 2500);
+          if (yandexTranslateStatus) {
+            yandexTranslateStatus.textContent = 'Translation complete';
+            setTimeout(() => { if (yandexTranslateStatus.textContent === 'Translation complete') yandexTranslateStatus.textContent = ''; }, 2000);
+          }
         } catch {
           yandexTargetText.value = '';
-          setYandexStatus('✗ Translation failed. Please try again.', 'error');
+          if (yandexTranslateStatus) yandexTranslateStatus.textContent = 'Translation failed. Please try again.';
         }
       }, 500);
     }
 
-    yandexSourceText.addEventListener('input',  scheduleYandexTranslation);
+    yandexSourceText.addEventListener('input', scheduleYandexTranslation);
     yandexSourceLang.addEventListener('change', scheduleYandexTranslation);
-
-    yandexOpenBtn.addEventListener('click', () => {
-      window.open(buildYandexTranslateUrl(), '_blank');
-    });
 
     yandexCopyBtn.addEventListener('click', () => {
       const text = yandexTargetText.value;
-      if (!text.trim()) { setYandexStatus('Nothing to copy.', 'error'); return; }
+      if (!text.trim()) { yandexTranslateStatus.textContent = 'Nothing to copy.'; return; }
       navigator.clipboard.writeText(text).then(() => {
-        setYandexStatus('✓ Copied to clipboard!', 'success');
-        setTimeout(() => setYandexStatus(''), 2000);
+        yandexTranslateStatus.textContent = 'Copied to clipboard!';
+        setTimeout(() => { yandexTranslateStatus.textContent = ''; }, 2000);
       });
     });
 
     yandexInsertBtn.addEventListener('click', () => {
       const text = yandexTargetText.value;
-      if (!text.trim()) { setYandexStatus('Nothing to insert.', 'error'); return; }
+      if (!text.trim()) { yandexTranslateStatus.textContent = 'Nothing to insert.'; return; }
       const start = searchInput.selectionStart;
       const end   = searchInput.selectionEnd;
       searchInput.value = searchInput.value.substring(0, start) + text + searchInput.value.substring(end);
       searchInput.selectionStart = searchInput.selectionEnd = start + text.length;
       searchInput.focus();
-      setYandexStatus('✓ Inserted into search bar!', 'success');
-      setTimeout(() => setYandexStatus(''), 2000);
+      yandexTranslateStatus.textContent = 'Inserted into search bar!';
+      setTimeout(() => { yandexTranslateStatus.textContent = ''; }, 2000);
     });
 
     // ============================================
