@@ -10,7 +10,9 @@ The project is maintained as a single, monolithic file for maximum portability a
 
 2. Data Model (The searchEngines Schema)
 All modifications must adhere to this structure.
-**CRITICAL:** If `promptBased` is `true`, the `name` **MUST** end with an asterisk (`*`) to notify the user that the query is copied for manual paste.
+**CRITICAL:**
+- **Naming Convention**: Prefers **DuckDuckGo !bangs** style for prefix names (e.g., `g:`, `yt:`, `ddg:`, `w:`, `yan:`) to ensure intuition for power users.
+- **Prompt-Based Engines**: If `promptBased` is `true`, the `name` **MUST** end with an asterisk (`*`) to notify the user that the query is copied for manual paste.
 
 ```javascript
 const searchEngines = {
@@ -56,7 +58,11 @@ The app operates on a Prefix → Resolve → Construct → Route pipeline:
 - **Site Search Override (`site:`)**: Button to toggle Google search within a specific engine's domain (e.g., using Google to search PubMed's site).
 - **DuckDuckGo !bangs Integration**: Detects `!` syntax (e.g., `!w` for Wikipedia) and routes to DuckDuckGo's bang library.
 - **Filetype Grid System**: A visual selector for 50+ file formats (Documents, Spreadsheets, Code, Images, Video) using `OR` logic (e.g., `(filetype:pdf OR filetype:docx)`).
-- **Yandex/MyMemory Translation API**: Real-time English → Russian translation when the `yan:` prefix is active, with a debounced (500ms) API call.
+- **On-Site Translation Boxes**:
+  - **Yandex Translate (`yan:`)**: Real-time translation to Russian.
+  - **Baidu Fanyi (`bd:`, `bdedu:`, `cbd:`)**: Real-time translation to/from Chinese with red-branded UI.
+  - **Google Unofficial API**: Both boxes utilize a high-quality unofficial Google Translate endpoint for real-time results, with original engine links preserved as backups.
+- **Paste-Required Legend Bar**: A fixed footer notification that appears when an AI engine (ChatGPT, Claude, etc.) requires manual pasting of the query.
 
 ### 🛡️ Advanced Technical Features
 - **Smart Tooltip System**: Position-aware tooltips for operator buttons that dynamically adjust (above/below/left/right) to avoid viewport edges.
@@ -67,7 +73,7 @@ The app operates on a Prefix → Resolve → Construct → Route pipeline:
 
 🌓 UI/UX Design System
 - **Classic/Compact Layout**: Favicon pinned inside the search input, integrated search button.
-- **Glassmorphism**: Use of `backdrop-filter: blur()` for autocomplete and overlays.
+- **Glassmorphism**: Use of `backdrop-filter: blur()` for autocomplete, overlays, and the Legend Bar.
 - **Focus Overlay**: macOS-style background blurring when the search bar is active.
 - **Smart Autocomplete**: Positioned dynamically (above/below) based on screen space.
 - **Shortcuts popup — full Arch Linux cheatsheet redesign**:
@@ -75,7 +81,7 @@ The app operates on a Prefix → Resolve → Construct → Route pipeline:
   - **macOS-style traffic light dots**: (red/yellow/green) in the header bar with the title `⌨ keybindings — Search Interface`.
   - **2-column grid**: of sections, each styled like a terminal config block with `#` prefix on section titles.
   - **kbd key chips**: each key rendered as a physical keyboard key with border-bottom depth effect.
-  - **Logical Sections**: Shortcuts grouped into 4 sections: *Search Bar*, *Engine Navigation*, *Google Site: Mode*, and *Interface*.
+  - **Logical Sections**: Shortcuts grouped into 5 sections: *Search Bar*, *Engine Navigation*, *Google Site: Mode*, *Translation*, and *Interface*.
   - **Color-coded descriptions**: green = action, blue = highlight, orange = warning.
   - **Footer**: shows total binding count + `ESC` to close hint.
   - **Custom scrollbar**: Scrollable body with custom thin scrollbar.
