@@ -16,3 +16,4 @@ stable27.2: added google favicon to google search operator tooltip
 stable28 (2): change from prefix: to :prefix
 stable29: add chinease translate 
 stable31: add 📋 next to search engin that doens't support search with url
+stable32: fixed cismef-* and ammps-* , and add some new search engin in general (wikipeadia, wikiwands, baidu wiki , grokipeadia)
