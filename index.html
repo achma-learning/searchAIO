@@ -2829,7 +2829,7 @@
         <div class="category-title">🤖 IA / Avancé</div>
         <div class="radio-group" id="group4">
           <label><input type="radio" name="searchEngine" value="wolf:">Wolfram Alpha</label>
-          <label><input type="radio" name="searchEngine" value="chatgpt:">ChatGPT 📋</label>
+          <label><input type="radio" name="searchEngine" value="chatgpt:">ChatGPT</label>
           <label><input type="radio" name="searchEngine" value="claude:">Claude AI 📋</label>
           <label><input type="radio" name="searchEngine" value="gemini:">Gemini 📋</label>
           <label><input type="radio" name="searchEngine" value="gai:">Google AI Mode</label>
@@ -3313,7 +3313,7 @@
       'bdedu:':      { name: 'Baidu Academic (Xueshu)',      url: 'https://xueshu.baidu.com/ndscholar/browse/search?wd=',                                          domain: 'baidu.com', plusEncoding: true },
       'proinserm:':  { name: 'Pro Inserm',                   url: 'https://pro.inserm.fr/?s=',                                                                    domain: 'pro.inserm.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/pro.inserm.fr-favicon.png' },
       'cismef:':     { name: 'CISMeF',                       url: 'https://doccismef.chu-rouen.fr/dc/#',                                                          domain: 'doccismef.chu-rouen.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.cismef.org-favicon.ico' },
-      'msps:':       { name: 'Ministère de la santé et de la Protection Sociale', url: 'https://www.google.com/search?q=site:sante.gov.ma ', domain: 'sante.gov.ma', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.sante.gov.ma-favicon.png' },
+      'msps:':       { name: 'Ministère de la santé et de la Protection Sociale', url: 'https://www.google.com/search?q=site:sante.gov.ma ', directUrl: 'https://www.sante.gov.ma/SearchCenter/Pages/results.aspx?k=', domain: 'sante.gov.ma', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.sante.gov.ma-favicon.png' },
       // AMMPS — Agence Marocaine des Médicaments et des Produits de Santé
       'ammps:':      { name: 'AMMPS – Médicaments',           url: 'https://ammps.sante.gov.ma/recherche-medicaments?search=',                                     domain: 'ammps.sante.gov.ma', plusEncoding: true, favicon: 'https://ammps.sante.gov.ma/favicon.ico' },
       'ammps-lm:':   { name: 'AMMPS – Liste Médicaments',      url: 'https://ammps.sante.gov.ma/basesdedonnes/listes-medicaments?search=',                         domain: 'ammps.sante.gov.ma', plusEncoding: true, favicon: 'https://ammps.sante.gov.ma/favicon.ico' },
@@ -3343,7 +3343,7 @@
       'drugs:':      { name: 'Drugs.com',                    url: 'https://www.drugs.com/search.php?searchterm=',                                                 domain: 'drugs.com' },
       'cdc:':        { name: 'CDC',                          url: 'https://search.cdc.gov/search/?query=',                                                        domain: 'cdc.gov' },
       'wolf:':       { name: 'Wolfram Alpha',                url: 'https://www.wolframalpha.com/input?i=',                                                        domain: 'wolframalpha.com' },
-      'chatgpt:':    { name: 'ChatGPT 📋',                   url: 'https://chatgpt.com/?prompt=',                                                                 domain: 'chatgpt.com', promptBased: true },
+      'chatgpt:':    { name: 'ChatGPT',                       url: 'https://chatgpt.com/?prompt=',                                                                 domain: 'chatgpt.com', plusEncoding: true },
       'claude:':     { name: 'Claude AI 📋',                 url: 'https://claude.ai/new?q=',                                                                     domain: 'claude.ai', promptBased: true },
       'gemini:':     { name: 'Gemini 📋',                    url: 'https://gemini.google.com/app?q=',                                                             domain: 'gemini.google.com', promptBased: true },
       'perplexity:': { name: 'Perplexity',                   url: 'https://www.perplexity.ai/search?q=',                                                          domain: 'perplexity.ai' },
@@ -4176,12 +4176,24 @@
       if (siteBtn.classList.contains('active')) {
         const selectedRadio = document.querySelector('input[name="searchEngine"]:checked');
         if (selectedRadio && searchEngines[selectedRadio.value]) {
+          // msps: site: URL is already baked into .url — open it directly
+          if (prefix === 'msps:') {
+            const enc = encodeURIComponent(query);
+            window.open(searchEngines['msps:'].url + enc, '_blank');
+            return;
+          }
           let siteUrl = searchEngines[selectedRadio.value].url;
           try { siteUrl = new URL(siteUrl).hostname; }
           catch { siteUrl = siteUrl.replace(/^https?:\/\//, '').split(/[/?#]/)[0]; }
           window.open('https://www.google.com/search?q=' + encodeURIComponent(`site:${siteUrl} ${query}`), '_blank');
           return;
         }
+      }
+
+      // msps: with site: OFF → use the direct site search URL
+      if (prefix === 'msps:') {
+        window.open(searchEngines['msps:'].directUrl + encodeURIComponent(query), '_blank');
+        return;
       }
 
       // Resolve alias
