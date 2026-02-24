@@ -2191,6 +2191,35 @@
 
     #yandexOpenBtn:active { transform: translateY(0); }
 
+    #yandexTranslateSearchBtn,
+    #baiduTranslateSearchBtn {
+      background: linear-gradient(135deg, #00897b 0%, #00695c 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 13px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    #yandexTranslateSearchBtn:hover,
+    #baiduTranslateSearchBtn:hover {
+      background: linear-gradient(135deg, #00796b 0%, #004d40 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 137, 123, 0.45);
+    }
+    #yandexTranslateSearchBtn:active,
+    #baiduTranslateSearchBtn:active { transform: translateY(0); }
+    .dark-mode #yandexTranslateSearchBtn,
+    .dark-mode #baiduTranslateSearchBtn {
+      background: linear-gradient(135deg, #26a69a 0%, #00897b 100%);
+    }
+
     #yandexTranslateStatus {
       font-size: 12px;
       min-height: 18px;
@@ -2681,6 +2710,7 @@
           <button type="button" id="yandexOpenBtn">🔗 Open in Yandex Translate</button>
           <button type="button" id="yandexInsertBtn" class="operator-btn">↩ Insert into search</button>
           <button type="button" id="yandexCopyBtn" class="operator-btn">📋 Copy</button>
+          <button type="button" id="yandexTranslateSearchBtn" title="Translate search bar to Russian (Alt+V)">🔄 Translate search bar</button>
         </div>
 
         <div id="yandexTranslateStatus"></div>
@@ -2724,6 +2754,7 @@
           <button type="button" id="baiduOpenBtn">🔗 Open in Baidu Fanyi</button>
           <button type="button" id="baiduCopyBtn" class="operator-btn">📋 Copy translation</button>
           <button type="button" id="baiduInsertBtn" class="operator-btn">↩ Insert into search</button>
+          <button type="button" id="baiduTranslateSearchBtn" title="Translate search bar to Chinese (Alt+V)">🔄 Translate search bar</button>
         </div>
 
         <div id="baiduTranslateStatus"></div>
@@ -3450,6 +3481,7 @@
     const yandexOpenBtn         = document.getElementById('yandexOpenBtn');
     const yandexInsertBtn       = document.getElementById('yandexInsertBtn');
     const yandexCopyBtn         = document.getElementById('yandexCopyBtn');
+    const yandexTranslateSearchBtn = document.getElementById('yandexTranslateSearchBtn');
     const yandexTranslateStatus = document.getElementById('yandexTranslateStatus');
 
     // Baidu
@@ -3460,6 +3492,7 @@
     const baiduOpenBtn          = document.getElementById('baiduOpenBtn');
     const baiduCopyBtn          = document.getElementById('baiduCopyBtn');
     const baiduInsertBtn        = document.getElementById('baiduInsertBtn');
+    const baiduTranslateSearchBtn = document.getElementById('baiduTranslateSearchBtn');
     const baiduTranslateStatus  = document.getElementById('baiduTranslateStatus');
 
     // ============================================
@@ -3771,6 +3804,74 @@
       searchInput.focus();
       setBaiduStatus('✅ Inserted into search bar!', '#28a745');
     });
+
+    // ============================================
+    // 🔄 TRANSLATE SEARCH BAR  (Alt+V)
+    // Reads the current query from the search input, translates it to the
+    // target language of the active engine, and replaces the query in-place.
+    // Works for: yan: → Russian   |   BAIDU_PREFIXES → Chinese
+    // ============================================
+
+    /**
+     * Get the target language for the current engine.
+     * Returns 'ru' for Yandex, resolved zh-target for Baidu engines, null otherwise.
+     */
+    function getTranslateSearchTarget() {
+      const activePrefix = (() => {
+        let best = '';
+        const val = searchInput.value.trim();
+        for (const k of Object.keys(searchEngines)) {
+          if (val.startsWith(k) && k.length > best.length) best = k;
+        }
+        if (!best) {
+          const r = document.querySelector('input[name="searchEngine"]:checked');
+          if (r) best = r.value;
+        }
+        return best;
+      })();
+      if (activePrefix === 'yan:') return { tl: 'ru', label: 'Russian', setStatus: setYandexStatus };
+      if (BAIDU_PREFIXES.includes(activePrefix)) {
+        const { tl } = parseBaiduLangPair(baiduSourceLang.value);
+        return { tl, label: 'Chinese', setStatus: (m, c) => setBaiduStatus(m, c || '#1565c0') };
+      }
+      return null;
+    }
+
+    async function translateSearchBar() {
+      const query = searchInput.value.trim();
+      if (!query) return;
+      const target = getTranslateSearchTarget();
+      if (!target) return;
+
+      const { tl, label, setStatus } = target;
+      // Determine source lang: for Yandex use the source select; for Baidu parse the pair
+      const sl = (tl === 'ru')
+        ? (yandexSourceLang ? yandexSourceLang.value : 'en')
+        : parseBaiduLangPair(baiduSourceLang.value).sl;
+
+      setStatus(`🔄 Translating search bar to ${label}…`, '#1565c0');
+      searchInput.value = '';          // clear bar immediately (like cut)
+      searchInput.disabled = true;
+
+      try {
+        const translated = await translateText(query, sl, tl);
+        searchInput.value    = translated;
+        searchInput.disabled = false;
+        searchInput.focus();
+        searchInput.select();
+        setStatus(`✅ Search bar translated to ${label}!`, '#28a745');
+        setTimeout(() => setStatus(''), 2500);
+      } catch {
+        searchInput.value    = query;  // restore original on failure
+        searchInput.disabled = false;
+        searchInput.focus();
+        setStatus('❌ Translation failed — original query restored.', '#e53935');
+      }
+      updateSearchSource();
+    }
+
+    yandexTranslateSearchBtn.addEventListener('click', translateSearchBar);
+    baiduTranslateSearchBtn.addEventListener('click', translateSearchBar);
 
     // ============================================
     // UPDATE SEARCH SOURCE (central sync hub)
@@ -4449,6 +4550,13 @@
       if (e.altKey && !e.shiftKey && e.key === 't') {
         e.preventDefault();
         langPopup.classList.contains('show') ? closeLangPopupFn() : openLangPopup();
+      }
+      // Alt+V — translate search bar (only for Yandex/Baidu engines)
+      if (e.altKey && !e.shiftKey && (e.key === 'v' || e.key === 'V')) {
+        if (getTranslateSearchTarget()) {
+          e.preventDefault();
+          translateSearchBar();
+        }
       }
       if (e.altKey && e.shiftKey && (e.key === 'O' || e.key === 'o')) {
         e.preventDefault();
