@@ -2743,6 +2743,10 @@
           <label><input type="radio" name="searchEngine" value="bing:">Bing</label>
           <label><input type="radio" name="searchEngine" value="bd:">Baidu</label>
           <label><input type="radio" name="searchEngine" value="gplus:">Google Avancé</label>
+          <label><input type="radio" name="searchEngine" value="wiki:">Wikipedia</label>
+          <label><input type="radio" name="searchEngine" value="bdbk:">Baidu Baike (wiki)</label>
+          <label><input type="radio" name="searchEngine" value="grokw:">Grokipedia</label>
+          <label><input type="radio" name="searchEngine" value="ww:">WikiWand</label>
         </div>
       </div>
 
@@ -3260,6 +3264,10 @@
       'bing:':       { name: 'Bing',                         url: 'https://www.bing.com/search?q=',                                                                domain: 'bing.com' },
       'bd:':         { name: 'Baidu',                        url: 'https://www.baidu.com/s?wd=',                                                                   domain: 'baidu.com' },
       'gplus:':      { name: 'Google Avancé',                url: 'https://www.google.com/advanced_search?q=',                                                     domain: 'google.com' },
+      'wiki:':       { name: 'Wikipedia',                    url: 'https://wikipedia.org/w/index.php?search=',                                                     domain: 'wikipedia.org', plusEncoding: true },
+      'bdbk:':       { name: 'Baidu Baike (wiki)',           url: 'https://baike.baidu.com/item/',                                                                 domain: 'baidu.com', favicon: 'https://www.google.com/s2/favicons?sz=32&domain=baike.baidu.com' },
+      'grokw:':      { name: 'Grokipedia',                   url: 'https://grokipedia.com/search?q=',                                                             domain: 'grokipedia.com' },
+      'ww:':         { name: 'WikiWand',                     url: 'https://www.wikiwand.com/en/search?q=',                                                        domain: 'wikiwand.com', plusEncoding: true },
       'gai:':        { name: 'Google AI Mode',               url: 'https://www.google.com/search?udm=50&q=',                                                       domain: 'google.com' },
       'scholar:':    { name: 'Google Scholar',               url: 'https://scholar.google.com/scholar?q=',                                                         domain: 'google.com' },
       'pubmed:':     { name: 'PubMed',                       url: 'https://pubmed.ncbi.nlm.nih.gov/?term=',                                                        domain: 'ncbi.nlm.nih.gov' },
@@ -3276,7 +3284,7 @@
       'cismef:':     { name: 'CISMeF',                       url: 'https://doccismef.chu-rouen.fr/dc/#',                                                          domain: 'doccismef.chu-rouen.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.cismef.org-favicon.ico' },
       'msps:':       { name: 'Ministère de la santé et de la Protection Sociale', url: 'https://www.google.com/search?q=site:sante.gov.ma ', domain: 'sante.gov.ma', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.sante.gov.ma-favicon.png' },
       // AMMPS — Agence Marocaine des Médicaments et des Produits de Santé
-      'ammps:':      { name: 'AMMPS',                         url: 'https://ammps.sante.gov.ma/recherche-medicaments?search=',                                     domain: 'ammps.sante.gov.ma', plusEncoding: true, favicon: 'https://ammps.sante.gov.ma/favicon.ico' },
+      'ammps:':      { name: 'AMMPS – Médicaments',           url: 'https://ammps.sante.gov.ma/recherche-medicaments?search=',                                     domain: 'ammps.sante.gov.ma', plusEncoding: true, favicon: 'https://ammps.sante.gov.ma/favicon.ico' },
       'ammps-lm:':   { name: 'AMMPS – Liste Médicaments',      url: 'https://ammps.sante.gov.ma/basesdedonnes/listes-medicaments?search=',                         domain: 'ammps.sante.gov.ma', plusEncoding: true, favicon: 'https://ammps.sante.gov.ma/favicon.ico' },
       'ammps-rmmg:': { name: 'AMMPS – RMMG',                   url: 'https://www.google.com/search?q=site:ammps.sante.gov.ma/callpages/RMMG+',                      domain: 'ammps.sante.gov.ma', plusEncoding: true, favicon: 'https://ammps.sante.gov.ma/favicon.ico' },
       'ammps-lvl:':  { name: 'AMMPS – Vaccins Libérés',        url: 'https://ammps.sante.gov.ma/basesdedonnes/liste-vaccin-libere?search=',                        domain: 'ammps.sante.gov.ma', plusEncoding: true, favicon: 'https://ammps.sante.gov.ma/favicon.ico' },
@@ -3329,6 +3337,10 @@
       '!bd': 'bd:',       '!baidu': 'bd:',
       '!gai': 'gai:',     '!gaimode': 'gai:',
       '!gplus': 'gplus:', '!gadv': 'gplus:',
+      '!wiki': 'wiki:',   '!wp': 'wiki:',    '!wikipedia': 'wiki:',
+      '!bdbk': 'bdbk:',  '!baike': 'bdbk:',
+      '!grokw': 'grokw:', '!grok': 'grokw:',
+      '!ww': 'ww:',       '!wikiwand': 'ww:',
       // 🎓 Academic
       '!sc': 'scholar:',  '!scholar': 'scholar:',
       '!pm': 'pubmed:',   '!pubmed': 'pubmed:',
@@ -3395,7 +3407,7 @@
 
     const bangIndicator    = document.getElementById('bang-indicator');
     const bangEngineLabel  = bangIndicator.querySelector('.bang-engine');
-    const BAIDU_PREFIXES  = ['bd:', 'bdedu:', 'cbd:'];
+    const BAIDU_PREFIXES  = ['bd:', 'bdedu:', 'cbd:', 'bdbk:'];
     const AMMPS_PREFIXES  = ['ammps:', 'ammps-lm:', 'ammps-rmmg:', 'ammps-lvl:', 'ammps-p:', 'ammps-gs:'];
 
     // ============================================
@@ -3772,9 +3784,9 @@
       let effectivePrefix = '';
       let effectiveEngine = null;
 
-      // 1. Check for prefix in input
+      // 1. Check for prefix in input — longest match wins (so "cismef-bp:" beats "cismef:")
       for (const key of Object.keys(searchEngines)) {
-        if (value.startsWith(key)) { effectivePrefix = key; break; }
+        if (value.startsWith(key) && key.length > effectivePrefix.length) effectivePrefix = key;
       }
 
       // 2. Fallback to selected radio
@@ -3810,7 +3822,7 @@
       if (effectiveEngine) {
         const categoryEmojis = { general: '🌐', academic: '🎓', medical: '⚕️', ai: '🤖' };
         const categoryMap = {
-          general:  ['g:', 'yt:', 'brave:', 'ddg:', 'yan:', 'bing:', 'bd:', 'gplus:'],
+          general:  ['g:', 'yt:', 'brave:', 'ddg:', 'yan:', 'bing:', 'bd:', 'gplus:', 'wiki:', 'bdbk:', 'grokw:', 'ww:'],
           academic: ['scholar:', 'pubmed:', 'arxiv:', 'gpat:', 'these2.0:', 'cismef-th:', 'these-ma:', 'these-fr:', 'rgate:', 'ndltd:', 'proinserm:', 'bdedu:'],
           medical:  ['cismef:', 'msps:', 'ammps:', 'ammps-lm:', 'ammps-rmmg:', 'ammps-lvl:', 'ammps-p:', 'ammps-gs:', 'has:', 'vidal:', 'mesh:', 'lissa:', 'anm:', 'hetop:', 'nejm:', 'rp:', 'utd:', 'coch:', 'medscape:', 'openmd:', 'dd:', 'webmd:', 'nih:', 'drugs:', 'cdc:', 'cismef-bp:', 'cismef-edu:', 'cismef-edn:', 'cismef-pat:'],
           ai:       ['wolf:', 'chatgpt:', 'claude:', 'gemini:', 'gai:', 'perplexity:', 'copilot:', 'cbd:', 'ernie:', 'duckai:']
@@ -3876,28 +3888,48 @@
       // DuckDuckGo !bang
       duckBangBtn.style.display = (effectivePrefix === 'ddg:') ? 'inline-block' : 'none';
 
-      // CISMeF
-      if (effectivePrefix === 'cismef:') {
+      // CISMeF — effectivePrefix may be 'cismef:' or an alias like 'cismef-bp:' (before alias resolution)
+      // We need the original typed prefix to know which sub-radio to check
+      const cismefPrefixes = ['cismef:', 'cismef-bp:', 'cismef-edu:', 'cismef-edn:', 'cismef-pat:', 'cismef-th:'];
+      const originalTypedCismef = Object.keys(searchEngines).reduce((best, k) =>
+        value.startsWith(k) && k.startsWith('cismef') && k.length > best.length ? k : best, '');
+      if (effectivePrefix === 'cismef:' || cismefPrefixes.includes(originalTypedCismef)) {
         cismefFilters.style.display = 'grid';
-        const typedPrefixEngine = searchEngines[Object.keys(searchEngines).find(k => value.startsWith(k))];
-        if (typedPrefixEngine && typedPrefixEngine.isAlias && typedPrefixEngine.filterValue) {
-          const filterRadio = document.querySelector(`input[name="cismef_scope"][value="${typedPrefixEngine.filterValue}"]`);
+        // Sync sub-radio from the originally-typed cismef alias
+        const aliasEngine = originalTypedCismef ? searchEngines[originalTypedCismef] : null;
+        if (aliasEngine && aliasEngine.isAlias && aliasEngine.filterValue) {
+          const filterRadio = document.querySelector(`input[name="cismef_scope"][value="${aliasEngine.filterValue}"]`);
           if (filterRadio) filterRadio.checked = true;
         }
       } else {
         cismefFilters.style.display = 'none';
       }
 
-      // AMMPS
-      // Site: engines that use Google search — auto-activate siteBtn visual
-      const SITE_SEARCH_PREFIXES = ['ammps-rmmg:', 'ammps-gs:', 'msps:'];
-      // When the base ammps: is active, check the sub-radio to see if it's a site: engine
-      let resolvedForSiteCheck = effectivePrefix;
-      if (effectivePrefix === 'ammps:') {
-        const activeSub = document.querySelector('input[name="ammps_scope"]:checked');
-        if (activeSub) resolvedForSiteCheck = activeSub.value;
+      // AMMPS sub-radio sync — effectivePrefix may now be 'ammps-lm:' etc. directly
+      // Also resolve when base 'ammps:' radio is active
+      const ammpsTypedPrefix = AMMPS_PREFIXES.includes(effectivePrefix) ? effectivePrefix : '';
+      if (AMMPS_PREFIXES.includes(effectivePrefix)) {
+        ammpsFilters.style.display = 'grid';
+        // Sync sub-radio if a specific sub-prefix was typed (not the base ammps:)
+        if (effectivePrefix !== 'ammps:') {
+          const subRadio = document.querySelector(`input[name="ammps_scope"][value="${effectivePrefix}"]`);
+          if (subRadio) subRadio.checked = true;
+        }
+      } else {
+        ammpsFilters.style.display = 'none';
       }
-      const isSiteEngine = SITE_SEARCH_PREFIXES.includes(resolvedForSiteCheck);
+
+      // Also check sub-radio to resolve site: engines
+      const resolvedAmmps = ammpsTypedPrefix !== 'ammps:' && ammpsTypedPrefix
+        ? ammpsTypedPrefix
+        : (AMMPS_PREFIXES.includes(effectivePrefix) ? (() => {
+            const s = document.querySelector('input[name="ammps_scope"]:checked');
+            return s ? s.value : 'ammps:';
+          })() : '');
+
+      // Site: engines — auto-activate siteBtn
+      const SITE_SEARCH_PREFIXES = ['ammps-rmmg:', 'ammps-gs:', 'msps:'];
+      const isSiteEngine = SITE_SEARCH_PREFIXES.includes(effectivePrefix) || SITE_SEARCH_PREFIXES.includes(resolvedAmmps);
       if (isSiteEngine) {
         siteBtn.classList.add('active');
         siteBtn.setAttribute('aria-pressed', 'true');
@@ -3908,18 +3940,6 @@
         }
       }
       siteBtn.dataset.autoActive = isSiteEngine ? 'true' : 'false';
-
-      if (AMMPS_PREFIXES.includes(effectivePrefix)) {
-        ammpsFilters.style.display = 'grid';
-        // Typed a specific sub-prefix → sync sub-radio
-        // (but NOT when effectivePrefix is 'ammps:' — that's the base/default, leave sub-radio alone for mouse clicks)
-        if (effectivePrefix !== 'ammps:') {
-          const subRadio = document.querySelector(`input[name="ammps_scope"][value="${effectivePrefix}"]`);
-          if (subRadio) subRadio.checked = true;
-        }
-      } else {
-        ammpsFilters.style.display = 'none';
-      }
 
       // Yandex translation box
       const isYandex         = (effectivePrefix === 'yan:');
@@ -3946,6 +3966,8 @@
         baiduTargetText.value            = '';
         baiduTranslateStatus.textContent = '';
         baiduTranslateStatus.style.color = '';
+        // bdbk: is a Chinese encyclopedia — default to English → Chinese
+        if (effectivePrefix === 'bdbk:') baiduSourceLang.value = 'en2zh';
         setTimeout(() => baiduSourceText.focus(), 50);
       } else if (!isBaidu && baiduBoxVisible) {
         // Just switched AWAY: clean up
@@ -3967,9 +3989,11 @@
         document.querySelectorAll('input[name="searchEngine"]').forEach(r => r.parentElement.classList.remove('selected'));
         radio.parentElement.classList.add('selected');
         let val = searchInput.value.trim();
+        let bestKey = '';
         for (const key of Object.keys(searchEngines)) {
-          if (val.startsWith(key)) { val = val.substring(key.length).trim(); break; }
+          if (val.startsWith(key) && key.length > bestKey.length) bestKey = key;
         }
+        if (bestKey) val = val.substring(bestKey.length).trim();
         searchInput.value = val;
         updateSearchSource();
         searchInput.focus();
@@ -3990,9 +4014,11 @@
         }
         // Strip any existing ammps prefix from the input (keep the actual query)
         let val = searchInput.value.trim();
+        let bestAmmpsKey = '';
         for (const key of AMMPS_PREFIXES) {
-          if (val.startsWith(key)) { val = val.substring(key.length).trim(); break; }
+          if (val.startsWith(key) && key.length > bestAmmpsKey.length) bestAmmpsKey = key;
         }
+        if (bestAmmpsKey) val = val.substring(bestAmmpsKey.length).trim();
         // Don't rewrite the input — the selected sub-radio drives the engine at submit time.
         // Just refresh the source bar.
         updateSearchSource();
@@ -4034,8 +4060,9 @@
       let prefix = '';
       let query  = '';
 
+      // Longest-match: "cismef-bp: x" must match "cismef-bp:" not "cismef:"
       for (const key of Object.keys(searchEngines)) {
-        if (value.startsWith(key)) { prefix = key; query = value.substring(key.length).trim(); break; }
+        if (value.startsWith(key) && key.length > prefix.length) { prefix = key; query = value.substring(key.length).trim(); }
       }
 
       if (!prefix) {
@@ -4123,6 +4150,8 @@
       if      (prefix === 'these-ma:') finalUrl = finalEngine.url + encodedQuery + '&submit=OK';
       else if (prefix === 'gpat:')     finalUrl = finalEngine.url + '?q=(' + encodedQuery + ')&oq=' + encodedQuery;
       else if (prefix === 'medscape:') finalUrl = finalEngine.url + '?q="' + encodedQuery + '"';
+      else if (prefix === 'wiki:')     finalUrl = finalEngine.url + encodedQuery + '&title=Special%3ASearch&fulltext=1';
+      else if (prefix === 'bdbk:')     finalUrl = finalEngine.url + encodeURIComponent(query) + '?fromModule=lemma_search-box';
       else                             finalUrl = finalEngine.url + encodedQuery;
 
       // Google Translate wrapper
@@ -4710,7 +4739,7 @@
     let selectedIndex = -1;
 
     const engineCategories = {
-      general:  ['g:', 'yt:', 'brave:', 'ddg:', 'yan:', 'bing:', 'bd:', 'gplus:'],
+      general:  ['g:', 'yt:', 'brave:', 'ddg:', 'yan:', 'bing:', 'bd:', 'gplus:', 'wiki:', 'bdbk:', 'grokw:', 'ww:'],
       academic: ['scholar:', 'pubmed:', 'arxiv:', 'gpat:', 'these2.0:', 'cismef-th:', 'these-ma:', 'these-fr:', 'rgate:', 'ndltd:', 'proinserm:', 'bdedu:'],
       medical:  ['cismef:', 'msps:', 'ammps:', 'ammps-lm:', 'ammps-rmmg:', 'ammps-lvl:', 'ammps-p:', 'ammps-gs:', 'has:', 'vidal:', 'mesh:', 'lissa:', 'anm:', 'hetop:', 'nejm:', 'rp:', 'utd:', 'coch:', 'medscape:', 'openmd:', 'dd:', 'webmd:', 'nih:', 'drugs:', 'cdc:', 'cismef-bp:', 'cismef-edu:', 'cismef-edn:', 'cismef-pat:'],
       ai:       ['wolf:', 'chatgpt:', 'claude:', 'gemini:', 'gai:', 'perplexity:', 'copilot:', 'cbd:', 'ernie:', 'duckai:']
@@ -4797,22 +4826,37 @@
             item.appendChild(nm);
 
             item.addEventListener('click', () => {
-              const radio = document.querySelector(`input[name="searchEngine"][value="${match.prefix}"]`);
-              if (radio) {
-                radio.checked = true;
+              const pfxKey = match.prefix;
+              // Resolve parent engine key for aliases / AMMPS sub-prefixes
+              const parentKey = searchEngines[pfxKey]?.isAlias ? searchEngines[pfxKey].aliasFor
+                : AMMPS_PREFIXES.includes(pfxKey) && pfxKey !== 'ammps:' ? 'ammps:' : pfxKey;
+              const targetRadio = document.querySelector(`input[name="searchEngine"][value="${parentKey}"]`)
+                || document.querySelector(`input[name="searchEngine"][value="${pfxKey}"]`);
+              if (targetRadio) {
+                targetRadio.checked = true;
                 document.querySelectorAll('input[name="searchEngine"]').forEach(r => r.parentElement.classList.remove('selected'));
-                radio.parentElement.classList.add('selected');
+                targetRadio.parentElement.classList.add('selected');
+              }
+              // Sync sub-radios before stripping
+              if (searchEngines[pfxKey]?.isAlias && searchEngines[pfxKey].filterValue) {
+                const subRadio = document.querySelector(`input[name="cismef_scope"][value="${searchEngines[pfxKey].filterValue}"]`);
+                if (subRadio) subRadio.checked = true;
+              }
+              if (AMMPS_PREFIXES.includes(pfxKey) && pfxKey !== 'ammps:') {
+                const subRadio = document.querySelector(`input[name="ammps_scope"][value="${pfxKey}"]`);
+                if (subRadio) subRadio.checked = true;
               }
               let val = searchInput.value.trim();
-              // Strip a fully-typed prefix (e.g. "brave: something" → "something")
+              // Strip a fully-typed prefix (e.g. "brave: something" → "something") — longest match wins
               let stripped = false;
+              let bestStripKey = '';
               for (const key of Object.keys(searchEngines)) {
-                if (val.toLowerCase().startsWith(key.toLowerCase())) {
-                  val = val.substring(key.length).trim();
+                if (val.toLowerCase().startsWith(key.toLowerCase()) && key.length > bestStripKey.length) {
+                  bestStripKey = key;
                   stripped = true;
-                  break;
                 }
               }
+              if (stripped) val = val.substring(bestStripKey.length).trim();
               // If no full prefix matched, the user typed a partial prefix (e.g. "brav")
               // to navigate the autocomplete — clear it entirely, it's not a real query.
               if (!stripped) val = '';
@@ -4848,21 +4892,40 @@
         bangIndicator.classList.remove('visible');
       }
 
-      // Exact prefix detection → strip prefix, select engine
+      // Exact prefix detection → strip prefix, select engine (longest match wins)
+      let exactKey = '';
       for (const key of Object.keys(searchEngines)) {
-        if (valueLower.startsWith(key.toLowerCase())) {
-          const radio = document.querySelector(`input[name="searchEngine"][value="${key}"]`);
-          if (radio) {
-            radio.checked = true;
-            document.querySelectorAll('input[name="searchEngine"]').forEach(r => r.parentElement.classList.remove('selected'));
-            radio.parentElement.classList.add('selected');
-          }
-          searchInput.value = value.trim().substring(key.length).trim();
-          autocompleteDiv.style.display = 'none';
-          bangIndicator.classList.remove('visible');
-          updateSearchSource();
-          return;
+        if (valueLower.startsWith(key.toLowerCase()) && key.length > exactKey.length) exactKey = key;
+      }
+      if (exactKey) {
+        const key = exactKey;
+        const radio = document.querySelector(`input[name="searchEngine"][value="${key}"]`);
+        // For sub-prefixes (cismef-bp:, ammps-lvl: etc.) select their parent radio
+        const parentKey = searchEngines[key]?.isAlias ? searchEngines[key].aliasFor
+          : AMMPS_PREFIXES.includes(key) && key !== 'ammps:' ? 'ammps:' : key;
+        const targetRadio = document.querySelector(`input[name="searchEngine"][value="${parentKey}"]`) || radio;
+        if (targetRadio) {
+          targetRadio.checked = true;
+          document.querySelectorAll('input[name="searchEngine"]').forEach(r => r.parentElement.classList.remove('selected'));
+          targetRadio.parentElement.classList.add('selected');
         }
+        // Sync sub-radios NOW — before the prefix is stripped from the input.
+        // After stripping, updateSearchSource can't tell which alias was typed.
+        if (searchEngines[key]?.isAlias && searchEngines[key].filterValue) {
+          // CISMeF alias (cismef-bp:, cismef-edu:, etc.) → check its scope radio
+          const subRadio = document.querySelector(`input[name="cismef_scope"][value="${searchEngines[key].filterValue}"]`);
+          if (subRadio) subRadio.checked = true;
+        }
+        if (AMMPS_PREFIXES.includes(key) && key !== 'ammps:') {
+          // AMMPS sub-prefix (ammps-lvl:, ammps-lm:, etc.) → check its scope radio
+          const subRadio = document.querySelector(`input[name="ammps_scope"][value="${key}"]`);
+          if (subRadio) subRadio.checked = true;
+        }
+        searchInput.value = value.trim().substring(key.length).trim();
+        autocompleteDiv.style.display = 'none';
+        bangIndicator.classList.remove('visible');
+        updateSearchSource();
+        return;
       }
 
       if (!valueLower || valueLower.includes(' ')) {
