@@ -3276,7 +3276,7 @@
       'cismef:':     { name: 'CISMeF',                       url: 'https://doccismef.chu-rouen.fr/dc/#',                                                          domain: 'doccismef.chu-rouen.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.cismef.org-favicon.ico' },
       'msps:':       { name: 'Ministère de la santé et de la Protection Sociale', url: 'https://www.google.com/search?q=site:sante.gov.ma ', domain: 'sante.gov.ma', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.sante.gov.ma-favicon.png' },
       // AMMPS — Agence Marocaine des Médicaments et des Produits de Santé
-      'ammps:':      { name: 'AMMPS – Médicaments',            url: 'https://ammps.sante.gov.ma/recherche-medicaments?search=',                                     domain: 'ammps.sante.gov.ma', plusEncoding: true, favicon: 'https://ammps.sante.gov.ma/favicon.ico' },
+      'ammps:':      { name: 'AMMPS',                         url: 'https://ammps.sante.gov.ma/recherche-medicaments?search=',                                     domain: 'ammps.sante.gov.ma', plusEncoding: true, favicon: 'https://ammps.sante.gov.ma/favicon.ico' },
       'ammps-lm:':   { name: 'AMMPS – Liste Médicaments',      url: 'https://ammps.sante.gov.ma/basesdedonnes/listes-medicaments?search=',                         domain: 'ammps.sante.gov.ma', plusEncoding: true, favicon: 'https://ammps.sante.gov.ma/favicon.ico' },
       'ammps-rmmg:': { name: 'AMMPS – RMMG',                   url: 'https://www.google.com/search?q=site:ammps.sante.gov.ma/callpages/RMMG+',                      domain: 'ammps.sante.gov.ma', plusEncoding: true, favicon: 'https://ammps.sante.gov.ma/favicon.ico' },
       'ammps-lvl:':  { name: 'AMMPS – Vaccins Libérés',        url: 'https://ammps.sante.gov.ma/basesdedonnes/liste-vaccin-libere?search=',                        domain: 'ammps.sante.gov.ma', plusEncoding: true, favicon: 'https://ammps.sante.gov.ma/favicon.ico' },
@@ -3798,6 +3798,14 @@
         }
       }
 
+      // 3b. AMMPS: when prefix is base 'ammps:', reflect the active sub-radio in sourceName
+      if (effectivePrefix === 'ammps:') {
+        const activeSub = document.querySelector('input[name="ammps_scope"]:checked');
+        if (activeSub && activeSub.value !== 'ammps:') {
+          const subEngine = searchEngines[activeSub.value];
+          if (subEngine) sourceName = subEngine.name;
+        }
+      }
       // 4. Update display
       if (effectiveEngine) {
         const categoryEmojis = { general: '🌐', academic: '🎓', medical: '⚕️', ai: '🤖' };
@@ -3881,11 +3889,30 @@
       }
 
       // AMMPS
+      // Site: engines that use Google search — auto-activate siteBtn visual
+      const SITE_SEARCH_PREFIXES = ['ammps-rmmg:', 'ammps-gs:', 'msps:'];
+      // When the base ammps: is active, check the sub-radio to see if it's a site: engine
+      let resolvedForSiteCheck = effectivePrefix;
+      if (effectivePrefix === 'ammps:') {
+        const activeSub = document.querySelector('input[name="ammps_scope"]:checked');
+        if (activeSub) resolvedForSiteCheck = activeSub.value;
+      }
+      const isSiteEngine = SITE_SEARCH_PREFIXES.includes(resolvedForSiteCheck);
+      if (isSiteEngine) {
+        siteBtn.classList.add('active');
+        siteBtn.setAttribute('aria-pressed', 'true');
+      } else if (!['g:', 'bing:'].includes(effectivePrefix)) {
+        if (siteBtn.dataset.autoActive === 'true') {
+          siteBtn.classList.remove('active');
+          siteBtn.setAttribute('aria-pressed', 'false');
+        }
+      }
+      siteBtn.dataset.autoActive = isSiteEngine ? 'true' : 'false';
+
       if (AMMPS_PREFIXES.includes(effectivePrefix)) {
         ammpsFilters.style.display = 'grid';
-        // Only force the sub-radio when the user typed a specific sub-prefix (e.g. "ammps-lm: …")
-        // When effectivePrefix is the base 'ammps:', leave the sub-radio untouched so
-        // mouse clicks on sub-radios are not overridden.
+        // Typed a specific sub-prefix → sync sub-radio
+        // (but NOT when effectivePrefix is 'ammps:' — that's the base/default, leave sub-radio alone for mouse clicks)
         if (effectivePrefix !== 'ammps:') {
           const subRadio = document.querySelector(`input[name="ammps_scope"][value="${effectivePrefix}"]`);
           if (subRadio) subRadio.checked = true;
@@ -3949,9 +3976,27 @@
       });
     });
 
-    // AMMPS sub-radio change → keep source bar in sync
+    // AMMPS sub-radio change → bidirectional sync
+    // Clicking a sub-radio selects the ammps: main engine AND updates the source bar.
+    // The sub-radio value IS the effective prefix (ammps:, ammps-lm:, ammps-rmmg:, etc.)
     document.querySelectorAll('input[name="ammps_scope"]').forEach(sub => {
-      sub.addEventListener('change', updateSearchSource);
+      sub.addEventListener('change', function () {
+        // Ensure the main searchEngine radio is set to ammps:
+        const mainRadio = document.querySelector('input[name="searchEngine"][value="ammps:"]');
+        if (mainRadio && !mainRadio.checked) {
+          mainRadio.checked = true;
+          document.querySelectorAll('input[name="searchEngine"]').forEach(r => r.parentElement.classList.remove('selected'));
+          mainRadio.parentElement.classList.add('selected');
+        }
+        // Strip any existing ammps prefix from the input (keep the actual query)
+        let val = searchInput.value.trim();
+        for (const key of AMMPS_PREFIXES) {
+          if (val.startsWith(key)) { val = val.substring(key.length).trim(); break; }
+        }
+        // Don't rewrite the input — the selected sub-radio drives the engine at submit time.
+        // Just refresh the source bar.
+        updateSearchSource();
+      });
     });
 
     // ============================================
