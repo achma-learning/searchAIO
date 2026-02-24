@@ -2082,6 +2082,110 @@
       border-bottom-color: #ff0000;
     }
 
+    #cyblTranslationBox {
+      display: none;
+      margin-bottom: 0;
+    }
+
+    #cyblTranslationBox .category-title {
+      border-bottom-color: #1565c0;
+    }
+
+    .cybl-hint {
+      font-size: 12px;
+      color: #888;
+      font-style: italic;
+      margin-bottom: 10px;
+      padding: 6px 10px;
+      background: rgba(21, 101, 192, 0.06);
+      border-left: 3px solid #1565c0;
+      border-radius: 0 4px 4px 0;
+      line-height: 1.5;
+    }
+
+    .dark-mode .cybl-hint {
+      color: #90a4ae;
+      background: rgba(100, 181, 246, 0.07);
+      border-left-color: #64b5f6;
+    }
+
+    #cyblTranslationBox .category-section {
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 14px 16px 10px;
+      margin-bottom: 16px;
+    }
+
+    .dark-mode #cyblTranslationBox .category-section {
+      background: #243447;
+      border-color: #2d3e52;
+    }
+
+    .dark-mode #cyblTranslationBox .category-title {
+      color: #90caf9;
+      border-bottom-color: #64b5f6;
+    }
+
+    #cyblOpenBtn {
+      background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    #cyblOpenBtn:hover {
+      background: linear-gradient(135deg, #0d47a1 0%, #0a3472 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(21, 101, 192, 0.4);
+    }
+
+    #cyblOpenBtn:active { transform: translateY(0); }
+
+    #cyblTranslateSearchBtn {
+      background: linear-gradient(135deg, #00897b 0%, #00695c 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 13px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    #cyblTranslateSearchBtn:hover {
+      background: linear-gradient(135deg, #00796b 0%, #004d40 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 137, 123, 0.45);
+    }
+
+    #cyblTranslateSearchBtn:active { transform: translateY(0); }
+
+    .dark-mode #cyblTranslateSearchBtn {
+      background: linear-gradient(135deg, #26a69a 0%, #00897b 100%);
+    }
+
+    #cyblTranslateStatus {
+      font-size: 12px;
+      min-height: 18px;
+      margin-top: 8px;
+      padding-left: 2px;
+      transition: color 0.2s;
+    }
+
     .yandex-hint {
       font-size: 12px;
       color: #888;
@@ -2672,6 +2776,51 @@
       </div>
     </div>
 
+    <!-- CyberLeninka Translation Box -->
+    <div id="cyblTranslationBox" style="display: none;">
+      <div class="category-section">
+        <div class="category-title">🇷🇺 CyberLeninka — Перевод</div>
+
+        <div class="cybl-hint">
+          💡 CyberLeninka is a Russian-language journal platform. Type your search term below — it auto-translates to <strong>Russian</strong> using a 3-layer fallback: Google Translate → LibreTranslate → MyMemory (500 ms debounce).
+        </div>
+
+        <div class="yandex-controls-row">
+          <select id="cyblSourceLang" title="Source language">
+            <option value="en" selected>English → Russian</option>
+            <option value="fr">French → Russian</option>
+            <option value="de">German → Russian</option>
+            <option value="es">Spanish → Russian</option>
+            <option value="ar">Arabic → Russian</option>
+            <option value="zh">Chinese → Russian</option>
+            <option value="it">Italian → Russian</option>
+            <option value="pt">Portuguese → Russian</option>
+          </select>
+          <input
+            type="text"
+            id="cyblSourceText"
+            placeholder="Enter text to translate… (or leave empty to open Yandex Translate)"
+            autocomplete="off"
+          />
+        </div>
+
+        <textarea
+          id="cyblTargetText"
+          readonly
+          placeholder="Russian translation will appear here…"
+        ></textarea>
+
+        <div class="yandex-buttons-row">
+          <button type="button" id="cyblOpenBtn" title="Open in Yandex Translate (Alt+U)">🔗 Open in Yandex Translate</button>
+          <button type="button" id="cyblInsertBtn" class="operator-btn" title="Insert translation into search bar (Alt+I)">↩ Insert into search</button>
+          <button type="button" id="cyblCopyBtn" class="operator-btn" title="Copy translation to clipboard (Alt+Q)">📋 Copy</button>
+          <button type="button" id="cyblTranslateSearchBtn" title="Translate search bar to Russian (Alt+V)">🔄 Translate search bar</button>
+        </div>
+
+        <div id="cyblTranslateStatus"></div>
+      </div>
+    </div>
+
     <!-- Yandex Translation Box -->
     <div id="yandexTranslationBox" style="display: none;">
       <div class="category-section">
@@ -2707,9 +2856,9 @@
         ></textarea>
 
         <div class="yandex-buttons-row">
-          <button type="button" id="yandexOpenBtn">🔗 Open in Yandex Translate</button>
-          <button type="button" id="yandexInsertBtn" class="operator-btn">↩ Insert into search</button>
-          <button type="button" id="yandexCopyBtn" class="operator-btn">📋 Copy</button>
+          <button type="button" id="yandexOpenBtn" title="Open in Yandex Translate (Alt+U)">🔗 Open in Yandex Translate</button>
+          <button type="button" id="yandexInsertBtn" class="operator-btn" title="Insert translation into search bar (Alt+I)">↩ Insert into search</button>
+          <button type="button" id="yandexCopyBtn" class="operator-btn" title="Copy translation to clipboard (Alt+Q)">📋 Copy</button>
           <button type="button" id="yandexTranslateSearchBtn" title="Translate search bar to Russian (Alt+V)">🔄 Translate search bar</button>
         </div>
 
@@ -2751,9 +2900,9 @@
         ></textarea>
 
         <div class="baidu-buttons-row">
-          <button type="button" id="baiduOpenBtn">🔗 Open in Baidu Fanyi</button>
-          <button type="button" id="baiduCopyBtn" class="operator-btn">📋 Copy translation</button>
-          <button type="button" id="baiduInsertBtn" class="operator-btn">↩ Insert into search</button>
+          <button type="button" id="baiduOpenBtn" title="Open in Baidu Fanyi (Alt+U)">🔗 Open in Baidu Fanyi</button>
+          <button type="button" id="baiduCopyBtn" class="operator-btn" title="Copy translation to clipboard (Alt+Q)">📋 Copy translation</button>
+          <button type="button" id="baiduInsertBtn" class="operator-btn" title="Insert translation into search bar (Alt+I)">↩ Insert into search</button>
           <button type="button" id="baiduTranslateSearchBtn" title="Translate search bar to Chinese (Alt+V)">🔄 Translate search bar</button>
         </div>
 
@@ -2796,6 +2945,7 @@
           <label><input type="radio" name="searchEngine" value="ndltd:">NDLTD</label>
           <label><input type="radio" name="searchEngine" value="proinserm:">Pro Inserm</label>
           <label><input type="radio" name="searchEngine" value="bdedu:">Baidu Scholar (Xueshu)</label>
+          <label><input type="radio" name="searchEngine" value="cybl:">CyberLeninka</label>
         </div>
       </div>
 
@@ -3191,6 +3341,22 @@
             <div class="cheat-keys"><span class="kbd">Alt</span><span class="kbd-sep">+</span><span class="kbd">Shift</span><span class="kbd-sep">+</span><span class="kbd">O</span></div>
             <div class="cheat-desc"><span class="hl-orange">Reset</span> translation</div>
           </div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Alt</span><span class="kbd-sep">+</span><span class="kbd">V</span></div>
+            <div class="cheat-desc"><span class="hl">Translate</span> search bar → RU / ZH <small style="opacity:.6">(Yandex/Baidu only)</small></div>
+          </div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Alt</span><span class="kbd-sep">+</span><span class="kbd">I</span></div>
+            <div class="cheat-desc"><span class="hl-green">Insert</span> translation into search bar <small style="opacity:.6">(Yandex/Baidu only)</small></div>
+          </div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Alt</span><span class="kbd-sep">+</span><span class="kbd">Q</span></div>
+            <div class="cheat-desc"><span class="hl-blue">Copy</span> translation to clipboard <small style="opacity:.6">(Yandex/Baidu only)</small></div>
+          </div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Alt</span><span class="kbd-sep">+</span><span class="kbd">U</span></div>
+            <div class="cheat-desc"><span class="hl-orange">Open</span> Fanyi / Yandex Translate <small style="opacity:.6">(Yandex/Baidu only)</small></div>
+          </div>
         </div>
         <div class="cheat-section cheat-section-wide">
           <div class="cheat-section-title">🖥 Interface</div>
@@ -3203,7 +3369,7 @@
     </div>
     <div class="cheat-footer">
       <div><span class="cheat-esc">ESC</span>&nbsp;to close &nbsp;·&nbsp; all shortcuts work globally</div>
-      <span class="cheat-count">15 bindings</span>
+      <span class="cheat-count">19 bindings</span>
     </div>
   </div>
 
@@ -3311,6 +3477,7 @@
       'rgate:':      { name: 'ResearchGate',                 url: 'https://www.researchgate.net/search/publication?q=',                                           domain: 'researchgate.net' },
       'ndltd:':      { name: 'NDLTD',                        url: 'http://search.ndltd.org/search.php?q=',                                                        domain: 'ndltd.org' },
       'bdedu:':      { name: 'Baidu Academic (Xueshu)',      url: 'https://xueshu.baidu.com/ndscholar/browse/search?wd=',                                          domain: 'baidu.com', plusEncoding: true },
+      'cybl:':       { name: 'CyberLeninka',                 url: 'https://cyberleninka.ru/search?q=',                                                             domain: 'cyberleninka.ru' },
       'proinserm:':  { name: 'Pro Inserm',                   url: 'https://pro.inserm.fr/?s=',                                                                    domain: 'pro.inserm.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/pro.inserm.fr-favicon.png' },
       'cismef:':     { name: 'CISMeF',                       url: 'https://doccismef.chu-rouen.fr/dc/#',                                                          domain: 'doccismef.chu-rouen.fr', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.cismef.org-favicon.ico' },
       'msps:':       { name: 'Ministère de la santé et de la Protection Sociale', url: 'https://www.google.com/search?q=site:sante.gov.ma ', directUrl: 'https://www.sante.gov.ma/SearchCenter/Pages/results.aspx?k=', domain: 'sante.gov.ma', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/www.sante.gov.ma-favicon.png' },
@@ -3372,6 +3539,7 @@
       '!bdbk': 'bdbk:',  '!baike': 'bdbk:',
       '!grokw': 'grokw:', '!grok': 'grokw:',
       '!ww': 'ww:',       '!wikiwand': 'ww:',
+      '!cybl': 'cybl:',   '!cyberleninka': 'cybl:',
       // 🎓 Academic
       '!sc': 'scholar:',  '!scholar': 'scholar:',
       '!pm': 'pubmed:',   '!pubmed': 'pubmed:',
@@ -3483,6 +3651,17 @@
     const yandexCopyBtn         = document.getElementById('yandexCopyBtn');
     const yandexTranslateSearchBtn = document.getElementById('yandexTranslateSearchBtn');
     const yandexTranslateStatus = document.getElementById('yandexTranslateStatus');
+
+    // CyberLeninka
+    const cyblTranslationBox    = document.getElementById('cyblTranslationBox');
+    const cyblSourceLang        = document.getElementById('cyblSourceLang');
+    const cyblSourceText        = document.getElementById('cyblSourceText');
+    const cyblTargetText        = document.getElementById('cyblTargetText');
+    const cyblOpenBtn           = document.getElementById('cyblOpenBtn');
+    const cyblInsertBtn         = document.getElementById('cyblInsertBtn');
+    const cyblCopyBtn           = document.getElementById('cyblCopyBtn');
+    const cyblTranslateSearchBtn = document.getElementById('cyblTranslateSearchBtn');
+    const cyblTranslateStatus   = document.getElementById('cyblTranslateStatus');
 
     // Baidu
     const baiduTranslationBox   = document.getElementById('baiduTranslationBox');
@@ -3830,6 +4009,7 @@
         return best;
       })();
       if (activePrefix === 'yan:') return { tl: 'ru', label: 'Russian', setStatus: setYandexStatus };
+      if (activePrefix === 'cybl:') return { tl: 'ru', label: 'Russian', setStatus: setCyblStatus };
       if (BAIDU_PREFIXES.includes(activePrefix)) {
         const { tl } = parseBaiduLangPair(baiduSourceLang.value);
         return { tl, label: 'Chinese', setStatus: (m, c) => setBaiduStatus(m, c || '#1565c0') };
@@ -3843,10 +4023,24 @@
       const target = getTranslateSearchTarget();
       if (!target) return;
 
+      // Resolve which engine is active (for source-lang dropdown selection)
+      const activePrefix = (() => {
+        let best = '';
+        const val = searchInput.value.trim();
+        for (const k of Object.keys(searchEngines)) {
+          if (val.startsWith(k) && k.length > best.length) best = k;
+        }
+        if (!best) {
+          const r = document.querySelector('input[name="searchEngine"]:checked');
+          if (r) best = r.value;
+        }
+        return best;
+      })();
+
       const { tl, label, setStatus } = target;
-      // Determine source lang: for Yandex use the source select; for Baidu parse the pair
+      // Determine source lang: for Yandex/CyberLeninka use the source select; for Baidu parse the pair
       const sl = (tl === 'ru')
-        ? (yandexSourceLang ? yandexSourceLang.value : 'en')
+        ? (activePrefix === 'cybl:' ? cyblSourceLang.value : (yandexSourceLang ? yandexSourceLang.value : 'en'))
         : parseBaiduLangPair(baiduSourceLang.value).sl;
 
       setStatus(`🔄 Translating search bar to ${label}…`, '#1565c0');
@@ -3872,6 +4066,78 @@
 
     yandexTranslateSearchBtn.addEventListener('click', translateSearchBar);
     baiduTranslateSearchBtn.addEventListener('click', translateSearchBar);
+
+    // ============================================
+    // 🇷🇺 CYBERLENINKA TRANSLATION
+    // Same 3-layer fallback as Yandex, target = Russian
+    // ============================================
+
+    function buildCyblTranslateUrl() {
+      const src     = cyblSourceLang.value;
+      const text    = cyblSourceText.value.trim();
+      const srcName = YANDEX_LANG_NAMES[src] || 'English';
+      const base    = `https://translate.yandex.com/en/translator/${srcName}-Russian`;
+      return text ? `${base}?text=${encodeURIComponent(text)}` : base;
+    }
+
+    function setCyblStatus(msg, type = '') {
+      cyblTranslateStatus.textContent = msg;
+      cyblTranslateStatus.className   = type;
+    }
+
+    let cyblTranslationTimeout;
+
+    function scheduleCyblTranslation() {
+      clearTimeout(cyblTranslationTimeout);
+      const textToTranslate = cyblSourceText.value;
+      if (!textToTranslate.trim()) {
+        cyblTargetText.value = '';
+        setCyblStatus('');
+        return;
+      }
+      setCyblStatus('Translating…', 'loading');
+      cyblTranslationTimeout = setTimeout(async () => {
+        try {
+          const translated = await translateText(textToTranslate, cyblSourceLang.value, 'ru');
+          cyblTargetText.value = translated;
+          setCyblStatus('✓ Translation complete', 'success');
+          setTimeout(() => { if (cyblTranslateStatus.textContent.includes('complete')) setCyblStatus(''); }, 2500);
+        } catch {
+          cyblTargetText.value = '';
+          setCyblStatus('✗ All translation APIs failed. Use \"🔗 Open in Yandex Translate\" as backup.', 'error');
+        }
+      }, 500);
+    }
+
+    cyblSourceText.addEventListener('input',  scheduleCyblTranslation);
+    cyblSourceLang.addEventListener('change', scheduleCyblTranslation);
+
+    cyblOpenBtn.addEventListener('click', () => {
+      window.open(buildCyblTranslateUrl(), '_blank');
+    });
+
+    cyblCopyBtn.addEventListener('click', () => {
+      const text = cyblTargetText.value;
+      if (!text.trim()) { setCyblStatus('Nothing to copy.', 'error'); return; }
+      navigator.clipboard.writeText(text).then(() => {
+        setCyblStatus('✓ Copied to clipboard!', 'success');
+        setTimeout(() => setCyblStatus(''), 2000);
+      });
+    });
+
+    cyblInsertBtn.addEventListener('click', () => {
+      const text = cyblTargetText.value;
+      if (!text.trim()) { setCyblStatus('Nothing to insert.', 'error'); return; }
+      const start = searchInput.selectionStart;
+      const end   = searchInput.selectionEnd;
+      searchInput.value = searchInput.value.substring(0, start) + text + searchInput.value.substring(end);
+      searchInput.selectionStart = searchInput.selectionEnd = start + text.length;
+      searchInput.focus();
+      setCyblStatus('✓ Inserted into search bar!', 'success');
+      setTimeout(() => setCyblStatus(''), 2000);
+    });
+
+    cyblTranslateSearchBtn.addEventListener('click', translateSearchBar);
 
     // ============================================
     // UPDATE SEARCH SOURCE (central sync hub)
@@ -3924,7 +4190,7 @@
         const categoryEmojis = { general: '🌐', academic: '🎓', medical: '⚕️', ai: '🤖' };
         const categoryMap = {
           general:  ['g:', 'yt:', 'brave:', 'ddg:', 'yan:', 'bing:', 'bd:', 'gplus:', 'wiki:', 'bdbk:', 'grokw:', 'ww:'],
-          academic: ['scholar:', 'pubmed:', 'arxiv:', 'gpat:', 'these2.0:', 'cismef-th:', 'these-ma:', 'these-fr:', 'rgate:', 'ndltd:', 'proinserm:', 'bdedu:'],
+          academic: ['scholar:', 'pubmed:', 'arxiv:', 'gpat:', 'these2.0:', 'cismef-th:', 'these-ma:', 'these-fr:', 'rgate:', 'ndltd:', 'proinserm:', 'bdedu:', 'cybl:'],
           medical:  ['cismef:', 'msps:', 'ammps:', 'ammps-lm:', 'ammps-rmmg:', 'ammps-lvl:', 'ammps-p:', 'ammps-gs:', 'has:', 'vidal:', 'mesh:', 'lissa:', 'anm:', 'hetop:', 'nejm:', 'rp:', 'utd:', 'coch:', 'medscape:', 'openmd:', 'dd:', 'webmd:', 'nih:', 'drugs:', 'cdc:', 'cismef-bp:', 'cismef-edu:', 'cismef-edn:', 'cismef-pat:'],
           ai:       ['wolf:', 'chatgpt:', 'claude:', 'gemini:', 'gai:', 'perplexity:', 'copilot:', 'cbd:', 'ernie:', 'duckai:']
         };
@@ -4055,6 +4321,21 @@
         yandexTargetText.value      = '';
         yandexTranslateStatus.textContent = '';
         yandexTranslateStatus.className   = '';
+      }
+
+      // CyberLeninka translation box
+      const isCybl         = (effectivePrefix === 'cybl:');
+      const cyblBoxVisible = cyblTranslationBox.style.display !== 'none';
+      cyblTranslationBox.style.display = isCybl ? 'grid' : 'none';
+      if (isCybl && !cyblBoxVisible) {
+        cyblSourceText.value = '';
+        cyblSourceText.focus();
+        scheduleCyblTranslation();
+      } else if (!isCybl && cyblBoxVisible) {
+        cyblSourceText.value            = '';
+        cyblTargetText.value            = '';
+        cyblTranslateStatus.textContent = '';
+        cyblTranslateStatus.className   = '';
       }
 
       // ── ✅ Baidu Fanyi translation box ─────────────────────────────────────
@@ -4265,6 +4546,7 @@
       else if (prefix === 'medscape:') finalUrl = finalEngine.url + '?q="' + encodedQuery + '"';
       else if (prefix === 'wiki:')     finalUrl = finalEngine.url + encodedQuery + '&title=Special%3ASearch&fulltext=1';
       else if (prefix === 'bdbk:')     finalUrl = finalEngine.url + encodeURIComponent(query) + '?fromModule=lemma_search-box';
+      else if (prefix === 'cybl:')     finalUrl = finalEngine.url + encodedQuery + '&page=1';
       else                             finalUrl = finalEngine.url + encodedQuery;
 
       // Google Translate wrapper
@@ -4570,13 +4852,49 @@
           translateSearchBar();
         }
       }
+      // Alt+I — Insert translation into search bar (Yandex, CyberLeninka, or Baidu)
+      if (e.altKey && !e.shiftKey && (e.key === 'i' || e.key === 'I')) {
+        const yandexVisible = yandexTranslationBox && yandexTranslationBox.style.display !== 'none';
+        const cyblVisible   = cyblTranslationBox   && cyblTranslationBox.style.display   !== 'none';
+        const baiduVisible  = baiduTranslationBox  && baiduTranslationBox.style.display  !== 'none';
+        if (yandexVisible || cyblVisible || baiduVisible) {
+          e.preventDefault();
+          if (yandexVisible) yandexInsertBtn.click();
+          else if (cyblVisible) cyblInsertBtn.click();
+          else               baiduInsertBtn.click();
+        }
+      }
+      // Alt+Q — Copy translation to clipboard (Yandex, CyberLeninka, or Baidu)
+      if (e.altKey && !e.shiftKey && (e.key === 'q' || e.key === 'Q')) {
+        const yandexVisible = yandexTranslationBox && yandexTranslationBox.style.display !== 'none';
+        const cyblVisible   = cyblTranslationBox   && cyblTranslationBox.style.display   !== 'none';
+        const baiduVisible  = baiduTranslationBox  && baiduTranslationBox.style.display  !== 'none';
+        if (yandexVisible || cyblVisible || baiduVisible) {
+          e.preventDefault();
+          if (yandexVisible) yandexCopyBtn.click();
+          else if (cyblVisible) cyblCopyBtn.click();
+          else               baiduCopyBtn.click();
+        }
+      }
+      // Alt+U — Open in Yandex Translate / CyberLeninka (Yandex) / Baidu Fanyi
+      if (e.altKey && !e.shiftKey && (e.key === 'u' || e.key === 'U')) {
+        const yandexVisible = yandexTranslationBox && yandexTranslationBox.style.display !== 'none';
+        const cyblVisible   = cyblTranslationBox   && cyblTranslationBox.style.display   !== 'none';
+        const baiduVisible  = baiduTranslationBox  && baiduTranslationBox.style.display  !== 'none';
+        if (yandexVisible || cyblVisible || baiduVisible) {
+          e.preventDefault();
+          if (yandexVisible) yandexOpenBtn.click();
+          else if (cyblVisible) cyblOpenBtn.click();
+          else               baiduOpenBtn.click();
+        }
+      }
       if (e.altKey && e.shiftKey && (e.key === 'O' || e.key === 'o')) {
         e.preventDefault();
         updateLangIcon('original');
       }
       if (e.altKey && !e.shiftKey) {
         const langMap = { 'o': 'original', 'f': 'fr', 'e': 'en', 'a': 'ar', 's': 'es', 'r': 'ru', 'c': 'zh' };
-        const skip    = new Set(['g', 't', 'k']);
+        const skip    = new Set(['g', 't', 'k', 'v', 'i', 'q', 'u']);
         const key     = e.key.toLowerCase();
         if (langMap[key] && !skip.has(key)) { e.preventDefault(); updateLangIcon(langMap[key]); }
       }
@@ -4860,7 +5178,7 @@
 
     const engineCategories = {
       general:  ['g:', 'yt:', 'brave:', 'ddg:', 'yan:', 'bing:', 'bd:', 'gplus:', 'wiki:', 'bdbk:', 'grokw:', 'ww:'],
-      academic: ['scholar:', 'pubmed:', 'arxiv:', 'gpat:', 'these2.0:', 'cismef-th:', 'these-ma:', 'these-fr:', 'rgate:', 'ndltd:', 'proinserm:', 'bdedu:'],
+      academic: ['scholar:', 'pubmed:', 'arxiv:', 'gpat:', 'these2.0:', 'cismef-th:', 'these-ma:', 'these-fr:', 'rgate:', 'ndltd:', 'proinserm:', 'bdedu:', 'cybl:'],
       medical:  ['cismef:', 'msps:', 'ammps:', 'ammps-lm:', 'ammps-rmmg:', 'ammps-lvl:', 'ammps-p:', 'ammps-gs:', 'has:', 'vidal:', 'mesh:', 'lissa:', 'anm:', 'hetop:', 'nejm:', 'rp:', 'utd:', 'coch:', 'medscape:', 'openmd:', 'dd:', 'webmd:', 'nih:', 'drugs:', 'cdc:', 'cismef-bp:', 'cismef-edu:', 'cismef-edn:', 'cismef-pat:'],
       ai:       ['wolf:', 'chatgpt:', 'claude:', 'gemini:', 'gai:', 'perplexity:', 'copilot:', 'cbd:', 'ernie:', 'duckai:']
     };
