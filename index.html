@@ -3335,8 +3335,12 @@
         <div class="cheat-section">
           <div class="cheat-section-title">🔍 Search Bar</div>
           <div class="cheat-row">
-            <div class="cheat-keys"><span class="kbd">Ctrl</span><span class="kbd-sep">+</span><span class="kbd">K</span></div>
+            <div class="cheat-keys"><span class="kbd">/</span></div>
             <div class="cheat-desc"><span class="hl">Focus</span> the search bar</div>
+          </div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Ctrl</span><span class="kbd-sep">+</span><span class="kbd">K</span></div>
+            <div class="cheat-desc"><span class="hl">Focus</span> the search bar <small style="opacity:.6">(also works in inputs)</small></div>
           </div>
           <div class="cheat-row">
             <div class="cheat-keys"><span class="kbd">Ctrl</span><span class="kbd-sep">+</span><span class="kbd">Shift</span><span class="kbd-sep">+</span><span class="kbd">K</span></div>
@@ -3430,6 +3434,10 @@
         <div class="cheat-section cheat-section-wide">
           <div class="cheat-section-title">🖥 Interface</div>
           <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Shift</span><span class="kbd-sep">+</span><span class="kbd">?</span></div>
+            <div class="cheat-desc"><span class="hl">Open</span> this shortcuts panel</div>
+          </div>
+          <div class="cheat-row">
             <div class="cheat-keys"><span class="kbd">Esc</span></div>
             <div class="cheat-desc">Close any open popup</div>
           </div>
@@ -3438,7 +3446,7 @@
     </div>
     <div class="cheat-footer">
       <div><span class="cheat-esc">ESC</span>&nbsp;to close &nbsp;·&nbsp; all shortcuts work globally</div>
-      <span class="cheat-count">19 bindings</span>
+      <span class="cheat-count">21 bindings</span>
     </div>
   </div>
 
@@ -4864,6 +4872,22 @@
     // KEYBOARD SHORTCUTS
     // ============================================
     document.addEventListener('keydown', e => {
+      // "/" — Focus search bar (only when not typing in an input/textarea)
+      if (e.key === '/' && !e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey) {
+        const tag = document.activeElement.tagName;
+        if (tag !== 'INPUT' && tag !== 'TEXTAREA' && !document.activeElement.isContentEditable) {
+          e.preventDefault();
+          searchInput.focus();
+        }
+      }
+      // Shift+? — Toggle keyboard shortcuts popup
+      if (e.key === '?' && e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        const tag = document.activeElement.tagName;
+        if (tag !== 'INPUT' && tag !== 'TEXTAREA' && !document.activeElement.isContentEditable) {
+          e.preventDefault();
+          keyboardShortcutsPopup.classList.contains('show') ? closeShortcutsPopup() : openShortcutsPopup();
+        }
+      }
       if (e.ctrlKey && !e.shiftKey && e.key === 'k') {
         e.preventDefault();
         searchInput.focus();
