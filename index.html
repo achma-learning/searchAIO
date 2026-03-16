@@ -6,8 +6,7 @@
   <title>Tools Search</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="icon" type="image/svg+xml"
-    href="https://upload.wikimedia.org/wikipedia/commons/a/a9/Vector_search_icon.svg" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🔎</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -155,7 +154,7 @@
     .search-bar {
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       gap: 10px;
       flex-wrap: wrap;
       position: relative;
@@ -231,6 +230,28 @@
     }
 
     #duckBangBtn {
+      background: linear-gradient(135deg, #DE5833 0%, #F7931E 100%);
+      color: white;
+    }
+
+    .bang-buttons-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-items: stretch;
+      width: 250px;
+      max-width: 50%;
+    }
+
+    .bang-buttons-container button {
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 12px;
+      white-space: nowrap;
+      width: 100%;
+    }
+
+    #bangsBtn {
       background: linear-gradient(135deg, #DE5833 0%, #F7931E 100%);
       color: white;
     }
@@ -2697,8 +2718,11 @@
         <button type="submit">🔍</button>
         <div id="langIcon" class="lang-icon" title="Select output language">🌐</div>
         <button type="button" id="filetypesBtn">📁 Filetypes</button>
-        <button type="button" id="duckBangBtn" style="display: none;">🦆 !bang</button>
       </form>
+      <div id="bangButtonsContainer" class="bang-buttons-container">
+        <button type="button" id="bangsBtn">🦆 !bang search</button>
+        <button type="button" id="duckBangBtn" style="display: none;">🦆 !bang list</button>
+      </div>
     </div>
 
     <!-- YouTube Filters -->
@@ -3057,6 +3081,7 @@
           <label><input type="radio" name="searchEngine" value="cbd:">Chat Baidu</label>
           <label><input type="radio" name="searchEngine" value="ernie:">Baidu AI 📋</label>
           <label><input type="radio" name="searchEngine" value="duckai:">Duck.ai</label>
+          <label><input type="radio" name="searchEngine" value="alphaf:">AlphaFold</label>
         </div>
       </div>
     </div>
@@ -3159,6 +3184,7 @@
             <div class="wiki-chip" data-prefix="cbd:" data-cat="ai" data-name="Chat Baidu"><span class="wiki-chip-prefix">cbd:</span><span class="wiki-chip-name">Chat Baidu</span></div>
             <div class="wiki-chip" data-prefix="ernie:" data-cat="ai" data-name="Baidu AI"><span class="wiki-chip-prefix">ernie:</span><span class="wiki-chip-name">Baidu AI</span></div>
             <div class="wiki-chip" data-prefix="duckai:" data-cat="ai" data-name="Duck.ai"><span class="wiki-chip-prefix">duckai:</span><span class="wiki-chip-name">Duck.ai</span></div>
+            <div class="wiki-chip" data-prefix="alphaf:" data-cat="ai" data-name="AlphaFold"><span class="wiki-chip-prefix">alphaf:</span><span class="wiki-chip-name">AlphaFold</span></div>
           </div>
         </div>
 
@@ -3275,7 +3301,6 @@
       <button type="button" id="darkModeToggleBtn">🌙</button>
       <button type="button" id="googleWikiBtn" style="display: none;">📖 Google Wiki</button>
       <button type="button" id="bingWikiBtn" style="display: none;">📖 Bing Wiki</button>
-      <button type="button" id="bangsBtn">!bangs</button>
     </div>
 
     <!-- Language Selection Popup -->
@@ -3594,7 +3619,8 @@
       'copilot:':    { name: 'Copilot 📋',                   url: 'https://copilot.microsoft.com/?q=',                                                            domain: 'microsoft.com', promptBased: true },
       'cbd:':        { name: 'Chat Baidu',                   url: 'https://chat.baidu.com/search?word=',                                                          domain: 'baidu.com', plusEncoding: true },
       'ernie:':      { name: 'Baidu AI 📋',                  url: 'https://ernie.baidu.com/',                                                                     domain: 'baidu.com', promptBased: true },
-      'duckai:':     { name: 'Duck.ai',                      url: 'https://duck.ai/chat?q=',                                                                      domain: 'duckduckgo.com', plusEncoding: true }
+      'duckai:':     { name: 'Duck.ai',                      url: 'https://duck.ai/chat?q=',                                                                      domain: 'duckduckgo.com', plusEncoding: true },
+      'alphaf:':     { name: 'AlphaFold',                   url: 'https://alphafold.ebi.ac.uk/search/text/',                                                     domain: 'alphafold.ebi.ac.uk' }
     };
 
     // ============================================
@@ -3657,6 +3683,7 @@
       '!wolf': 'wolf:',   '!wolfram': 'wolf:',
       '!dai': 'duckai:',  '!duckai': 'duckai:',
       '!ernie': 'ernie:', '!bai': 'ernie:',
+      '!alphaf': 'alphaf:', '!alphafold': 'alphaf:',
     };
 
     /**
@@ -4269,7 +4296,7 @@
           general:  ['g:', 'yt:', 'brave:', 'ddg:', 'yan:', 'bing:', 'bd:', 'gplus:', 'wiki:', 'bdbk:', 'grokw:', 'ww:'],
           academic: ['scholar:', 'pubmed:', 'arxiv:', 'gpat:', 'these2.0:', 'cismef-th:', 'these-ma:', 'these-fr:', 'rgate:', 'ndltd:', 'proinserm:', 'bdedu:', 'cybl:'],
           medical:  ['cismef:', 'msps:', 'ammps:', 'ammps-lm:', 'ammps-rmmg:', 'ammps-lvl:', 'ammps-p:', 'ammps-gs:', 'has:', 'vidal:', 'mesh:', 'lissa:', 'anm:', 'hetop:', 'nejm:', 'rp:', 'utd:', 'coch:', 'medscape:', 'openmd:', 'dd:', 'webmd:', 'nih:', 'drugs:', 'cdc:', 'cismef-bp:', 'cismef-edu:', 'cismef-edn:', 'cismef-pat:'],
-          ai:       ['wolf:', 'chatgpt:', 'claude:', 'gemini:', 'gai:', 'perplexity:', 'copilot:', 'cbd:', 'ernie:', 'duckai:']
+          ai:       ['wolf:', 'chatgpt:', 'claude:', 'gemini:', 'gai:', 'perplexity:', 'copilot:', 'cbd:', 'ernie:', 'duckai:', 'alphaf:']
         };
         let engineCategory = 'general';
         for (const [cat, prefixes] of Object.entries(categoryMap)) {
@@ -5273,7 +5300,7 @@
       general:  ['g:', 'yt:', 'brave:', 'ddg:', 'yan:', 'bing:', 'bd:', 'gplus:', 'wiki:', 'bdbk:', 'grokw:', 'ww:'],
       academic: ['scholar:', 'pubmed:', 'arxiv:', 'gpat:', 'these2.0:', 'cismef-th:', 'these-ma:', 'these-fr:', 'rgate:', 'ndltd:', 'proinserm:', 'bdedu:', 'cybl:'],
       medical:  ['cismef:', 'msps:', 'ammps:', 'ammps-lm:', 'ammps-rmmg:', 'ammps-lvl:', 'ammps-p:', 'ammps-gs:', 'has:', 'vidal:', 'mesh:', 'lissa:', 'anm:', 'hetop:', 'nejm:', 'rp:', 'utd:', 'coch:', 'medscape:', 'openmd:', 'dd:', 'webmd:', 'nih:', 'drugs:', 'cdc:', 'cismef-bp:', 'cismef-edu:', 'cismef-edn:', 'cismef-pat:'],
-      ai:       ['wolf:', 'chatgpt:', 'claude:', 'gemini:', 'gai:', 'perplexity:', 'copilot:', 'cbd:', 'ernie:', 'duckai:']
+      ai:       ['wolf:', 'chatgpt:', 'claude:', 'gemini:', 'gai:', 'perplexity:', 'copilot:', 'cbd:', 'ernie:', 'duckai:', 'alphaf:']
     };
 
     const categoryTitles = {
