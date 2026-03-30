@@ -6,8 +6,7 @@
   <title>Tools Search</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="icon" type="image/svg+xml"
-    href="https://upload.wikimedia.org/wikipedia/commons/a/a9/Vector_search_icon.svg" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🔎</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -231,6 +230,24 @@
     }
 
     #duckBangBtn {
+      background: linear-gradient(135deg, #DE5833 0%, #F7931E 100%);
+      color: white;
+    }
+
+    .bang-buttons-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .bang-buttons-container button {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 10px;
+      white-space: nowrap;
+    }
+
+    #bangsBtn {
       background: linear-gradient(135deg, #DE5833 0%, #F7931E 100%);
       color: white;
     }
@@ -2696,8 +2713,11 @@
         </div>
         <button type="submit">🔍</button>
         <div id="langIcon" class="lang-icon" title="Select output language">🌐</div>
+        <div id="bangButtonsContainer" class="bang-buttons-container">
+          <button type="button" id="bangsBtn">🦆 !bang search</button>
+          <button type="button" id="duckBangBtn" style="display: none;">🦆 !bang list</button>
+        </div>
         <button type="button" id="filetypesBtn">📁 Filetypes</button>
-        <button type="button" id="duckBangBtn" style="display: none;">🦆 !bang</button>
       </form>
     </div>
 
@@ -3057,6 +3077,7 @@
           <label><input type="radio" name="searchEngine" value="cbd:">Chat Baidu</label>
           <label><input type="radio" name="searchEngine" value="ernie:">Baidu AI 📋</label>
           <label><input type="radio" name="searchEngine" value="duckai:">Duck.ai</label>
+          <label><input type="radio" name="searchEngine" value="alphaf:">AlphaFold</label>
         </div>
       </div>
     </div>
@@ -3159,6 +3180,7 @@
             <div class="wiki-chip" data-prefix="cbd:" data-cat="ai" data-name="Chat Baidu"><span class="wiki-chip-prefix">cbd:</span><span class="wiki-chip-name">Chat Baidu</span></div>
             <div class="wiki-chip" data-prefix="ernie:" data-cat="ai" data-name="Baidu AI"><span class="wiki-chip-prefix">ernie:</span><span class="wiki-chip-name">Baidu AI</span></div>
             <div class="wiki-chip" data-prefix="duckai:" data-cat="ai" data-name="Duck.ai"><span class="wiki-chip-prefix">duckai:</span><span class="wiki-chip-name">Duck.ai</span></div>
+            <div class="wiki-chip" data-prefix="alphaf:" data-cat="ai" data-name="AlphaFold"><span class="wiki-chip-prefix">alphaf:</span><span class="wiki-chip-name">AlphaFold</span></div>
           </div>
         </div>
 
@@ -3275,7 +3297,6 @@
       <button type="button" id="darkModeToggleBtn">🌙</button>
       <button type="button" id="googleWikiBtn" style="display: none;">📖 Google Wiki</button>
       <button type="button" id="bingWikiBtn" style="display: none;">📖 Bing Wiki</button>
-      <button type="button" id="bangsBtn">!bangs</button>
     </div>
 
     <!-- Language Selection Popup -->
@@ -3335,8 +3356,12 @@
         <div class="cheat-section">
           <div class="cheat-section-title">🔍 Search Bar</div>
           <div class="cheat-row">
-            <div class="cheat-keys"><span class="kbd">Ctrl</span><span class="kbd-sep">+</span><span class="kbd">K</span></div>
+            <div class="cheat-keys"><span class="kbd">/</span></div>
             <div class="cheat-desc"><span class="hl">Focus</span> the search bar</div>
+          </div>
+          <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Ctrl</span><span class="kbd-sep">+</span><span class="kbd">K</span></div>
+            <div class="cheat-desc"><span class="hl">Focus</span> the search bar <small style="opacity:.6">(also works in inputs)</small></div>
           </div>
           <div class="cheat-row">
             <div class="cheat-keys"><span class="kbd">Ctrl</span><span class="kbd-sep">+</span><span class="kbd">Shift</span><span class="kbd-sep">+</span><span class="kbd">K</span></div>
@@ -3430,6 +3455,10 @@
         <div class="cheat-section cheat-section-wide">
           <div class="cheat-section-title">🖥 Interface</div>
           <div class="cheat-row">
+            <div class="cheat-keys"><span class="kbd">Shift</span><span class="kbd-sep">+</span><span class="kbd">?</span></div>
+            <div class="cheat-desc"><span class="hl">Open</span> this shortcuts panel</div>
+          </div>
+          <div class="cheat-row">
             <div class="cheat-keys"><span class="kbd">Esc</span></div>
             <div class="cheat-desc">Close any open popup</div>
           </div>
@@ -3438,7 +3467,7 @@
     </div>
     <div class="cheat-footer">
       <div><span class="cheat-esc">ESC</span>&nbsp;to close &nbsp;·&nbsp; all shortcuts work globally</div>
-      <span class="cheat-count">19 bindings</span>
+      <span class="cheat-count">21 bindings</span>
     </div>
   </div>
 
@@ -3586,7 +3615,8 @@
       'copilot:':    { name: 'Copilot 📋',                   url: 'https://copilot.microsoft.com/?q=',                                                            domain: 'microsoft.com', promptBased: true },
       'cbd:':        { name: 'Chat Baidu',                   url: 'https://chat.baidu.com/search?word=',                                                          domain: 'baidu.com', plusEncoding: true },
       'ernie:':      { name: 'Baidu AI 📋',                  url: 'https://ernie.baidu.com/',                                                                     domain: 'baidu.com', promptBased: true },
-      'duckai:':     { name: 'Duck.ai',                      url: 'https://duck.ai/chat?q=',                                                                      domain: 'duckduckgo.com', plusEncoding: true }
+      'duckai:':     { name: 'Duck.ai',                      url: 'https://duck.ai/chat?q=',                                                                      domain: 'duckduckgo.com', plusEncoding: true },
+      'alphaf:':     { name: 'AlphaFold',                   url: 'https://alphafold.ebi.ac.uk/search/text/',                                                     domain: 'alphafold.ebi.ac.uk' }
     };
 
     // ============================================
@@ -3649,6 +3679,7 @@
       '!wolf': 'wolf:',   '!wolfram': 'wolf:',
       '!dai': 'duckai:',  '!duckai': 'duckai:',
       '!ernie': 'ernie:', '!bai': 'ernie:',
+      '!alphaf': 'alphaf:', '!alphafold': 'alphaf:',
     };
 
     /**
@@ -4261,7 +4292,7 @@
           general:  ['g:', 'yt:', 'brave:', 'ddg:', 'yan:', 'bing:', 'bd:', 'gplus:', 'wiki:', 'bdbk:', 'grokw:', 'ww:'],
           academic: ['scholar:', 'pubmed:', 'arxiv:', 'gpat:', 'these2.0:', 'cismef-th:', 'these-ma:', 'these-fr:', 'rgate:', 'ndltd:', 'proinserm:', 'bdedu:', 'cybl:'],
           medical:  ['cismef:', 'msps:', 'ammps:', 'ammps-lm:', 'ammps-rmmg:', 'ammps-lvl:', 'ammps-p:', 'ammps-gs:', 'has:', 'vidal:', 'mesh:', 'lissa:', 'anm:', 'hetop:', 'nejm:', 'rp:', 'utd:', 'coch:', 'medscape:', 'openmd:', 'dd:', 'webmd:', 'nih:', 'drugs:', 'cdc:', 'cismef-bp:', 'cismef-edu:', 'cismef-edn:', 'cismef-pat:'],
-          ai:       ['wolf:', 'chatgpt:', 'claude:', 'gemini:', 'gai:', 'perplexity:', 'copilot:', 'cbd:', 'ernie:', 'duckai:']
+          ai:       ['wolf:', 'chatgpt:', 'claude:', 'gemini:', 'gai:', 'perplexity:', 'copilot:', 'cbd:', 'ernie:', 'duckai:', 'alphaf:']
         };
         let engineCategory = 'general';
         for (const [cat, prefixes] of Object.entries(categoryMap)) {
@@ -4864,6 +4895,22 @@
     // KEYBOARD SHORTCUTS
     // ============================================
     document.addEventListener('keydown', e => {
+      // "/" — Focus search bar (only when not typing in an input/textarea)
+      if (e.key === '/' && !e.ctrlKey && !e.altKey && !e.shiftKey && !e.metaKey) {
+        const tag = document.activeElement.tagName;
+        if (tag !== 'INPUT' && tag !== 'TEXTAREA' && !document.activeElement.isContentEditable) {
+          e.preventDefault();
+          searchInput.focus();
+        }
+      }
+      // Shift+? — Toggle keyboard shortcuts popup
+      if (e.key === '?' && e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        const tag = document.activeElement.tagName;
+        if (tag !== 'INPUT' && tag !== 'TEXTAREA' && !document.activeElement.isContentEditable) {
+          e.preventDefault();
+          keyboardShortcutsPopup.classList.contains('show') ? closeShortcutsPopup() : openShortcutsPopup();
+        }
+      }
       if (e.ctrlKey && !e.shiftKey && e.key === 'k') {
         e.preventDefault();
         searchInput.focus();
@@ -5249,7 +5296,7 @@
       general:  ['g:', 'yt:', 'brave:', 'ddg:', 'yan:', 'bing:', 'bd:', 'gplus:', 'wiki:', 'bdbk:', 'grokw:', 'ww:'],
       academic: ['scholar:', 'pubmed:', 'arxiv:', 'gpat:', 'these2.0:', 'cismef-th:', 'these-ma:', 'these-fr:', 'rgate:', 'ndltd:', 'proinserm:', 'bdedu:', 'cybl:'],
       medical:  ['cismef:', 'msps:', 'ammps:', 'ammps-lm:', 'ammps-rmmg:', 'ammps-lvl:', 'ammps-p:', 'ammps-gs:', 'has:', 'vidal:', 'mesh:', 'lissa:', 'anm:', 'hetop:', 'nejm:', 'rp:', 'utd:', 'coch:', 'medscape:', 'openmd:', 'dd:', 'webmd:', 'nih:', 'drugs:', 'cdc:', 'cismef-bp:', 'cismef-edu:', 'cismef-edn:', 'cismef-pat:'],
-      ai:       ['wolf:', 'chatgpt:', 'claude:', 'gemini:', 'gai:', 'perplexity:', 'copilot:', 'cbd:', 'ernie:', 'duckai:']
+      ai:       ['wolf:', 'chatgpt:', 'claude:', 'gemini:', 'gai:', 'perplexity:', 'copilot:', 'cbd:', 'ernie:', 'duckai:', 'alphaf:']
     };
 
     const categoryTitles = {
