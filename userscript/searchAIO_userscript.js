@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SearchAIO — Sidebar Power Search
 // @namespace    https://achma-learning.github.io/searchAIO/
-// @version      7.1
+// @version      7.11
 // @description  Selection → ⚡ → Edit text & Search across Medical/Academic/AI grids. Alt+S to open sidebar.
 // @author       SearchAIO
 // @match        *://*/*
