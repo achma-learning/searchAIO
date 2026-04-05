@@ -184,8 +184,14 @@
                 div.dataset.idx = i;
                 const idxLabel = String.fromCharCode(97 + i); // a, b, c...
                 div.innerHTML = `<span class="saio-idx">${i < 26 ? idxLabel : ''}</span><span>${escAttr(e.label)}</span>${e.clipboard ? '<span class="saio-cb">+clip</span>' : ''}`;
-                div.onclick = (ev) => { ev.stopPropagation(); launch(e); };
-                div.onmouseenter = () => { selectedIndex = i; render(); };
+                div.addEventListener('click', (ev) => { ev.stopPropagation(); ev.preventDefault(); launch(e); });
+                div.addEventListener('mouseenter', () => {
+                    // Update selection visually without full re-render (avoids destroying DOM mid-click)
+                    const prev = grid.querySelector('.saio-sel');
+                    if (prev) prev.classList.remove('saio-sel');
+                    div.classList.add('saio-sel');
+                    selectedIndex = i;
+                });
                 grid.appendChild(div);
             });
             // scroll selected into view
@@ -311,9 +317,9 @@
                 return;
             }
 
-            // Letter shortcuts a-z to jump to engine (when not in input)
-            if (!isInput && /^[a-z]$/.test(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey) {
-                const idx = e.key.charCodeAt(0) - 97;
+            // Letter shortcuts a-z to jump to engine (when not in input, case-insensitive)
+            if (!isInput && /^[a-zA-Z]$/.test(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                const idx = e.key.toLowerCase().charCodeAt(0) - 97;
                 if (idx >= 0 && idx < items.length) {
                     e.preventDefault();
                     launch(items[idx]);
