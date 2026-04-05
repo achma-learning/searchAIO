@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         SearchAIO — Sidebar Power Search
 // @namespace    https://achma-learning.github.io/searchAIO/
-// @version      7.0
+// @version      7.1
 // @description  Selection → ⚡ → Edit text & Search across Medical/Academic/AI grids. Alt+S to open sidebar.
 // @author       SearchAIO
 // @match        *://*/*
@@ -139,8 +139,21 @@
 .saio-empty{padding:24px;text-align:center;color:#555;font-size:13px}
 
 /* Footer */
-.saio-ft{padding:7px 14px;font-size:9.5px;color:#444;background:rgba(0,0,0,.25);display:flex;justify-content:space-between;flex-shrink:0;border-top:1px solid rgba(255,255,255,.04)}
+.saio-ft{padding:7px 14px;font-size:9.5px;color:#444;background:rgba(0,0,0,.25);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;border-top:1px solid rgba(255,255,255,.04)}
 .saio-ft kbd{background:rgba(255,255,255,.06);padding:1px 5px;border-radius:3px;font-family:inherit;color:#555}
+.saio-ft-right{display:flex;align-items:center;gap:6px}
+.saio-help-btn{background:none;border:1px solid rgba(255,255,255,.1);border-radius:4px;color:#555;cursor:pointer;font-size:inherit;padding:1px 5px;line-height:1.2;transition:all .12s;font-family:inherit}
+.saio-help-btn:hover{background:rgba(255,255,255,.08);color:#888;border-color:rgba(255,255,255,.2)}
+
+/* Help modal */
+#saio-help{all:initial;position:fixed;z-index:2147483647;top:50%;left:50%;transform:translate(-50%,-50%) scale(.96);width:380px;background:rgba(18,18,22,.98);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.1);border-radius:14px;box-shadow:0 24px 80px rgba(0,0,0,.7);font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#e2e8f0;padding:20px;opacity:0;transition:opacity .12s,transform .12s}
+#saio-help.saio-show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#saio-help h3{margin:0 0 14px;font-size:14px;font-weight:700;color:#fff}
+#saio-help table{width:100%;border-collapse:collapse;font-size:11.5px}
+#saio-help td{padding:4px 0;vertical-align:top}
+#saio-help td:first-child{color:#007aff;font-weight:600;white-space:nowrap;padding-right:12px;font-family:'SF Mono','Cascadia Code',monospace;font-size:10.5px}
+#saio-help td:last-child{color:#999}
+#saio-help .saio-help-close{margin-top:14px;text-align:center;font-size:10px;color:#555}
 `;
     document.head.appendChild(style);
 
@@ -186,14 +199,15 @@
     }
 
     // ── Launch ───────────────────────────────────────────────────
-    function launch(e) {
+    function launch(engine) {
+        // Read query from input BEFORE closing (closing destroys DOM)
         const input = sidebar && sidebar.querySelector('.saio-input');
         const finalQuery = (input && input.value.trim()) || query;
         if (!finalQuery) return;
-        if (e.clipboard) navigator.clipboard.writeText(finalQuery).catch(() => {});
-        const url = e.url.replace('{q}', encodeURIComponent(finalQuery));
-        GM_openInTab(url, { active: true });
+        if (engine.clipboard) navigator.clipboard.writeText(finalQuery).catch(() => {});
+        const url = engine.url.replace('{q}', encodeURIComponent(finalQuery));
         closeSidebar();
+        GM_openInTab(url, { active: true });
     }
 
     // ── Open Sidebar (centered) ──────────────────────────────────
@@ -215,15 +229,15 @@
 
         sidebar.innerHTML = `
             <div class="saio-hd">
-                <input type="text" class="saio-input" value="${escAttr(query)}" placeholder="Search anything... (Alt+S)">
+                <input type="text" class="saio-input" value="${escAttr(query)}" placeholder="Type query… (/ to focus)">
                 <div class="saio-tabs">
                     ${CATS.map((c, i) => `<div class="saio-tab" data-cat="${c}">${CAT_LABELS[c]}<span class="saio-key">${i + 1}</span></div>`).join('')}
                 </div>
             </div>
             <div class="saio-grid"></div>
             <div class="saio-ft">
-                <span><kbd>Tab</kbd> cats <kbd>↑↓</kbd> nav <kbd>Enter</kbd> go <kbd>Esc</kbd> close</span>
-                <span>SearchAIO v7.0</span>
+                <span><kbd>/</kbd> edit <kbd>Tab</kbd> cats <kbd>a-z</kbd> go <kbd>Esc</kbd> close</span>
+                <span class="saio-ft-right">SearchAIO v7.0 <button class="saio-help-btn" title="Keyboard shortcuts (Ctrl+?)">⌨️</button></span>
             </div>
         `;
         document.body.appendChild(sidebar);
@@ -235,8 +249,14 @@
         });
 
         const input = sidebar.querySelector('.saio-input');
-        input.focus();
-        input.select();
+        // Don't focus input — stay in grid mode so letter shortcuts work immediately
+        sidebar.focus();
+
+        // Help button click
+        sidebar.querySelector('.saio-help-btn').onclick = (ev) => {
+            ev.stopPropagation();
+            toggleHelp();
+        };
 
         // Tab clicks
         sidebar.querySelectorAll('.saio-tab').forEach(t => {
@@ -246,13 +266,7 @@
                 GM_setValue('saio_cat', activeCat);
                 selectedIndex = 0;
                 render();
-                input.focus();
             };
-        });
-
-        // Filter on input
-        input.addEventListener('input', () => {
-            // no filtering on main query — user types query freely
         });
 
         render();
@@ -336,11 +350,22 @@
                 return;
             }
 
-            // / to focus input
-            if (e.key === '/' && !isInput) {
+            // / toggles focus between input and grid
+            if (e.key === '/') {
                 e.preventDefault();
-                input.focus();
-                input.select();
+                if (isInput) {
+                    input.blur();
+                } else {
+                    input.focus();
+                    input.select();
+                }
+                return;
+            }
+
+            // Ctrl+? opens help
+            if (e.key === '?' && e.ctrlKey) {
+                e.preventDefault();
+                toggleHelp();
                 return;
             }
         };
@@ -350,8 +375,35 @@
         sidebar._ov = overlay;
     }
 
+    // ── Help modal ───────────────────────────────────────────────
+    let helpModal = null;
+    function toggleHelp() {
+        if (helpModal) { helpModal.remove(); helpModal = null; return; }
+        helpModal = document.createElement('div');
+        helpModal.id = 'saio-help';
+        helpModal.onmousedown = (e) => e.stopPropagation();
+        helpModal.innerHTML = `
+            <h3>⌨️ Keyboard Shortcuts</h3>
+            <table>
+                <tr><td>Alt+S</td><td>Open/close sidebar</td></tr>
+                <tr><td>/</td><td>Focus / unfocus search input</td></tr>
+                <tr><td>a-z</td><td>Launch engine by letter (grid mode)</td></tr>
+                <tr><td>1 2 3 4</td><td>Switch category (grid mode)</td></tr>
+                <tr><td>Tab</td><td>Next category (Shift+Tab = prev)</td></tr>
+                <tr><td>↑ ↓ ← →</td><td>Navigate engine grid</td></tr>
+                <tr><td>Enter</td><td>Launch selected engine</td></tr>
+                <tr><td>Escape</td><td>Close sidebar / close help</td></tr>
+                <tr><td>Ctrl+?</td><td>Toggle this help</td></tr>
+            </table>
+            <div class="saio-help-close">Press <b>Esc</b> or <b>Ctrl+?</b> to close</div>
+        `;
+        document.body.appendChild(helpModal);
+        requestAnimationFrame(() => helpModal.classList.add('saio-show'));
+    }
+
     // ── Close ────────────────────────────────────────────────────
     function closeSidebar() {
+        if (helpModal) { helpModal.remove(); helpModal = null; }
         if (triggerBtn) { triggerBtn.remove(); triggerBtn = null; }
         if (sidebar) {
             window.removeEventListener('keydown', sidebar._kh, true);
@@ -394,16 +446,30 @@
         if (sidebar && !sidebar.contains(e.target)) closeSidebar();
     });
 
-    // ── Alt+S global shortcut ────────────────────────────────────
+    // ── Global shortcuts ────────────────────────────────────────
     document.addEventListener('keydown', (e) => {
+        // Alt+S — open/close sidebar
         if (e.altKey && e.key.toLowerCase() === 's') {
             e.preventDefault();
             e.stopPropagation();
-            // Grab current selection if any
             const sel = window.getSelection();
             const text = sel ? sel.toString().trim() : '';
             if (text.length > 1) query = text;
             openSidebar();
+            return;
+        }
+        // Ctrl+? — toggle help (works globally)
+        if (e.key === '?' && e.ctrlKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleHelp();
+            return;
+        }
+        // Escape closes help if open
+        if (e.key === 'Escape' && helpModal) {
+            e.preventDefault();
+            helpModal.remove();
+            helpModal = null;
         }
     }, true);
 
