@@ -20,8 +20,7 @@ The entire project lives in **`index.html`** — all HTML, CSS, and JavaScript. 
 **Deployment**: GitHub Pages, served directly from `index.html`.
 
 **Preservation Rules**:
-- all files under `stables/` are **read-only backups** — never delete them.
-- Files that have `Zone.Identifier` in their names , should be deleted.
+- Files that have `Zone.Identifier` in their names should be deleted.
 - Push to GitHub after every significant change.
 
 ---
