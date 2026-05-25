@@ -4667,7 +4667,6 @@
         if (!keepWikiOpenCheckbox.checked) wikiContent.style.display = 'none';
       } else {
         wikiContent.style.display = 'block';
-        wikiContent.focus();
         const wsi = document.getElementById('wikiSearchInput');
         if (wsi) setTimeout(() => wsi.focus(), 50);
       }
@@ -5031,14 +5030,24 @@
     searchInput.addEventListener('input', updateSearchSource);
 
     // ============================================
+    // SAFE LOCALSTORAGE (Safari private mode / sandboxed iframes throw)
+    // ============================================
+    function lsGet(key) {
+      try { return localStorage.getItem(key); } catch (_) { return null; }
+    }
+    function lsSet(key, value) {
+      try { localStorage.setItem(key, value); } catch (_) { /* ignore */ }
+    }
+
+    // ============================================
     // DARK MODE
     // ============================================
     const darkModeToggleBtn = document.getElementById('darkModeToggleBtn');
     darkModeToggleBtn.addEventListener('click', () => {
       document.body.classList.toggle('dark-mode');
-      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode') ? 'enabled' : 'disabled');
+      lsSet('darkMode', document.body.classList.contains('dark-mode') ? 'enabled' : 'disabled');
     });
-    if (localStorage.getItem('darkMode') === 'enabled') document.body.classList.add('dark-mode');
+    if (lsGet('darkMode') === 'enabled') document.body.classList.add('dark-mode');
 
     // ============================================
     // OPERATOR TOOLTIP
@@ -5218,7 +5227,7 @@
       lb:'Luxembourgish', sm:'Samoan', ceb:'Cebuano', la:'Latin', eo:'Esperanto'
     };
 
-    let selectedOutputLang = localStorage.getItem('selectedOutputLang') || 'original';
+    let selectedOutputLang = lsGet('selectedOutputLang') || 'original';
 
     const langIcon        = document.getElementById('langIcon');
     const langPopup       = document.getElementById('langPopup');
@@ -5255,7 +5264,7 @@
         langIcon.classList.add('language-selected');
         langIcon.title = `Translate to ${allLanguages[langCode] || langCode.toUpperCase()}`;
       }
-      localStorage.setItem('selectedOutputLang', langCode);
+      lsSet('selectedOutputLang', langCode);
     }
 
     langSearchInput.addEventListener('input', function () {
@@ -5558,7 +5567,7 @@
       updateSearchSource();
       searchInput.focus();
       addFaviconsToSearchEngines();
-      const savedLang = localStorage.getItem('selectedOutputLang');
+      const savedLang = lsGet('selectedOutputLang');
       if (savedLang) updateLangIcon(savedLang);
     });
   </script>
