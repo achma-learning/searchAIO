@@ -42,11 +42,7 @@ _Last synced: 2026-04-27 @ 3ceb6f4_
 - `LICENSE` — MIT, © 2026 maa384.
 - `.github/workflows/gemini-*.yml` — Gemini-CLI-driven PR review/triage automation.
 
-**Folders to know about, not edit:**
-- `stables/` — Read-only history of every milestone build (`stable.html`, `stable10.html`, …, `stable33.html`). Do not delete.
-- `antigravity.html` + `antigravity_fork/` — Separate dynamic-island UI experiment; not the live app.
-- `old/` — Legacy split-file experiment (`src (old)/css/`, `src (old)/js/`) and abandoned drafts.
-- `contexts+++/` — Archived AI assistant context files (older `GEMINI.md` / `claude.md` snapshots).
+**Historical context (no longer in repo):** `stables/` milestone snapshots, `old/` split-file/abandoned-draft experiments, `antigravity.html` + `antigravity_fork/` dynamic-island UI experiment, and `contexts+++/` archived AI context files were purged in the 2026-05-25 cleanup. See git history if you need to recover anything.
 
 ## 5. Rules For Editing This Code
 - **Single-file mandate.** All app changes go in `index.html`. No new `.js`/`.css` files unless explicitly requested (`GEMINI.md:421`).
@@ -55,7 +51,6 @@ _Last synced: 2026-04-27 @ 3ceb6f4_
 - **No `innerHTML` with user data.** Use `textContent` or `encodeURIComponent`. The query is untrusted (`GEMINI.md:423`).
 - **Naming convention for prefixes:** short, DuckDuckGo-`!bang`-style (`g:`, `yt:`, `ddg:`). Power-user muscle memory matters.
 - **Don't refactor working code without confirmed bugs.** The author has explicitly said they can't fix some bugs without breaking functionality (`README.md:37`).
-- **Stables are sacred.** Never delete or rewrite anything in `stables/`.
 - **Delete files matching `*Zone.Identifier`** when you see them (Windows-download artifacts) — see `GEMINI.md:24`.
 - **Userscripts must mirror engine list manually.** Adding an engine to `index.html` means updating `userscript/searchAIO_userscript.js` too — the `ENGINES` array starts at line 19.
 
@@ -74,12 +69,12 @@ _Last synced: 2026-04-27 @ 3ceb6f4_
 - **Bang detection runs after prefix detection but overrides it.** Bangs can appear at start, middle, or end of input. Changing the order of operations in `updateSearchSource` breaks both flows.
 - **Translation 3-API chain** (Google unofficial → LibreTranslate → MyMemory) — all three free/unauthenticated. Any one can rate-limit you; the fallback chain hides that. Don't simplify to one.
 - **Favicon swap animation** depends on the `.swapping` CSS class being toggled at the right moment in `updateSearchSource()`. Removing what looks like a stray class add will kill the animation.
-- **Power Words to ignore:** `old/`, `stables/`, `antigravity*`, `contexts+++/`, `missing favicons/` — they look like cleanup targets but each has a reason. See §4.
+- **`missing favicons/` is live**, not cruft — `index.html` references those `.ico/.png` files via `raw.githubusercontent.com` URLs for engines Google S2 can't fetch (CISMeF, Inserm, Sante.gov.ma, etc.). Don't delete.
 
 ## 7. Current State
 - **Last shipped:** New userscript variant `userscript/userscript-google.js` (v8.0, Google AI focus) and userscript `description.md` for GreasyFork (commits `3ceb6f4`, `021c7bf`, `d2a9277`).
 - **Working on now:** Adding this `CONTEXT.md` on branch `claude/add-context-documentation-j5jMN`.
-- **Next up:** _Not yet figured out._ The `README.md` mentions wanting to add advanced search operators from `cipher387/Advanced-search-operators-list` and to make the page a custom new-tab extension; `old/imporvement.md` proposes a Dynamic Island redesign — neither has been pulled into a concrete next step.
+- **Next up:** _Not yet figured out._ `README.md` mentions wanting to add advanced search operators from `cipher387/Advanced-search-operators-list` and to make the page a custom new-tab extension. Neither has been pulled into a concrete next step.
 
 ## 8. Update Protocol (Verbatim)
 > **For the AI Assistant:** When asked to "Update CONTEXT.md":
