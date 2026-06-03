@@ -23,12 +23,13 @@ _Last synced: 2026-05-25 — merged former GEMINI.md into this file._
 - **Language + runtime:** Vanilla HTML5 + CSS3 + ES6+ JavaScript. No transpiler, no bundler, no Node. Browser is the runtime.
 - **Framework / key libraries:** None. Zero npm/pip dependencies. Only external assets are Google Fonts (`Roboto`, `JetBrains Mono`, `Source Code Pro`) loaded via CDN (`index.html:13`).
 - **What kind of project:** Single-file static web app + companion userscripts. Deployed as GitHub Pages.
-- **External services:**
-  - Google S2 favicon service (`https://www.google.com/s2/favicons`) for engine icons
+- **External services (privacy-minimised — no Google contact on page load):**
+  - DuckDuckGo icon service (`https://icons.duckduckgo.com/ip3/<domain>.ico`) for engine icons, via the `faviconFor()` helper (replaced Google S2 for privacy). Missing icons hide gracefully via an `error` handler.
   - GitHub raw URLs for fallback favicons in `missing favicons/`
-  - Google Fonts CDN
-  - Google unofficial translate API + LibreTranslate + MyMemory (3-tier fallback for translation boxes — see `index.html` Yandex/Cybl/Baidu translation logic)
+  - Bunny Fonts CDN (`https://fonts.bunny.net`, GDPR-compliant, no logging — replaced Google Fonts; same families, drop-in `css2` API)
+  - Google unofficial translate API + LibreTranslate + MyMemory (3-tier fallback for translation boxes — user-initiated only — see `index.html` Yandex/Cybl/Baidu translation logic)
   - 50+ third-party search engine endpoints (the whole point of the app)
+  - **Privacy defaults:** `<meta name="referrer" content="no-referrer">` (no `Referer` leaked to engines/icons/fonts); all `window.open` use `noopener,noreferrer`; `#searchInput` + translation inputs set `spellcheck="false"` (blocks cloud-spellcheck text exfiltration); search history off by default.
 - **CI:** `.github/workflows/` runs five Gemini-CLI workflows (dispatch, invoke, review, triage, scheduled-triage). No build/test CI — there is nothing to build.
 
 ## 4. Code Map (The Important Files Only)
@@ -217,7 +218,8 @@ Bangs can appear **anywhere** in the input (start, middle, end). The UI shows a 
 - **bangsBtn:** Opens `duckduckgo.com/bangs` search in a popup window.
 - **duckBangBtn:** Opens `mosermichael.github.io/duckduckbang` (only visible when `ddg:` is active).
 - **`#bang-indicator`:** Appears when a `!bang` token is detected, shows resolved engine name.
-- **Search history:** Focusing the empty search bar shows the last 12 raw inputs (`showHistory()` inside the AUTOCOMPLETE section). Each row shows the resolved engine favicon + name (`resolveHistoryEntry()` mirrors the submit handler's bang-then-longest-prefix order). Clicking refills `#searchInput` and calls `searchForm.requestSubmit()`, so routing is replayed verbatim — no routing logic is duplicated. Stored under `searchHistory` via `lsGet`/`lsSet` (JSON array, deduped case-insensitively, capped at `HISTORY_MAX = 12`); `addHistory()` runs at the top of the submit handler. Clear button = "Effacer".
+- **Settings panel (`#settingsPopup`):** Gear button (`#settingsBtn`) in the bottom-buttons row opens a modal (same flex-overlay + `.show` pattern as `#langPopup`). Preferences persist under `aioSettings` via `getSettings()`/`setSetting()` (JSON merged over `DEFAULT_SETTINGS`, corrupt-data-safe). Closes via close-btn, overlay click, or Esc. Currently one toggle: search history.
+- **Search history (opt-in, OFF by default):** Gated behind `getSettings().historyEnabled` — both `addHistory()` and `showHistory()` no-op when disabled. When enabled, focusing the empty search bar shows the last 12 raw inputs (`showHistory()` inside the AUTOCOMPLETE section). Each row shows the resolved engine favicon + name (`resolveHistoryEntry()` mirrors the submit handler's bang-then-longest-prefix order). Clicking refills `#searchInput` and calls `searchForm.requestSubmit()`, so routing is replayed verbatim — no routing logic is duplicated. Stored under `searchHistory` via `lsGet`/`lsSet` (JSON array, deduped case-insensitively, capped at `HISTORY_MAX = 12`); `addHistory()` runs at the top of the submit handler. Clear button = "Effacer".
 - **Legend Bar** (fixed footer): Shows 📋 paste reminder when a `promptBased` engine is active.
 
 ### 7.2 Filter Panels (context-aware, hidden by default, toggled by `updateSearchSource()`)
@@ -402,8 +404,9 @@ else if (prefix === 'cybl:')
   - `lsGet`/`lsSet` wrappers around all `localStorage` access (Safari-private-mode hardening) and removal of a dead `wikiContent.focus()` call.
   - 2026-05-25 repo cleanup: purged `stables/`, `old/`, `antigravity*`, `contexts+++/`, stray `.url` shortcut (~9.5 MB / 113 files removed), and merged former `GEMINI.md` into this file.
   - Earlier: new userscript variant `userscript/userscript-google.js` (v8.0, Google AI focus) + userscript `description.md` for GreasyFork.
-  - Search history / recent-searches dropdown (focus empty bar → last 12 queries, one-click replay). See §7.1.
-- **Working on now:** Branch `claude/magical-allen-LTyfA` — search-history feature.
+  - Settings panel (⚙️ gear, bottom-buttons row) persisting to `aioSettings`. See §7.1.
+  - Search history / recent-searches dropdown — **opt-in via Settings, OFF by default** (focus empty bar → last 12 queries, one-click replay). See §7.1.
+- **Working on now:** Branch `claude/magical-allen-LTyfA` — settings panel + opt-in search history.
 - **Next up:** _Not yet figured out._ `README.md` mentions wanting to add advanced search operators from `cipher387/Advanced-search-operators-list` and to make the page a custom new-tab extension.
 
 ---
