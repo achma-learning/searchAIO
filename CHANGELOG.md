@@ -12,6 +12,9 @@ Working journal of notable changes. Format adapted from [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+- **Search history (recent searches).** Focusing the empty search bar now surfaces the last 12 queries inside the existing autocomplete dropdown, each tagged with its resolved engine favicon + name. Click (or arrow-key + Enter) replays the exact raw input through the form handler, so all bang/prefix/site/translate routing is preserved for free. Persisted via `lsGet`/`lsSet` under `searchHistory` (JSON, deduped case-insensitively, capped at 12). Includes an "Effacer" clear button. Directly advances the "make this a daily-driver start page" goal in `README.md`.
+
 ### Architectural
 - Added `CONTEXT.md` at repo root — condensed AI-onboarding file replacing scattered context across `GEMINI.md`/`contexts+++/`. `(890c15a)`
 

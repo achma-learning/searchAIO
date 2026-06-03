@@ -1647,6 +1647,38 @@
       color: #b0bec5;
     }
 
+    /* Search history (recent searches) inside the autocomplete dropdown */
+    .autocomplete-history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #667eea;
+    }
+    .autocomplete-history-header .ah-title {
+      font-weight: 900;
+      color: #2c3e50;
+      font-size: 0.95em;
+      font-family: 'Papyrus', cursive, fantasy;
+    }
+    .dark-mode .autocomplete-history-header { border-bottom-color: #64b5f6; }
+    .dark-mode .autocomplete-history-header .ah-title { color: #64b5f6; }
+    .autocomplete-history-clear {
+      background: none;
+      border: none;
+      color: #888;
+      cursor: pointer;
+      font-size: 0.8em;
+      padding: 3px 10px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .autocomplete-history-clear:hover { background: rgba(231, 76, 60, 0.12); color: #e74c3c; }
+    .autocomplete-history-list { display: flex; flex-direction: column; gap: 6px; }
+    .autocomplete-item .autocomplete-name.ah-query { color: #2c3e50; font-weight: 500; }
+    .dark-mode .autocomplete-item .autocomplete-name.ah-query { color: #e0e0e0; }
+
     @media (max-width: 1024px) {
       #autocomplete { min-width: 600px; }
       .autocomplete-grid { grid-template-columns: repeat(2, 1fr); }
@@ -4516,6 +4548,9 @@
       let value = searchInput.value.trim();
       if (!value) return;
 
+      // Remember the raw input so it can be replayed from the history dropdown.
+      addHistory(value);
+
       // ── !bang inline engine routing ──────────────────────────────────────
       // detectBang() scans anywhere in the query for a known !bang token.
       // If matched: switch engine, strip the token, continue normal submit.
@@ -5323,6 +5358,117 @@
       return 'general';
     }
 
+    // ── Search history (recent searches) ──────────────────────────────────
+    // Stores the exact raw input the user typed (e.g. "pubmed: aspirin" or
+    // "aspirin !pm"). Re-submitting a stored entry replays it through the same
+    // form handler, so all engine/bang/site/translate routing is preserved for
+    // free — no need to re-implement any of it here.
+    const HISTORY_KEY = 'searchHistory';
+    const HISTORY_MAX = 12;
+
+    function getHistory() {
+      try {
+        const arr = JSON.parse(lsGet(HISTORY_KEY) || '[]');
+        return Array.isArray(arr) ? arr.filter(x => typeof x === 'string') : [];
+      } catch (_) { return []; }
+    }
+
+    function addHistory(entry) {
+      entry = (entry || '').trim();
+      if (!entry) return;
+      let hist = getHistory().filter(x => x.toLowerCase() !== entry.toLowerCase());
+      hist.unshift(entry);
+      if (hist.length > HISTORY_MAX) hist = hist.slice(0, HISTORY_MAX);
+      lsSet(HISTORY_KEY, JSON.stringify(hist));
+    }
+
+    function clearHistory() { lsSet(HISTORY_KEY, JSON.stringify([])); }
+
+    // Resolve engine + display text for a stored raw input (display only —
+    // mirrors the submit handler's bang-then-longest-prefix detection order).
+    function resolveHistoryEntry(raw) {
+      const bang = detectBang(raw);
+      if (bang && searchEngines[bang.prefix]) {
+        return { engine: searchEngines[bang.prefix], text: bang.cleanQuery || raw };
+      }
+      let prefix = '';
+      for (const key of Object.keys(searchEngines)) {
+        if (raw.startsWith(key) && key.length > prefix.length) prefix = key;
+      }
+      if (prefix) {
+        const t = raw.substring(prefix.length).trim();
+        return { engine: searchEngines[prefix], text: t || raw };
+      }
+      const sel = document.querySelector('input[name="searchEngine"]:checked');
+      return { engine: sel ? searchEngines[sel.value] : null, text: raw };
+    }
+
+    function showHistory() {
+      const hist = getHistory();
+      if (hist.length === 0) { autocompleteDiv.style.display = 'none'; return; }
+      selectedIndex = -1;
+
+      autocompleteDiv.innerHTML = '';
+
+      const header = document.createElement('div');
+      header.className = 'autocomplete-history-header';
+      const title = document.createElement('span');
+      title.className   = 'ah-title';
+      title.textContent = '🕘 Recherches récentes';
+      const clearBtn = document.createElement('button');
+      clearBtn.type        = 'button';
+      clearBtn.className    = 'autocomplete-history-clear';
+      clearBtn.textContent = 'Effacer';
+      clearBtn.addEventListener('click', ev => {
+        ev.stopPropagation();
+        clearHistory();
+        autocompleteDiv.style.display = 'none';
+        searchInput.focus();
+      });
+      header.appendChild(title);
+      header.appendChild(clearBtn);
+      autocompleteDiv.appendChild(header);
+
+      const list = document.createElement('div');
+      list.className = 'autocomplete-history-list';
+
+      hist.forEach(raw => {
+        const { engine, text } = resolveHistoryEntry(raw);
+        const item = document.createElement('div');
+        item.className = 'autocomplete-item';
+
+        const faviconUrl = engine && (engine.favicon || (engine.domain ? `https://www.google.com/s2/favicons?sz=32&domain=${engine.domain}` : null));
+        if (faviconUrl) {
+          const fav = document.createElement('img');
+          fav.src = faviconUrl; fav.alt = ''; fav.className = 'favicon-icon';
+          item.appendChild(fav);
+        }
+        if (engine) {
+          const pfx = document.createElement('span');
+          pfx.className   = 'autocomplete-prefix';
+          pfx.textContent = engine.name.replace(/\s*📋$/, '');
+          item.appendChild(pfx);
+        }
+        const nm = document.createElement('span');
+        nm.className   = 'autocomplete-name ah-query';
+        nm.textContent = text;
+        item.appendChild(nm);
+
+        item.addEventListener('click', () => {
+          searchInput.value = raw;
+          autocompleteDiv.style.display = 'none';
+          if (typeof searchForm.requestSubmit === 'function') searchForm.requestSubmit();
+          else searchForm.dispatchEvent(new Event('submit', { cancelable: true }));
+        });
+
+        list.appendChild(item);
+      });
+
+      autocompleteDiv.appendChild(list);
+      autocompleteDiv.style.display = 'block';
+      positionAutocomplete();
+    }
+
     function positionAutocomplete() {
       const inputRect       = searchInput.getBoundingClientRect();
       const containerRect   = document.querySelector('.search-container').getBoundingClientRect();
@@ -5492,7 +5638,12 @@
         return;
       }
 
-      if (!valueLower || valueLower.includes(' ')) {
+      if (!valueLower) {
+        showHistory();
+        updateSearchSource();
+        return;
+      }
+      if (valueLower.includes(' ')) {
         autocompleteDiv.style.display = 'none';
         updateSearchSource();
         return;
@@ -5548,6 +5699,7 @@
     searchInput.addEventListener('focus', () => {
       focusOverlay.classList.add('active');
       searchContainer.classList.add('focused');
+      if (!searchInput.value.trim()) showHistory();
     });
     searchInput.addEventListener('blur', () => {
       setTimeout(() => {
