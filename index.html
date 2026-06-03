@@ -1801,6 +1801,114 @@
       display: flex !important;
     }
 
+    /* Settings popup — reuses the lang-popup modal pattern */
+    #settingsPopup {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      padding: 20px;
+      overflow: auto;
+    }
+    #settingsPopup.show { display: flex !important; }
+
+    #settingsPopupContent {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+      padding: 30px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 90vh;
+      overflow: auto;
+      position: relative;
+      animation: popupSlideIn 0.3s ease;
+    }
+    .dark-mode #settingsPopupContent {
+      background: #1a2332;
+      border: 2px solid #2d3e52;
+    }
+    #settingsPopupContent .close-btn {
+      position: absolute;
+      top: 12px; right: 12px;
+      width: 32px; height: 32px;
+      border: none;
+      background: #dc3545;
+      color: white;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+      padding: 0;
+      transition: all 0.2s ease;
+    }
+    #settingsPopupContent .close-btn:hover {
+      background: #c82333;
+      transform: rotate(90deg);
+      box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
+    }
+    #settingsPopupContent h2 {
+      margin: 0 40px 20px 0;
+      color: #333;
+      font-size: 22px;
+      padding-right: 40px;
+    }
+    .dark-mode #settingsPopupContent h2 { color: #64b5f6; }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px;
+      border: 1px solid #e6e6e6;
+      border-radius: 10px;
+      margin-bottom: 14px;
+    }
+    .dark-mode .settings-row { border-color: #2d3e52; background: #16202e; }
+    .settings-row-text { display: flex; flex-direction: column; gap: 4px; }
+    .settings-row-title { font-weight: 700; color: #333; font-size: 1em; }
+    .dark-mode .settings-row-title { color: #e0e0e0; }
+    .settings-row-desc { font-size: 0.82em; color: #777; line-height: 1.4; }
+    .dark-mode .settings-row-desc { color: #90a4b8; }
+
+    .settings-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px; height: 26px;
+      flex-shrink: 0;
+    }
+    .settings-switch input { opacity: 0; width: 0; height: 0; }
+    .settings-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #ccc;
+      border-radius: 26px;
+      transition: 0.25s;
+    }
+    .settings-slider::before {
+      content: "";
+      position: absolute;
+      height: 20px; width: 20px;
+      left: 3px; bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.25s;
+    }
+    .settings-switch input:checked + .settings-slider {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    .settings-switch input:checked + .settings-slider::before {
+      transform: translateX(22px);
+    }
+    .settings-switch input:focus-visible + .settings-slider {
+      box-shadow: 0 0 0 3px rgba(156, 90, 242, 0.4);
+    }
+
     #langPopupContent {
       background: white;
       border-radius: 12px;
@@ -3327,6 +3435,7 @@
       <button type="button" id="wikiToggleBtn">📖 Wiki</button>
       <button type="button" id="keyboardShortcutsBtn">⌨️</button>
       <button type="button" id="darkModeToggleBtn">🌙</button>
+      <button type="button" id="settingsBtn" title="Paramètres">⚙️</button>
       <button type="button" id="googleWikiBtn" style="display: none;">📖 Google Wiki</button>
       <button type="button" id="bingWikiBtn" style="display: none;">📖 Bing Wiki</button>
     </div>
@@ -3350,6 +3459,25 @@
           <button class="lang-btn" data-lang="zh" title="Chinese">中文</button>
         </div>
         <p class="lang-info">Press <kbd>ESC</kbd> to close • Translation may not work for all engines</p>
+      </div>
+    </div>
+
+    <!-- Settings Popup -->
+    <div id="settingsPopup" class="popup-overlay">
+      <div id="settingsPopupContent">
+        <button class="close-btn" id="closeSettingsBtn">&times;</button>
+        <h2>⚙️ Paramètres</h2>
+        <div class="settings-row">
+          <div class="settings-row-text">
+            <span class="settings-row-title">Historique de recherche</span>
+            <span class="settings-row-desc">Mémoriser vos recherches récentes et les proposer quand la barre est vide. Désactivé par défaut. Stocké uniquement dans ce navigateur.</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="historyToggle">
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+        <p class="lang-info">Appuyez sur <kbd>ESC</kbd> pour fermer • Les réglages sont enregistrés dans ce navigateur</p>
       </div>
     </div>
   </div>
@@ -5056,6 +5184,7 @@
         if (wikiContent.style.display === 'block'      && !keepWikiOpenCheckbox.checked)        wikiContent.style.display = 'none';
         if (keyboardShortcutsPopup.classList.contains('show')) closeShortcutsPopup();
         if (langPopup.classList.contains('show')) closeLangPopupFn();
+        if (settingsPopup.classList.contains('show')) closeSettingsPopup();
       }
     });
 
@@ -5073,6 +5202,42 @@
     function lsSet(key, value) {
       try { localStorage.setItem(key, value); } catch (_) { /* ignore */ }
     }
+
+    // ============================================
+    // SETTINGS
+    // ============================================
+    const SETTINGS_KEY     = 'aioSettings';
+    const DEFAULT_SETTINGS = { historyEnabled: false };  // history is opt-in
+
+    function getSettings() {
+      try { return Object.assign({}, DEFAULT_SETTINGS, JSON.parse(lsGet(SETTINGS_KEY) || '{}')); }
+      catch (_) { return Object.assign({}, DEFAULT_SETTINGS); }
+    }
+    function setSetting(key, value) {
+      const s = getSettings();
+      s[key] = value;
+      lsSet(SETTINGS_KEY, JSON.stringify(s));
+    }
+
+    const settingsBtn      = document.getElementById('settingsBtn');
+    const settingsPopup    = document.getElementById('settingsPopup');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+    const historyToggle    = document.getElementById('historyToggle');
+
+    function openSettingsPopup() {
+      historyToggle.checked = getSettings().historyEnabled;
+      settingsPopup.classList.add('show');
+    }
+    function closeSettingsPopup() { settingsPopup.classList.remove('show'); }
+
+    settingsBtn.addEventListener('click', openSettingsPopup);
+    closeSettingsBtn.addEventListener('click', closeSettingsPopup);
+    settingsPopup.addEventListener('click', e => { if (e.target === settingsPopup) closeSettingsPopup(); });
+    historyToggle.addEventListener('change', () => {
+      setSetting('historyEnabled', historyToggle.checked);
+      // Hide the recent-searches dropdown immediately when history is turned off.
+      if (!historyToggle.checked) autocompleteDiv.style.display = 'none';
+    });
 
     // ============================================
     // DARK MODE
@@ -5374,6 +5539,7 @@
     }
 
     function addHistory(entry) {
+      if (!getSettings().historyEnabled) return;
       entry = (entry || '').trim();
       if (!entry) return;
       let hist = getHistory().filter(x => x.toLowerCase() !== entry.toLowerCase());
@@ -5404,6 +5570,7 @@
     }
 
     function showHistory() {
+      if (!getSettings().historyEnabled) { autocompleteDiv.style.display = 'none'; return; }
       const hist = getHistory();
       if (hist.length === 0) { autocompleteDiv.style.display = 'none'; return; }
       selectedIndex = -1;
