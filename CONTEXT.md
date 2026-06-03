@@ -23,12 +23,13 @@ _Last synced: 2026-05-25 — merged former GEMINI.md into this file._
 - **Language + runtime:** Vanilla HTML5 + CSS3 + ES6+ JavaScript. No transpiler, no bundler, no Node. Browser is the runtime.
 - **Framework / key libraries:** None. Zero npm/pip dependencies. Only external assets are Google Fonts (`Roboto`, `JetBrains Mono`, `Source Code Pro`) loaded via CDN (`index.html:13`).
 - **What kind of project:** Single-file static web app + companion userscripts. Deployed as GitHub Pages.
-- **External services:**
-  - Google S2 favicon service (`https://www.google.com/s2/favicons`) for engine icons
+- **External services (privacy-minimised — no Google contact on page load):**
+  - DuckDuckGo icon service (`https://icons.duckduckgo.com/ip3/<domain>.ico`) for engine icons, via the `faviconFor()` helper (replaced Google S2 for privacy). Missing icons hide gracefully via an `error` handler.
   - GitHub raw URLs for fallback favicons in `missing favicons/`
-  - Google Fonts CDN
-  - Google unofficial translate API + LibreTranslate + MyMemory (3-tier fallback for translation boxes — see `index.html` Yandex/Cybl/Baidu translation logic)
+  - Bunny Fonts CDN (`https://fonts.bunny.net`, GDPR-compliant, no logging — replaced Google Fonts; same families, drop-in `css2` API)
+  - Google unofficial translate API + LibreTranslate + MyMemory (3-tier fallback for translation boxes — user-initiated only — see `index.html` Yandex/Cybl/Baidu translation logic)
   - 50+ third-party search engine endpoints (the whole point of the app)
+  - **Privacy defaults:** `<meta name="referrer" content="no-referrer">` (no `Referer` leaked to engines/icons/fonts); all `window.open` use `noopener,noreferrer`; `#searchInput` + translation inputs set `spellcheck="false"` (blocks cloud-spellcheck text exfiltration); search history off by default.
 - **CI:** `.github/workflows/` runs five Gemini-CLI workflows (dispatch, invoke, review, triage, scheduled-triage). No build/test CI — there is nothing to build.
 
 ## 4. Code Map (The Important Files Only)

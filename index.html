@@ -6,11 +6,14 @@
   <title>Tools Search</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- Privacy: never leak this page's URL to search engines, favicon, or font hosts. -->
+  <meta name="referrer" content="no-referrer">
+
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>🔎</text></svg>" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Privacy: fonts served from Bunny Fonts (GDPR-compliant, no logging) instead of Google Fonts. Same families, drop-in css2 API. -->
+  <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Source+Code+Pro:wght@400;500;600&display=swap"
+    href="https://fonts.bunny.net/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Source+Code+Pro:wght@400;500;600&display=swap"
     rel="stylesheet">
   <style>
     .focus-overlay {
@@ -1909,6 +1912,27 @@
       box-shadow: 0 0 0 3px rgba(156, 90, 242, 0.4);
     }
 
+    .settings-privacy-note {
+      border: 1px solid #e6e6e6;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      font-size: 0.85em;
+      color: #555;
+      line-height: 1.5;
+    }
+    .settings-privacy-note strong { color: #333; display: block; margin-bottom: 6px; }
+    .settings-privacy-note ul { margin: 0; padding-left: 18px; }
+    .settings-privacy-note code {
+      font-family: 'JetBrains Mono', 'Source Code Pro', monospace;
+      font-size: 0.92em;
+      background: rgba(156, 90, 242, 0.1);
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+    .dark-mode .settings-privacy-note { border-color: #2d3e52; background: #16202e; color: #90a4b8; }
+    .dark-mode .settings-privacy-note strong { color: #e0e0e0; }
+
     #langPopupContent {
       background: white;
       border-radius: 12px;
@@ -2843,8 +2867,8 @@
           site:
         </button>
         <div class="autocomplete-container">
-          <img id="search-prefix-favicon" src="https://www.google.com/s2/favicons?sz=64&domain=google.com" alt="favicon" title="Moteur actif">
-          <input type="text" id="searchInput" autocomplete="off" placeholder="Commencez votre recherche ici..." />
+          <img id="search-prefix-favicon" src="https://icons.duckduckgo.com/ip3/google.com.ico" alt="favicon" title="Moteur actif" onerror="this.style.visibility='hidden'">
+          <input type="text" id="searchInput" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" placeholder="Commencez votre recherche ici..." />
           <div id="bang-indicator" role="status" aria-live="polite">
             <span class="bang-arrow">⚡</span>
             <span class="bang-engine"></span>
@@ -3030,6 +3054,7 @@
             id="cyblSourceText"
             placeholder="Enter text to translate… (or leave empty to open Yandex Translate)"
             autocomplete="off"
+            spellcheck="false"
           />
         </div>
 
@@ -3075,6 +3100,7 @@
             id="yandexSourceText"
             placeholder="Enter text to translate… (or leave empty to open Yandex Translate)"
             autocomplete="off"
+            spellcheck="false"
           />
         </div>
 
@@ -3118,6 +3144,7 @@
             id="baiduSourceText"
             placeholder="Enter text to translate… (or leave empty to open Baidu Fanyi)"
             autocomplete="off"
+            spellcheck="false"
           />
         </div>
 
@@ -3477,6 +3504,16 @@
             <span class="settings-slider"></span>
           </label>
         </div>
+        <div class="settings-privacy-note">
+          <strong>🔒 Confidentialité par défaut</strong>
+          <ul>
+            <li>Aucun traqueur, aucune analytique, aucun cookie.</li>
+            <li>Polices via Bunny Fonts (RGPD), pas Google.</li>
+            <li>Icônes des moteurs via DuckDuckGo, pas Google.</li>
+            <li>En-tête <code>Referer</code> jamais transmis (no-referrer).</li>
+            <li>Historique de recherche désactivé par défaut.</li>
+          </ul>
+        </div>
         <p class="lang-info">Appuyez sur <kbd>ESC</kbd> pour fermer • Les réglages sont enregistrés dans ce navigateur</p>
       </div>
     </div>
@@ -3720,7 +3757,7 @@
       'bd:':         { name: 'Baidu',                        url: 'https://www.baidu.com/s?wd=',                                                                   domain: 'baidu.com' },
       'gplus:':      { name: 'Google Avancé',                url: 'https://www.google.com/advanced_search?q=',                                                     domain: 'google.com' },
       'wiki:':       { name: 'Wikipedia',                    url: 'https://wikipedia.org/w/index.php?search=',                                                     domain: 'wikipedia.org', plusEncoding: true },
-      'bdbk:':       { name: 'Baidu Baike (wiki)',           url: 'https://baike.baidu.com/item/',                                                                 domain: 'baidu.com', favicon: 'https://www.google.com/s2/favicons?sz=32&domain=baike.baidu.com' },
+      'bdbk:':       { name: 'Baidu Baike (wiki)',           url: 'https://baike.baidu.com/item/',                                                                 domain: 'baidu.com', favicon: 'https://icons.duckduckgo.com/ip3/baike.baidu.com.ico' },
       'grokw:':      { name: 'Grokipedia',                   url: 'https://grokipedia.com/search?q=',                                                             domain: 'grokipedia.com' },
       'ww:':         { name: 'WikiWand',                     url: 'https://www.wikiwand.com/en/search?q=',                                                        domain: 'wikiwand.com', plusEncoding: true },
       'gai:':        { name: 'Google AI Mode',               url: 'https://www.google.com/search?udm=50&q=',                                                       domain: 'google.com' },
@@ -3764,7 +3801,7 @@
       'mesh:':       { name: 'MeSH Browser',                 url: 'https://meshb.nlm.nih.gov/search?searchInField=allTerms&searchString=',                       domain: 'nlm.nih.gov' },
       'dd:':         { name: 'Diseases Database',            url: 'http://www.diseasesdatabase.com/item_choice.asp?strUserInput=',                                domain: 'diseasesdatabase.com' },
       'webmd:':      { name: 'WebMD',                        url: 'https://www.webmd.com/search?query=',                                                          domain: 'webmd.com' },
-      'nih:':        { name: 'NIH',                          url: 'https://search.usa.gov/search?utf8=%E2%9C%93&affiliate=nih&query=',                            domain: 'nih.gov', favicon: 'https://www.google.com/s2/favicons?sz=32&domain=nlm.nih.gov' },
+      'nih:':        { name: 'NIH',                          url: 'https://search.usa.gov/search?utf8=%E2%9C%93&affiliate=nih&query=',                            domain: 'nih.gov', favicon: 'https://icons.duckduckgo.com/ip3/nlm.nih.gov.ico' },
       'drugs:':      { name: 'Drugs.com',                    url: 'https://www.drugs.com/search.php?searchterm=',                                                 domain: 'drugs.com' },
       'cdc:':        { name: 'CDC',                          url: 'https://search.cdc.gov/search/?query=',                                                        domain: 'cdc.gov' },
       'wolf:':       { name: 'Wolfram Alpha',                url: 'https://www.wolframalpha.com/input?i=',                                                        domain: 'wolframalpha.com' },
@@ -3937,6 +3974,13 @@
     // ============================================
     // FAVICONS
     // ============================================
+    // Privacy: engine icons are proxied through DuckDuckGo's icon service
+    // (no tracking) instead of Google, so opening this page doesn't ping
+    // Google for ~55 favicons. Missing icons are hidden gracefully.
+    function faviconFor(domain) {
+      return `https://icons.duckduckgo.com/ip3/${domain}.ico`;
+    }
+
     function addFaviconsToSearchEngines() {
       document.querySelectorAll('input[name="searchEngine"]').forEach(radio => {
         const prefix = radio.value;
@@ -3945,13 +3989,14 @@
           let faviconUrl = engine.favicon
             ? engine.favicon
             : engine.domain
-              ? `https://www.google.com/s2/favicons?sz=32&domain=${engine.domain}`
+              ? faviconFor(engine.domain)
               : null;
           if (faviconUrl) {
             const img = document.createElement('img');
             img.src = faviconUrl;
             img.alt = `${engine.name} Favicon`;
             img.classList.add('favicon-icon');
+            img.addEventListener('error', () => { img.style.display = 'none'; });
             radio.parentNode.insertBefore(img, radio.nextSibling);
           }
         }
@@ -4466,7 +4511,7 @@
         let faviconUrl = effectiveEngine.favicon
           ? effectiveEngine.favicon
           : effectiveEngine.domain
-            ? `https://www.google.com/s2/favicons?sz=32&domain=${effectiveEngine.domain}`
+            ? faviconFor(effectiveEngine.domain)
             : null;
 
         if (faviconUrl && faviconUrl !== searchPrefixFavicon.src) {
@@ -4490,7 +4535,7 @@
         if (!searchPrefixFavicon.src.includes('google.com')) {
           searchPrefixFavicon.classList.remove('swapping');
           void searchPrefixFavicon.offsetWidth;
-          searchPrefixFavicon.src   = 'https://www.google.com/s2/favicons?sz=64&domain=google.com';
+          searchPrefixFavicon.src   = faviconFor('google.com');
           searchPrefixFavicon.alt   = 'Google';
           searchPrefixFavicon.title = 'Google (défaut)';
           searchPrefixFavicon.classList.add('swapping');
@@ -5604,10 +5649,11 @@
         const item = document.createElement('div');
         item.className = 'autocomplete-item';
 
-        const faviconUrl = engine && (engine.favicon || (engine.domain ? `https://www.google.com/s2/favicons?sz=32&domain=${engine.domain}` : null));
+        const faviconUrl = engine && (engine.favicon || (engine.domain ? faviconFor(engine.domain) : null));
         if (faviconUrl) {
           const fav = document.createElement('img');
           fav.src = faviconUrl; fav.alt = ''; fav.className = 'favicon-icon';
+          fav.addEventListener('error', () => { fav.style.display = 'none'; });
           item.appendChild(fav);
         }
         if (engine) {
@@ -5685,10 +5731,11 @@
             item.className = 'autocomplete-item';
             if (flatIdx === selectedIndex) item.classList.add('selected');
 
-            const faviconUrl = match.engine.favicon || (match.engine.domain ? `https://www.google.com/s2/favicons?sz=32&domain=${match.engine.domain}` : null);
+            const faviconUrl = match.engine.favicon || (match.engine.domain ? faviconFor(match.engine.domain) : null);
             if (faviconUrl) {
               const fav = document.createElement('img');
               fav.src = faviconUrl; fav.alt = ''; fav.className = 'favicon-icon';
+              fav.addEventListener('error', () => { fav.style.display = 'none'; });
               item.appendChild(fav);
             }
 
