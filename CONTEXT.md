@@ -217,6 +217,7 @@ Bangs can appear **anywhere** in the input (start, middle, end). The UI shows a 
 - **bangsBtn:** Opens `duckduckgo.com/bangs` search in a popup window.
 - **duckBangBtn:** Opens `mosermichael.github.io/duckduckbang` (only visible when `ddg:` is active).
 - **`#bang-indicator`:** Appears when a `!bang` token is detected, shows resolved engine name.
+- **Search history:** Focusing the empty search bar shows the last 12 raw inputs (`showHistory()` inside the AUTOCOMPLETE section). Each row shows the resolved engine favicon + name (`resolveHistoryEntry()` mirrors the submit handler's bang-then-longest-prefix order). Clicking refills `#searchInput` and calls `searchForm.requestSubmit()`, so routing is replayed verbatim — no routing logic is duplicated. Stored under `searchHistory` via `lsGet`/`lsSet` (JSON array, deduped case-insensitively, capped at `HISTORY_MAX = 12`); `addHistory()` runs at the top of the submit handler. Clear button = "Effacer".
 - **Legend Bar** (fixed footer): Shows 📋 paste reminder when a `promptBased` engine is active.
 
 ### 7.2 Filter Panels (context-aware, hidden by default, toggled by `updateSearchSource()`)
@@ -401,7 +402,8 @@ else if (prefix === 'cybl:')
   - `lsGet`/`lsSet` wrappers around all `localStorage` access (Safari-private-mode hardening) and removal of a dead `wikiContent.focus()` call.
   - 2026-05-25 repo cleanup: purged `stables/`, `old/`, `antigravity*`, `contexts+++/`, stray `.url` shortcut (~9.5 MB / 113 files removed), and merged former `GEMINI.md` into this file.
   - Earlier: new userscript variant `userscript/userscript-google.js` (v8.0, Google AI focus) + userscript `description.md` for GreasyFork.
-- **Working on now:** Branch `claude/amazing-babbage-4j27a` — bug fixes + repo cleanup + this doc merge. PR #38.
+  - Search history / recent-searches dropdown (focus empty bar → last 12 queries, one-click replay). See §7.1.
+- **Working on now:** Branch `claude/magical-allen-LTyfA` — search-history feature.
 - **Next up:** _Not yet figured out._ `README.md` mentions wanting to add advanced search operators from `cipher387/Advanced-search-operators-list` and to make the page a custom new-tab extension.
 
 ---
