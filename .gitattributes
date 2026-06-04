@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Never normalize binary assets (PWA icons, favicons)
+*.png binary
+*.ico binary
