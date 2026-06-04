@@ -41,7 +41,9 @@ _Last synced: 2026-05-25 — merged former GEMINI.md into this file._
   - `index.html:~4500–4660` — search submit / URL construction (special cases for `gpat:`, `wiki:`, `bdbk:`, `medscape:`, `these-ma:`, `cybl:`, `msps:`, AMMPS family).
 - `userscript/searchAIO_userscript.js` — Tampermonkey sidebar: select text on any page → ⚡ icon → search across the same engine list. v7.11. Synced manually with `index.html`. Published at GreasyFork #568031.
 - `userscript/userscript-google.js` — Variant focused on Google AI products (Gemini, NotebookLM, Docs Help-Me-Write). v8.0.
+- `userscript/searchAIO-med.js` — **Medical/thesis variant (v1.0).** Same selection→sidebar UX, but built for med students writing a thesis + doctors in daily practice. Adds: **Search Packs** (one query → many engines via `GM_openInTab`, e.g. EBM = PubMed+Cochrane+UpToDate+NEJM), **PubMed power filters** (Review/Systematic/Meta/RCT/Free-full-text/Humans/≤5 yrs/TIAB — correct PubMed term syntax, applied only to `pubmed:` URLs), **smart identifier detection** (DOI→doi.org, PMID→PubMed, NCT→ClinicalTrials), and **FR/AR→EN translation** of the selection (`GM_xmlhttpRequest` → Google's free endpoint; `@connect translate.googleapis.com`). Grants: `GM_openInTab`/`GM_setValue`/`GM_getValue`/`GM_xmlhttpRequest`. Engine list mirrored manually like the others.
 - `userscript/description.md` — User-facing readme for the userscript.
+- **PWA files (installable app):** `manifest.webmanifest`, `sw.js` (offline-first app-shell service worker), `icon-192.png`/`icon-512.png` (maskable) + `icon-180.png` (apple-touch). Linked from `index.html` `<head>`; install offered via the Settings panel (`#installRow`/`#installAppBtn`, `beforeinstallprompt`). SW registers on https only.
 - `missing favicons/` — `.ico/.png` files for engines whose favicons Google S2 can't fetch (CISMeF, Inserm, Sante.gov.ma, etc.). Referenced via `raw.githubusercontent.com/...` URLs inside `index.html`.
 - `search_engin.md` / `search_engin_needing_manual_past.md` — Human-readable engine catalog. Out of sync with `index.html` (older subset — codebase wins).
 - `CHANGELOG.md` — Forensic project journal of every notable commit and decision.
@@ -406,7 +408,10 @@ else if (prefix === 'cybl:')
   - Earlier: new userscript variant `userscript/userscript-google.js` (v8.0, Google AI focus) + userscript `description.md` for GreasyFork.
   - Settings panel (⚙️ gear, bottom-buttons row) persisting to `aioSettings`. See §7.1.
   - Search history / recent-searches dropdown — **opt-in via Settings, OFF by default** (focus empty bar → last 12 queries, one-click replay). See §7.1.
-- **Working on now:** Branch `claude/magical-allen-LTyfA` — settings panel + opt-in search history.
+  - Privacy-by-default: Bunny Fonts + DuckDuckGo icons (no Google on load), `no-referrer`, `spellcheck="false"`. See §3.
+  - **Installable PWA** (manifest + service worker + maskable icons); install from the Settings panel; works offline. See §4.
+  - **`userscript/searchAIO-med.js` (v1.0)** — medical/thesis variant with Search Packs, PubMed filters, DOI/PMID/NCT resolve, FR/AR→EN translate. See §4.
+- **Working on now:** Branch `claude/magical-allen-LTyfA` — PWA install + medical userscript variant.
 - **Next up:** _Not yet figured out._ `README.md` mentions wanting to add advanced search operators from `cipher387/Advanced-search-operators-list` and to make the page a custom new-tab extension.
 
 ---

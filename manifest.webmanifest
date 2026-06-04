@@ -1,0 +1,19 @@
+{
+  "name": "searchAIO — One-Page Search",
+  "short_name": "searchAIO",
+  "description": "Type a short prefix or !bang and route your query to 55+ search engines — medical, academic, AI. Keyboard-driven, privacy-respecting, works offline.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "portrait-primary",
+  "background_color": "#001f3f",
+  "theme_color": "#001f3f",
+  "lang": "fr",
+  "dir": "ltr",
+  "categories": ["productivity", "education", "medical", "utilities"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
