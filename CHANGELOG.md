@@ -12,6 +12,9 @@ Working journal of notable changes. Format adapted from [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Changed (UI)
+- **JetBrains Mono is now the single app-wide UI font.** Introduced a `--ui-font` CSS variable on `:root` and pointed `body`, the search input, the engine-group titles / radio labels (was Papyrus), and the filter titles (was Roboto) at it — so the whole interface is one cohesive monospace and a future font swap is a one-line change. Dropped the now-unused Roboto family from the Bunny Fonts request (one fewer font to download). The `.site-btn-g-off` "G" glyph stays Arial on purpose (it imitates the Google logo letter).
+
 ### Added (reliability safety net)
 - **`tools/validate-engines.mjs` — engine-registry validator.** Dependency-free Node script (no `npm install`) that parses `index.html` and asserts the invariants that silently break the router: duplicate prefix/`!bang` keys, a `!bang` pointing at a deleted prefix, an alias whose `aliasFor` is missing/another alias, a radio button or `categoryMap` entry that isn't a real engine, and engines with neither `url` nor `isAlias`. Warns (without failing) on `http://` engine URLs (mixed-content, blocked on the HTTPS Pages site — currently `ndltd:`, `anm:`, `dd:`), `promptBased` engines missing the `📋` marker, and UI-unreachable engines. Exits non-zero on any error.
 - **`.github/workflows/validate-engines.yml` — CI gate.** Runs the validator on every push/PR touching `index.html` or the validator, so a broken registry goes red before it ships to GitHub Pages. Joins the existing Gemini-CLI workflows; still no _build_ step.

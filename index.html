@@ -22,9 +22,15 @@
   <!-- Privacy: fonts served from Bunny Fonts (GDPR-compliant, no logging) instead of Google Fonts. Same families, drop-in css2 API. -->
   <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
   <link
-    href="https://fonts.bunny.net/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Roboto:wght@400;500;700&family=Source+Code+Pro:wght@400;500;600&display=swap"
+    href="https://fonts.bunny.net/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap"
     rel="stylesheet">
   <style>
+    /* Primary UI font. Change this one line to restyle the whole app.
+       JetBrains Mono is loaded from Bunny Fonts in <head>; the rest are fallbacks. */
+    :root {
+      --ui-font: 'JetBrains Mono', 'Source Code Pro', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Courier New', monospace;
+    }
+
     .focus-overlay {
       position: fixed;
       top: 0;
@@ -54,7 +60,7 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      font-family: var(--ui-font);
       background: linear-gradient(135deg, #000022 0%, #051937 50%, #001f3f 100%);
       display: flex;
       justify-content: center;
@@ -119,7 +125,7 @@
       font-size: 1.1em;
       border-bottom: 2px solid #667eea;
       padding-bottom: 8px;
-      font-family: 'Papyrus', cursive, fantasy;
+      font-family: var(--ui-font);
     }
 
     .radio-group {
@@ -136,7 +142,7 @@
       font-size: 0.95em;
       display: flex;
       align-items: center;
-      font-family: 'Papyrus', cursive, fantasy;
+      font-family: var(--ui-font);
     }
 
     .radio-group input[type=radio] {
@@ -190,7 +196,7 @@
       width: 100%;
       background: #fafafa;
       transition: all 0.3s ease;
-      font-family: 'Roboto', sans-serif;
+      font-family: var(--ui-font);
       font-weight: 500;
     }
 
@@ -980,7 +986,7 @@
     #youtubeFilters .category-title,
     #cismefFilters .category-title,
     #ammpsFilters .category-title {
-      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      font-family: var(--ui-font);
       font-weight: 700;
     }
 
@@ -1603,7 +1609,7 @@
       font-size: 0.95em;
       border-bottom: 2px solid #667eea;
       padding-bottom: 6px;
-      font-family: 'Papyrus', cursive, fantasy;
+      font-family: var(--ui-font);
     }
 
     .dark-mode .autocomplete-column-title {
@@ -1672,7 +1678,7 @@
       font-weight: 900;
       color: #2c3e50;
       font-size: 0.95em;
-      font-family: 'Papyrus', cursive, fantasy;
+      font-family: var(--ui-font);
     }
     .dark-mode .autocomplete-history-header { border-bottom-color: #64b5f6; }
     .dark-mode .autocomplete-history-header .ah-title { color: #64b5f6; }
