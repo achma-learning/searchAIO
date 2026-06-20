@@ -1,0 +1,34 @@
+name: '✅ Validate engine registry'
+
+# Reliability safety net: parses index.html and asserts the engine-registry
+# invariants (no orphaned !bangs, dead radios, duplicate prefixes, etc.).
+# Runs on every push / PR that touches the app or the validator so a broken
+# registry goes red here instead of silently shipping to GitHub Pages.
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'index.html'
+      - 'tools/validate-engines.mjs'
+      - '.github/workflows/validate-engines.yml'
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'tools/validate-engines.mjs'
+      - '.github/workflows/validate-engines.yml'
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Validate searchAIO engine registry
+        run: node tools/validate-engines.mjs

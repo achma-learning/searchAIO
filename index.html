@@ -6028,6 +6028,73 @@
       const savedLang = lsGet('selectedOutputLang');
       if (savedLang) updateLangIcon(savedLang);
     });
+
+    // ============================================
+    // SELF-TEST  (open index.html?selftest)
+    // ============================================
+    // A reliability check you can run with no tools: visit the page with
+    // ?selftest in the URL and it validates the LIVE engine objects + rendered
+    // radio buttons, then prints a pass/fail report on top of the page.
+    // Mirrors tools/validate-engines.mjs (the CI gate) but checks what the
+    // browser actually built. Never runs in normal use.
+    function runSelfTest() {
+      const errs = [];
+      const warns = [];
+      const keys = new Set(Object.keys(searchEngines));
+
+      for (const [prefix, eng] of Object.entries(searchEngines)) {
+        if (!prefix.endsWith(':')) warns.push(`prefix '${prefix}' should end with ':'`);
+        if (!eng.name) errs.push(`engine '${prefix}' has no name`);
+        if (!eng.url && !eng.isAlias) errs.push(`engine '${prefix}' has neither url nor isAlias`);
+        if (eng.isAlias) {
+          if (!keys.has(eng.aliasFor)) errs.push(`alias '${prefix}' → missing engine '${eng.aliasFor}'`);
+          else if (searchEngines[eng.aliasFor].isAlias) errs.push(`alias '${prefix}' → another alias '${eng.aliasFor}'`);
+        }
+        if (eng.url && eng.url.startsWith('http://')) warns.push(`'${prefix}' uses http:// (blocked on HTTPS)`);
+        if (eng.promptBased && !/📋/.test(eng.name)) warns.push(`promptBased '${prefix}' missing 📋 marker`);
+      }
+      for (const [token, target] of Object.entries(BANG_MAP))
+        if (!keys.has(target)) errs.push(`bang '${token}' → '${target}' is not a real engine`);
+
+      const radios = [...document.querySelectorAll('input[name="searchEngine"]')];
+      const seenRadio = new Set();
+      for (const r of radios) {
+        if (!keys.has(r.value)) errs.push(`radio '${r.value}' is not a real engine`);
+        if (seenRadio.has(r.value)) errs.push(`duplicate radio for '${r.value}'`);
+        seenRadio.add(r.value);
+      }
+      for (const [prefix, eng] of Object.entries(searchEngines))
+        if (!eng.isAlias && !AMMPS_PREFIXES.includes(prefix) && !seenRadio.has(prefix))
+          warns.push(`engine '${prefix}' has no radio button (typed-prefix only)`);
+
+      // ── Render report (DOM API + textContent only — no innerHTML) ──
+      const box = document.createElement('div');
+      Object.assign(box.style, {
+        position: 'fixed', inset: '0', zIndex: '99999', overflow: 'auto',
+        background: 'rgba(13,17,23,0.97)', color: '#e6edf3', padding: '24px',
+        font: "14px/1.5 'JetBrains Mono', monospace"
+      });
+      const add = (text, color) => {
+        const p = document.createElement('div');
+        p.textContent = text;
+        if (color) p.style.color = color;
+        box.appendChild(p);
+      };
+      add(errs.length ? '❌ SELF-TEST FAILED' : '✅ SELF-TEST PASSED',
+          errs.length ? '#ff7b72' : '#3fb950');
+      add(`engines: ${keys.size}  ·  bangs: ${Object.keys(BANG_MAP).length}  ·  radios: ${radios.length}`, '#8b949e');
+      add('');
+      if (errs.length) { add(`Errors (${errs.length}):`, '#ff7b72'); errs.forEach(e => add('  • ' + e)); add(''); }
+      if (warns.length) { add(`Warnings (${warns.length}):`, '#d29922'); warns.forEach(w => add('  • ' + w)); add(''); }
+      const close = document.createElement('button');
+      close.textContent = 'Close (or remove ?selftest from the URL)';
+      Object.assign(close.style, { marginTop: '12px', padding: '8px 14px', cursor: 'pointer' });
+      close.addEventListener('click', () => box.remove());
+      box.appendChild(close);
+      document.body.appendChild(box);
+      console.log('[searchAIO self-test]', { errors: errs, warnings: warns });
+    }
+    if (/[?&]selftest\b/.test(location.search)) window.addEventListener('load', runSelfTest);
   </script>
   <div id="paste-legend">
     📋 &nbsp;Engines marked with <strong style="color:#e0e0e0">📋</strong> can't receive queries via URL — your query is auto-copied to the clipboard when you search. Just press <kbd>Ctrl</kbd>+<kbd>V</kbd> (or <kbd>⌘</kbd>+<kbd>V</kbd> on Mac) once the page opens.
