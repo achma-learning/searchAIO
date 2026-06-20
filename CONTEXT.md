@@ -320,10 +320,8 @@ else if (prefix === 'cybl:')
 | Focus overlay | `rgba(0,0,0,0.4)` + blur | `rgba(0,0,0,0.6)` + blur |
 
 ### Typography
-- Body: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial`
-- Search input: `'Roboto', sans-serif, 500`
-- Category titles / radio labels: `'Papyrus', cursive, fantasy`
-- Shortcuts popup / code: `'JetBrains Mono'`, `'Source Code Pro'`
+- **One font, app-wide: JetBrains Mono.** Defined once as `--ui-font` on `:root` (top of `<style>`) and referenced via `var(--ui-font)` on `body`, the search input, the engine-group titles / radio labels (formerly Papyrus), and the filter titles (formerly Roboto). Change that single variable to restyle everything. Loaded from Bunny Fonts; falls back to `Source Code Pro` → system monospace. (Roboto was dropped from the font request — no longer used.)
+- Exceptions kept on purpose: the `.site-btn-g-off` "G" glyph stays `Arial` (mimics the Google logo letter); the shortcuts-popup code blocks already used `'JetBrains Mono'`/`'Source Code Pro'`.
 
 ### Animation
 - Transitions: `0.2s ease` for interactions, `0.3s cubic-bezier(0.4,0,0.2,1)` for overlays.
