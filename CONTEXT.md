@@ -30,7 +30,7 @@ _Last synced: 2026-05-25 — merged former GEMINI.md into this file._
   - Google unofficial translate API + LibreTranslate + MyMemory (3-tier fallback for translation boxes — user-initiated only — see `index.html` Yandex/Cybl/Baidu translation logic)
   - 50+ third-party search engine endpoints (the whole point of the app)
   - **Privacy defaults:** `<meta name="referrer" content="no-referrer">` (no `Referer` leaked to engines/icons/fonts); all `window.open` use `noopener,noreferrer`; `#searchInput` + translation inputs set `spellcheck="false"` (blocks cloud-spellcheck text exfiltration); search history off by default.
-- **CI:** `.github/workflows/` runs five Gemini-CLI workflows (dispatch, invoke, review, triage, scheduled-triage). No build/test CI — there is nothing to build.
+- **CI:** `.github/workflows/` runs five Gemini-CLI workflows (dispatch, invoke, review, triage, scheduled-triage) **plus `validate-engines.yml`** — a dependency-free Node check (`tools/validate-engines.mjs`) that parses `index.html` and fails the build on a broken engine registry (orphaned `!bangs`, dead radios, duplicate prefixes, etc.). Still no _build_ step — there is nothing to build.
 
 ## 4. Code Map (The Important Files Only)
 - `index.html` — **The whole app.** ~5,570 lines, HTML/CSS/JS in one file. Open this if you forgot how anything works.
@@ -39,6 +39,7 @@ _Last synced: 2026-05-25 — merged former GEMINI.md into this file._
   - `index.html:3690` — `detectBang(value)` — scans input right-to-left for `!token`.
   - `index.html:4245` — `updateSearchSource()` — the main reactive function: runs on every input/radio change, syncs UI, toggles filter panels, swaps favicon.
   - `index.html:~4500–4660` — search submit / URL construction (special cases for `gpat:`, `wiki:`, `bdbk:`, `medscape:`, `these-ma:`, `cybl:`, `msps:`, AMMPS family).
+- `tools/validate-engines.mjs` — **Reliability safety net.** Dependency-free Node script that parses the `searchEngines`, `BANG_MAP`, radio buttons and `categoryMap` out of `index.html` and asserts they stay consistent (see §12). Run `node tools/validate-engines.mjs`; in the browser open `index.html?selftest` for the live-DOM equivalent. Wired to CI via `.github/workflows/validate-engines.yml`. See `tools/README.md`.
 - `userscript/searchAIO_userscript.js` — Tampermonkey sidebar: select text on any page → ⚡ icon → search across the same engine list. v7.11. Synced manually with `index.html`. Published at GreasyFork #568031.
 - `userscript/userscript-google.js` — Variant focused on Google AI products (Gemini, NotebookLM, Docs Help-Me-Write). v8.0.
 - `userscript/searchAIO-med.js` — **Medical/thesis variant (v1.0).** Same selection→sidebar UX, but built for med students writing a thesis + doctors in daily practice. Adds: **Search Packs** (one query → many engines via `GM_openInTab`, e.g. EBM = PubMed+Cochrane+UpToDate+NEJM), **PubMed power filters** (Review/Systematic/Meta/RCT/Free-full-text/Humans/≤5 yrs/TIAB — correct PubMed term syntax, applied only to `pubmed:` URLs), **smart identifier detection** (DOI→doi.org, PMID→PubMed, NCT→ClinicalTrials), and **FR/AR→EN translation** of the selection (`GM_xmlhttpRequest` → Google's free endpoint; `@connect translate.googleapis.com`). Grants: `GM_openInTab`/`GM_setValue`/`GM_getValue`/`GM_xmlhttpRequest`. Engine list mirrored manually like the others.
@@ -355,6 +356,7 @@ else if (prefix === 'cybl:')
 
 ## 12. Testing Checklist (pre-commit)
 
+- [ ] **Run `node tools/validate-engines.mjs`** (or open `index.html?selftest`) — must report ✅ PASS. CI enforces this. Catches orphaned `!bangs`, dead radios, duplicate prefixes, aliases pointing at nothing, and `http://` (mixed-content) URLs.
 - [ ] All ~55 prefixes route to correct URLs with `encodeURIComponent` applied
 - [ ] CISMeF aliases auto-select correct scope radio
 - [ ] AMMPS sub-radios bidirectionally sync with main `ammps:` radio
@@ -411,8 +413,9 @@ else if (prefix === 'cybl:')
   - Privacy-by-default: Bunny Fonts + DuckDuckGo icons (no Google on load), `no-referrer`, `spellcheck="false"`. See §3.
   - **Installable PWA** (manifest + service worker + maskable icons); install from the Settings panel; works offline. See §4.
   - **`userscript/searchAIO-med.js` (v1.0)** — medical/thesis variant with Search Packs, PubMed filters, DOI/PMID/NCT resolve, FR/AR→EN translate. See §4.
-- **Working on now:** Branch `claude/magical-allen-LTyfA` — PWA install + medical userscript variant.
-- **Next up:** _Not yet figured out._ `README.md` mentions wanting to add advanced search operators from `cipher387/Advanced-search-operators-list` and to make the page a custom new-tab extension.
+  - **Reliability safety net** — `tools/validate-engines.mjs` (dependency-free Node validator) + `validate-engines.yml` CI gate + in-page `?selftest`. Asserts the engine registry stays internally consistent so edits stop silently breaking the router. See §4, §12.
+- **Working on now:** Branch `claude/vibrant-newton-8oky5u` — reliability safety net (done), then surgical fixes (the 3 `http://` engines, `lang="fr"`, reduced-motion stars) and power features (multi-engine Search Packs on the main page).
+- **Next up:** Track 2 fixes + Track 3 power features (see audit). `README.md` also wants advanced operators from `cipher387/Advanced-search-operators-list` and a custom new-tab page.
 
 ---
 

@@ -1,42 +1,65 @@
-make it functionnal and usable, then make it beautiful , then make it a winning product not a perfect product, just a useful tool
-
 # searchAIO
-#
-# good working version : https://web.archive.org/web/20260119190354/https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/index.html
-#
-the one page search
-### https://www.dca.ca.gov/about_us/kbs_chrome.shtml
-### https://www.dca.ca.gov/accessibility.shtml
 
-# used gemini-cli : https://github.com/google-gemini/gemini-cli   \ inside wsl-ubuntu
-# with github desktop
-# + claude-AI to analyse for errors and suggestions
+> Type a short prefix like `pubmed:` — or a `!bang` — hit Enter, and your query lands in the right search engine (Google, PubMed, CISMeF, arXiv, ChatGPT, 55+ more) without you ever leaving the page.
 
-### https://github.com/cipher387/Advanced-search-operators-list
-### https://mosermichael.github.io/duckduckbang/html/all_cats.html
-### https://seosly.com/blog/youtube-search-operators/
+**▶ Live: <https://achma-learning.github.io/searchAIO/>** — nothing to install, it's one HTML file.
 
-this is a poor readme:
-to chose search engin either chose with mouse the radio button or type "prefix:" , or use keyboard shortcuts
+[![validate engine registry](https://github.com/achma-learning/searchAIO/actions/workflows/validate-engines.yml/badge.svg)](https://github.com/achma-learning/searchAIO/actions/workflows/validate-engines.yml)
 
-# you can use duckduckgo bang inside google
-# i tried to name search "prefix:" same or close to duckduckgo !bang
-here a good website about duckduckgo !bangs : https://mosermichael.github.io/duckduckbang/html/main.html
- and i think of adding search operator to main search engin
- and in yandex and baidu ... , add a translation for those who doesn't speek the language, where at top of search bar you have search translation like now in yandex , and i  think of adding a small button at right of this popout to open a google translate or deepl translate page, and at buttom you have search operator
+_TODO: add a screenshot or GIF of the search bar routing a query_
 
+## What it is
 
-# next is to list some good user script : use at your risk
-1. infinite scrolling in pages : google or any : https://greasyfork.org/en/scripts/438684-pagetual/post-install
-2. https://greasyfork.org/en/scripts/535629-google-search-custom-sidebar
-3. https://greasyfork.org/en/scripts/424160-google-bangs
-4. https://greasyfork.org/zh-TW/scripts/14178-ac-baidu-%E9%87%8D%E5%AE%9A%E5%90%91%E4%BC%98%E5%8C%96%E7%99%BE%E5%BA%A6%E6%90%9C%E7%8B%97%E8%B0%B7%E6%AD%8C%E5%BF%85%E5%BA%94%E6%90%9C%E7%B4%A2-favicon-%E5%8F%8C%E5%88%97
-5. https://greasyfork.org/en/scripts/473830-greasy-fork
+searchAIO is a single web page that sends your search to whichever engine you want, picked by a short prefix (`scholar:`, `cismef:`, `yt:`) or a DuckDuckGo-style `!bang` (`!pm`, `!sc`). It's built for medical researchers, thesis students, and doctors who'd otherwise keep 50 bookmarks and click through them one at a time — so it leans heavy on medical and French/Moroccan sources (PubMed, Cochrane, CISMeF, HAS, VIDAL, theses.fr, Toubkal, AMMPS) right next to the usual web and AI engines. The interface is mostly in French (the author's context), but the engines themselves are global.
 
-# then make this default start page, or custom new tab extension
-# i am a noob at coding but using gemini-cli , and claude AI and some other ai helped me, there is some error as of now 2026-01-19 reported by claude ai , but i can't fixe them yet without breaking functionnality
-# this help me supercharge my moves : https://www.youtube.com/watch?v=MsQACpcuTkU , since i can copy all of gemini or grok (website AI) discurssion and past them in a .txt folder and tell gemini-cli in prompt : to read the @grok-test.txt and try to fix/update/correct errors 
-### feel free to fork it and improved it
+The one choice that makes it different: **it's one `index.html` — no build, no dependencies, no framework, no tracking.** Save it, open it offline, fork it, drop it on a `file://` path — it just works. Keyboard-driven, and privacy-respecting by default (no Google contact on load, no telemetry).
 
+## Install & run
 
-# to do's : try to add something from here : https://github.com/cipher387/Advanced-search-operators-list
+**Just use it** — open the live page: <https://achma-learning.github.io/searchAIO/>. You can also install it as an offline app (PWA) from the in-page ⚙️ Settings panel.
+
+**Run it locally** — no toolchain, no `npm install`:
+
+```bash
+git clone https://github.com/achma-learning/searchAIO.git
+cd searchAIO
+# open index.html in any modern browser — that's the whole "build"
+```
+
+**Browser userscript** (select text on any page → search it from a ⚡ sidebar):
+
+- Install [Tampermonkey](https://www.tampermonkey.net/) or [Violentmonkey](https://violentmonkey.github.io/).
+- Main script published on GreasyFork: <https://greasyfork.org/scripts/568031>
+- Variants live in [`userscript/`](./userscript/) — `searchAIO-med.js` (thesis/clinical: Search Packs, PubMed filters, DOI/PMID/NCT resolve) and `userscript-google.js` (Google-AI focus). Paste either into your manager.
+
+## Usage
+
+Focus the bar with `Ctrl+K`, then prefix or bang your query:
+
+```
+pubmed: myocardial infarction     → opens PubMed results
+!sc crispr off-target             → Google Scholar (a bang works anywhere in the line)
+cismef-bp: diabète type 2         → CISMeF with the "bonnes pratiques" scope pre-selected
+claude: explain this ECG          → copies your text, opens Claude for you to paste
+```
+
+No prefix? Just start typing and an autocomplete list matches engines by name. Handy keys: `Ctrl+K` focus · `Alt+↑/↓` cycle engines · `Alt+T` output language · `Esc` close panels. The full set is behind the ⌨️ shortcuts button.
+
+Tinkering with the engine list? Open `index.html?selftest` (or run `node tools/validate-engines.mjs`) to confirm you didn't break a prefix or `!bang` before you ship.
+
+## What's new
+
+Latest — **installable as an offline app (PWA)**, a dedicated **medical/thesis userscript** (Search Packs that fire one query at PubMed + Cochrane + UpToDate + NEJM, PubMed power-filters, DOI/PMID/NCT resolve), and privacy-by-default (no Google on page load). [Full changelog →](./CHANGELOG.md)
+
+## Why I built this
+
+I'm a medical researcher (Morocco / France), not a pro coder — this is vibe-coded with Gemini CLI and Claude. I got tired of keeping a wall of bookmarks for PubMed, CISMeF, theses.fr, Toubkal and the rest, and clicking each one for every single search. So: type once, route anywhere, keyboard-first. It's meant to be a useful tool, not a perfect one. Fork it and make it better.
+
+## License
+
+MIT © 2026 maa384 — see [`LICENSE`](./LICENSE).
+
+## See also
+
+- [`CONTEXT.md`](./CONTEXT.md) — the deep architecture file, for AI assistants (and the curious)
+- [`CHANGELOG.md`](./CHANGELOG.md) — what shipped, when
