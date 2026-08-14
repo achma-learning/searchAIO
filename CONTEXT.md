@@ -11,7 +11,7 @@ _Last synced: 2026-05-25 — merged former GEMINI.md into this file._
 - **Why it exists:** The author is a Moroccan/French medical researcher who got tired of bookmarking 50 specialized databases and clicking through them one by one. Type once, route anywhere, keyboard-driven.
 - **Who uses it:** The author and friends, plus anyone who finds the GitHub Pages link. Public-facing but personal-tool scale — no auth, no analytics, no telemetry. Hosted at `https://achma-learning.github.io/searchAIO/`.
 - **Target audience:** Researchers, medical professionals (French & Moroccan focus), PhD students, power users who need fast access to multiple specialized databases without context-switching.
-- **Vibe:** Scrappy, ambitious solo project. "Vibe-coded" with Gemini CLI + Claude. One enormous `index.html` (~5,570 lines), no build step, no dependencies. Author calls themselves a noob and admits there are bugs they can't fix without breaking things (`README.md:37`).
+- **Vibe:** Scrappy, ambitious solo project. "Vibe-coded" with Gemini CLI + Claude. One enormous `index.html` (~6,140 lines), no build step, no dependencies. Author calls themselves a noob and admits there are bugs they can't fix without breaking things (`README.md:37`).
 
 ## 2. How To Run It
 - **Setup once:** Nothing to install. Clone the repo, that's it.
@@ -33,13 +33,16 @@ _Last synced: 2026-05-25 — merged former GEMINI.md into this file._
 - **CI:** `.github/workflows/` runs five Gemini-CLI workflows (dispatch, invoke, review, triage, scheduled-triage) **plus `validate-engines.yml`** — a dependency-free Node check (`tools/validate-engines.mjs`) that parses `index.html` and fails the build on a broken engine registry (orphaned `!bangs`, dead radios, duplicate prefixes, etc.). Still no _build_ step — there is nothing to build.
 
 ## 4. Code Map (The Important Files Only)
-- `index.html` — **The whole app.** ~5,570 lines, HTML/CSS/JS in one file. Open this if you forgot how anything works.
-  - `index.html:3553` — `const searchEngines = {…}` — the engine registry. Adding a new engine starts here.
-  - `index.html:3626` — `const BANG_MAP = {…}` — DuckDuckGo-style `!bang` → prefix lookup table.
-  - `index.html:3690` — `detectBang(value)` — scans input right-to-left for `!token`.
-  - `index.html:4245` — `updateSearchSource()` — the main reactive function: runs on every input/radio change, syncs UI, toggles filter panels, swaps favicon.
+- `index.html` — **The whole app.** ~6,140 lines, HTML/CSS/JS in one file. Open this if you forgot how anything works.
+  - `index.html:3735` — `const ENGINE_CATEGORIES = {…}` — the four buckets an engine's `cat` can name.
+  - `index.html:3742` — `const searchEngines = {…}` — the engine registry. Adding a new engine starts *and ends* here: `cat` drives the picker chips and the source label.
+  - `index.html:3815` — `const BANG_MAP = {…}` — DuckDuckGo-style `!bang` → prefix lookup table.
+  - `index.html:3879` — `detectBang(value)` — scans input right-to-left for `!token`.
+  - `index.html:4443` — `updateSearchSource()` — the main reactive function: runs on every input/radio change, syncs UI, toggles filter panels, swaps favicon.
+  - `index.html:4871` — `renderEngineChips()` — builds the whole engine-picker grid from `searchEngines`.
+  - `index.html:4907` — `selectEngineByPrefix(prefix)` — chip → engine: radio, else alias + CISMeF scope, else prefix in the bar.
   - `index.html:~4500–4660` — search submit / URL construction (special cases for `gpat:`, `wiki:`, `bdbk:`, `medscape:`, `these-ma:`, `cybl:`, `msps:`, AMMPS family).
-- `tools/validate-engines.mjs` — **Reliability safety net.** Dependency-free Node script that parses the `searchEngines`, `BANG_MAP`, radio buttons and `categoryMap` out of `index.html` and asserts they stay consistent (see §12). Run `node tools/validate-engines.mjs`; in the browser open `index.html?selftest` for the live-DOM equivalent. Wired to CI via `.github/workflows/validate-engines.yml`. See `tools/README.md`.
+- `tools/validate-engines.mjs` — **Reliability safety net.** Dependency-free Node script that parses the `searchEngines`, `BANG_MAP`, `ENGINE_CATEGORIES`, radio buttons and rendered chip sections out of `index.html` and asserts they stay consistent (see §12). Run `node tools/validate-engines.mjs`; in the browser open `index.html?selftest` for the live-DOM equivalent. Wired to CI via `.github/workflows/validate-engines.yml`. See `tools/README.md`.
 - `userscript/searchAIO_userscript.js` — Tampermonkey sidebar: select text on any page → ⚡ icon → search across the same engine list. v7.11. Synced manually with `index.html`. Published at GreasyFork #568031.
 - `userscript/userscript-google.js` — Variant focused on Google AI products (Gemini, NotebookLM, Docs Help-Me-Write). v8.0.
 - `userscript/searchAIO-med.js` — **Medical/thesis variant (v1.0).** Same selection→sidebar UX, but built for med students writing a thesis + doctors in daily practice. Adds: **Search Packs** (one query → many engines via `GM_openInTab`, e.g. EBM = PubMed+Cochrane+UpToDate+NEJM), **PubMed power filters** (Review/Systematic/Meta/RCT/Free-full-text/Humans/≤5 yrs/TIAB — correct PubMed term syntax, applied only to `pubmed:` URLs), **smart identifier detection** (DOI→doi.org, PMID→PubMed, NCT→ClinicalTrials), and **FR/AR→EN translation** of the selection (`GM_xmlhttpRequest` → Google's free endpoint; `@connect translate.googleapis.com`). Grants: `GM_openInTab`/`GM_setValue`/`GM_getValue`/`GM_xmlhttpRequest`. Engine list mirrored manually like the others.
@@ -77,9 +80,17 @@ const searchEngines = {
     filterValue: 'env=bp&q=',     // Pre-applied filter for alias (CISMeF / AMMPS)
     promptBased: false,           // If true: copies query to clipboard, opens base URL
     directUrl: 'https://...',     // Optional: secondary URL used in specific routing logic (e.g., msps:)
+    cat: 'medical',               // REQUIRED. One of ENGINE_CATEGORIES: general | academic | medical | ai
+    chip: 'Short Label',          // Optional: shorter label for the chip grid (defaults to `name` minus 📋)
   }
 }
 ```
+
+**`cat` is the single source of truth for categorisation.** It drives the source-label
+emoji in `updateSearchSource()` *and* which section of the engine picker the chip lands
+in — the chip grid is generated from the registry by `renderEngineChips()`, so there is
+no hand-written chip list to keep in sync. Adding an engine with a valid `cat` surfaces
+it in the picker automatically. An engine with a missing or unknown `cat` fails CI.
 
 **Naming convention:** Follow DuckDuckGo `!bang` style for brevity (`g:`, `yt:`, `ddg:`, `yan:`). Power users expect short, memorable prefixes.
 
@@ -241,7 +252,7 @@ Bangs can appear **anywhere** in the input (start, middle, end). The UI shows a 
 - **Language Proxy** (`langPopup`): `Alt+T` opens. Options: Original · 🇫🇷 FR · 🇬🇧 EN · 🇸🇦 AR · 🇪🇸 ES · 🇷🇺 RU · 🇨🇳 ZH. When active, wraps finalUrl in `https://translate.google.com/translate?sl=auto&tl=XX&u=...`. `Alt+Shift+O` resets to original.
 
 ### 7.4 Wiki / Engine Browser (`wikiContent`)
-Triggered by `wikiToggleBtn`, keeps open via `keepWikiOpenCheckbox`. Live filter input (`wikiSearchInput`) — by prefix or engine name. Category tabs: All / 🌐 General / 🎓 Academic / ⚕️ Medical / 🤖 AI. Chip grid (`wiki-chip`) — click selects engine (checks radio + updates source). Empty state with "No results for '…'" feedback.
+Triggered by `wikiToggleBtn`, keeps open via `keepWikiOpenCheckbox`. Live filter input (`wikiSearchInput`) — by prefix or engine name. Category tabs: All / 🌐 General / 🎓 Academic / ⚕️ Medical / 🤖 AI. Chip grid (`wiki-chip`) — **generated from `searchEngines` by `renderEngineChips()`**, one chip per engine, keyboard-activatable (`role=button`, Enter/Space). Click routes through `selectEngineByPrefix()`: checks the engine radio, or for aliases selects the base engine + its CISMeF scope, or for radio-less engines (AMMPS family) drops the prefix into the search bar. Empty state with "No results for '…'" feedback.
 
 ### 7.5 Auxiliary Popups
 - **Google Wiki / Bing Wiki popups** (`googleWikiPopup`, `bingWikiPopup`): operator cheatsheets, only visible for `g:` / `bing:`. Keep-open checkbox toggles Esc behavior.
@@ -344,17 +355,17 @@ else if (prefix === 'cybl:')
 4. **`favicon`** — test Google S2; if missing, host the `.ico/.png` in `missing favicons/` on GitHub and use raw URL.
 5. **Radio button** — `<label><input type="radio" name="searchEngine" value="prefix:">Name</label>` in correct `#groupN`.
 6. **`BANG_MAP`** — add at least 2 bang tokens (short + full name).
-7. **Category map** — add prefix to correct array in `updateSearchSource()`'s `categoryMap`.
+7. **Category** — set `cat:` on the engine (`general`/`academic`/`medical`/`ai`). That alone files it in the picker and picks its emoji.
 8. **`performSearch()` quirks** — add `else if` branch if URL needs special construction.
 9. **Filter panel** — if it has sub-modes, add a dedicated filter `<div>` and handle in `updateSearchSource()` + `performSearch()`.
-10. **Wiki chips** — add `<div class="wiki-chip" data-prefix="…" data-name="…">` in wiki panel.
+10. **Wiki chips** — nothing to do; the chip is generated from the registry. Add `chip:` only if `name` is too long for the grid.
 11. **Userscript mirror** — update the `ENGINES` array in `userscript/searchAIO_userscript.js` (starts ~line 19). Manual sync, no automation.
 
 ---
 
 ## 12. Testing Checklist (pre-commit)
 
-- [ ] **Run `node tools/validate-engines.mjs`** (or open `index.html?selftest`) — must report ✅ PASS. CI enforces this. Catches orphaned `!bangs`, dead radios, duplicate prefixes, aliases pointing at nothing, and `http://` (mixed-content) URLs.
+- [ ] **Run `node tools/validate-engines.mjs`** (or open `index.html?selftest`) — must report ✅ PASS. CI enforces this. Catches orphaned `!bangs`, dead radios, duplicate prefixes, aliases pointing at nothing, engines with a missing/unknown `cat`, category tabs with no section, and `http://` (mixed-content) URLs. The in-page `?selftest` additionally asserts every engine rendered exactly one chip.
 - [ ] All ~55 prefixes route to correct URLs with `encodeURIComponent` applied
 - [ ] CISMeF aliases auto-select correct scope radio
 - [ ] AMMPS sub-radios bidirectionally sync with main `ammps:` radio
@@ -365,7 +376,7 @@ else if (prefix === 'cybl:')
 - [ ] `!bang` detection at start, middle, end of input
 - [ ] Keyboard: Ctrl+K, Alt+↑↓, Alt+1–4, Alt+T, Alt+G, Esc (all modes)
 - [ ] Filetype grid: OR-logic query, counter updates
-- [ ] Wiki panel: chip click selects engine, search filter, empty state
+- [ ] Wiki panel: chip click selects engine (incl. CISMeF aliases → base engine + scope, AMMPS → prefix in bar), Enter/Space on a focused chip, search filter matches prefix + full name + short label, empty state
 - [ ] Dark mode persists via `localStorage`
 - [ ] Mobile 320px: no overflow, touch targets ≥ 44px
 - [ ] Favicons load for all engines

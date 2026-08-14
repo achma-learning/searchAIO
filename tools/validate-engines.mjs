@@ -9,7 +9,8 @@
  *   • a !bang that points at a prefix that no longer exists
  *   • an alias whose aliasFor target is missing (or is itself an alias)
  *   • a radio button whose value isn't a real engine (dead UI button)
- *   • a categoryMap prefix that isn't a real engine (orphaned grouping)
+ *   • an engine with a missing/unknown `cat` (vanishes from the chip picker)
+ *   • a category tab or engine `cat` with no .wiki-section to render into
  *   • engines missing both `url` and `isAlias` (nothing to open)
  *
  * Warnings (do NOT fail the build) flag smells worth a human glance:
@@ -92,11 +93,12 @@ function findDuplicateKeys(literal, keyRegex) {
 // ── Extract the data structures ────────────────────────────────────────────
 const enginesLit = extractObjectLiteral(HTML, 'const searchEngines = {');
 const bangLit    = extractObjectLiteral(HTML, 'const BANG_MAP = {');
-const catLit     = extractObjectLiteral(HTML, 'const categoryMap = {');
+const catLit     = extractObjectLiteral(HTML, 'const ENGINE_CATEGORIES = {');
 
-const searchEngines = evalLiteral(enginesLit, 'searchEngines');
-const BANG_MAP      = evalLiteral(bangLit, 'BANG_MAP');
-const categoryMap   = evalLiteral(catLit, 'categoryMap');
+const searchEngines     = evalLiteral(enginesLit, 'searchEngines');
+const BANG_MAP          = evalLiteral(bangLit, 'BANG_MAP');
+const ENGINE_CATEGORIES = evalLiteral(catLit, 'ENGINE_CATEGORIES');
+const validCats         = new Set(Object.keys(ENGINE_CATEGORIES));
 
 // Radio button values, attribute-order independent.
 const radioValues = [];
@@ -145,21 +147,36 @@ for (const [token, target] of Object.entries(BANG_MAP)) {
 for (const v of radioValues)
   if (!engineKeys.has(v)) err(`radio button value '${v}' is not a real engine`);
 
-// ── categoryMap references only real engines ────────────────────────────────
-const categorised = new Set();
-for (const [cat, list] of Object.entries(categoryMap)) {
-  if (!Array.isArray(list)) { err(`categoryMap '${cat}' is not an array`); continue; }
-  for (const p of list) {
-    categorised.add(p);
-    if (!engineKeys.has(p)) err(`categoryMap '${cat}' lists missing engine '${p}'`);
-  }
+// ── Every engine declares a category the UI knows how to render ─────────────
+// `cat` drives both the source-label emoji and which chip section the engine
+// lands in, so an engine without one (or with a typo'd one) silently vanishes
+// from the picker. The chip grid is generated from this — there is no separate
+// list of prefixes that can drift out of sync any more.
+const sectionCats = new Set(
+  [...HTML.matchAll(/<div class="wiki-section" data-section="([^"]+)"/g)].map(m => m[1])
+);
+for (const [prefix, eng] of Object.entries(searchEngines)) {
+  if (!eng.cat) { err(`engine '${prefix}' has no cat (won't appear in the picker)`); continue; }
+  if (!validCats.has(eng.cat))
+    err(`engine '${prefix}' has unknown cat '${eng.cat}' (not in ENGINE_CATEGORIES)`);
+  else if (!sectionCats.has(eng.cat))
+    err(`engine '${prefix}' cat '${eng.cat}' has no .wiki-section to render into`);
+  if ('chip' in eng && typeof eng.chip !== 'string')
+    err(`engine '${prefix}' field 'chip' should be a string`);
 }
 
+// A category tab with no section behind it filters to a permanently empty grid.
+for (const [, cat] of HTML.matchAll(/<button class="wiki-cat-tab[^"]*" data-cat="([^"]+)"/g))
+  if (cat !== 'all' && !sectionCats.has(cat))
+    err(`category tab '${cat}' has no matching .wiki-section`);
+
 // ── Reachability: a real (non-alias) engine the UI can't surface ────────────
+// Chips now cover every categorised engine, so this only fires if `cat` is
+// missing above — kept as a second net in case the chip renderer changes.
 const radioSet = new Set(radioValues);
 for (const [prefix, eng] of Object.entries(searchEngines)) {
   if (eng.isAlias) continue;
-  if (!radioSet.has(prefix) && !categorised.has(prefix))
+  if (!radioSet.has(prefix) && !eng.cat)
     warn(`engine '${prefix}' has no radio button and no category (typed-prefix only)`);
 }
 
@@ -168,7 +185,7 @@ console.log(`searchAIO engine registry check`);
 console.log(`  engines:   ${engineKeys.size}`);
 console.log(`  bangs:     ${Object.keys(BANG_MAP).length}`);
 console.log(`  radios:    ${radioValues.length}`);
-console.log(`  categories:${Object.keys(categoryMap).length}`);
+console.log(`  categories:${validCats.size}`);
 console.log('');
 
 if (warnings.length) {
