@@ -3134,9 +3134,9 @@
           <label><input type="radio" name="epmc_date" value="5"> Les 5 dernières années</label>
           <label><input type="radio" name="epmc_date" value="custom"> Période personnalisée</label>
           <div class="epmc-years">
-            <input type="number" id="epmcYearFrom" min="1800" placeholder="1900" aria-label="Année de début">
+            <input type="number" id="epmcYearFrom" min="1768" placeholder="1768" aria-label="Année de début">
             <span>→</span>
-            <input type="number" id="epmcYearTo" min="1800" placeholder="2000" aria-label="Année de fin">
+            <input type="number" id="epmcYearTo" min="1768" aria-label="Année de fin">
           </div>
         </div>
       </div>
@@ -4811,6 +4811,8 @@
     // europepmc.org writes into its own search box. Checkboxes inside one
     // group are OR'd, groups are AND'd.
     const epmcBox = id => document.getElementById(id).checked;
+    // Empty year boxes default to the full range: 1768 → this year.
+    const EPMC_FIRST_YEAR = 1768;
 
     function epmcClauses() {
       const clauses = [];
@@ -4846,8 +4848,7 @@
       if (r.value === 'custom') {
         let from = parseInt(document.getElementById('epmcYearFrom').value, 10);
         let to   = parseInt(document.getElementById('epmcYearTo').value, 10);
-        if (isNaN(from) && isNaN(to)) return '';
-        if (isNaN(from)) from = 1800;
+        if (isNaN(from)) from = EPMC_FIRST_YEAR;
         if (isNaN(to))   to   = new Date().getFullYear();
         if (from > to) [from, to] = [to, from];
         return `${from} TO ${to}`;
@@ -4892,6 +4893,7 @@
     for (const id of ['epmcYearFrom', 'epmcYearTo']) {
       const input = document.getElementById(id);
       input.max = new Date().getFullYear();
+      if (id === 'epmcYearTo') input.placeholder = input.max;
       input.addEventListener('input', () => {
         document.querySelector('#epmcFilters input[name="epmc_date"][value="custom"]').checked = true;
         updateEpmcPreview();
