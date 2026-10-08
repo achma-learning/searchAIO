@@ -3339,104 +3339,6 @@
       <div class="wiki-hint">💡 Click a chip to select that engine · Type the prefix directly in the search bar</div>
     </div>
 
-    <!-- Google Wiki Popup -->
-    <div id="googleWikiPopup" style="display: none;">
-      <button class="close-btn" id="closeGoogleWikiBtn">&times;</button>
-      <h3>Google Search Operators Wiki</h3>
-      <div class="checkbox-container" style="padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid #e0e0e0;">
-        <input type="checkbox" id="keepGoogleWikiOpenCheckbox" />
-        <label for="keepGoogleWikiOpenCheckbox">Keep wiki open</label>
-      </div>
-      <p>Search operators are special words and symbols to refine search results.</p>
-      <div style="max-height: 50vh; overflow-y: auto;">
-        <h4>Basic Operators</h4>
-        <table class="wiki-table">
-          <thead><tr><th>Operator</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><code>"phrase"</code></td><td>Searches for an exact phrase match.</td></tr>
-            <tr><td><code>OR</code> or <code>|</code></td><td>Returns results containing either term.</td></tr>
-            <tr><td><code>-term</code></td><td>Excludes results containing the term.</td></tr>
-            <tr><td><code>*</code></td><td>Wildcard for any word or phrase.</td></tr>
-            <tr><td><code>( )</code></td><td>Groups terms to control search logic.</td></tr>
-            <tr><td><code>in</code></td><td>Converts units or currencies.</td></tr>
-          </tbody>
-        </table>
-        <h4>Advanced Operators</h4>
-        <table class="wiki-table">
-          <thead><tr><th>Operator</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><code>site:</code></td><td>Restricts results to a specific site.</td></tr>
-            <tr><td><code>intitle:</code></td><td>Term must appear in the page title.</td></tr>
-            <tr><td><code>allintitle:</code></td><td>All terms must appear in the page title.</td></tr>
-            <tr><td><code>inurl:</code></td><td>Term must be in the page's URL.</td></tr>
-            <tr><td><code>allinurl:</code></td><td>All terms must be in the URL.</td></tr>
-            <tr><td><code>intext:</code></td><td>Term must be in the page body text.</td></tr>
-            <tr><td><code>allintext:</code></td><td>All terms must be in the body text.</td></tr>
-            <tr><td><code>filetype:</code></td><td>Limits results to specific file types.</td></tr>
-            <tr><td><code>related:</code></td><td>Finds sites similar to a given domain.</td></tr>
-          </tbody>
-        </table>
-        <h4>Specialized Operators</h4>
-        <table class="wiki-table">
-          <thead><tr><th>Operator</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><code>define:</code></td><td>Displays definitions.</td></tr>
-            <tr><td><code>source:</code></td><td>In Google News, filters by a specific outlet.</td></tr>
-            <tr><td><code>stocks:</code></td><td>Fetches stock info.</td></tr>
-            <tr><td><code>weather:</code></td><td>Shows weather for a location.</td></tr>
-            <tr><td><code>before:/after:</code></td><td>Filters results before/after a date (YYYY-MM-DD).</td></tr>
-            <tr><td><code>AROUND(n)</code></td><td>Finds terms within 'n' words of each other.</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="wiki-footer" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #e0e0e0;">
-        <p>Operators can be combined. See <a href="https://support.google.com/websearch/answer/2466433" target="_blank" rel="noopener noreferrer">Google's official documentation</a>.</p>
-      </div>
-    </div>
-
-    <!-- Bing Wiki Popup -->
-    <div id="bingWikiPopup" style="display: none;">
-      <button class="close-btn" id="closeBingWikiBtn">&times;</button>
-      <h3>Bing Search Operators Wiki</h3>
-      <div class="checkbox-container" style="padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid #e0e0e0;">
-        <input type="checkbox" id="keepBingWikiOpenCheckbox" />
-        <label for="keepBingWikiOpenCheckbox">Keep wiki open</label>
-      </div>
-      <p>Bing search operators for more precise outcomes.</p>
-      <div style="max-height: 50vh; overflow-y: auto;">
-        <h4>Basic Operators</h4>
-        <table class="wiki-table">
-          <thead><tr><th>Operator</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><code>"phrase"</code></td><td>Searches for an exact phrase match.</td></tr>
-            <tr><td><code>OR</code></td><td>Returns results containing either term.</td></tr>
-            <tr><td><code>NOT</code> or <code>-</code></td><td>Excludes results containing the term.</td></tr>
-          </tbody>
-        </table>
-        <h4>Advanced Operators</h4>
-        <table class="wiki-table">
-          <thead><tr><th>Operator</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><code>site:</code></td><td>Restricts results to a specific site.</td></tr>
-            <tr><td><code>filetype:</code></td><td>Limits results to specific file types.</td></tr>
-            <tr><td><code>inurl:</code></td><td>Term must be in the page's URL.</td></tr>
-            <tr><td><code>inbody:</code></td><td>Term must be in the page body text.</td></tr>
-            <tr><td><code>intitle:</code></td><td>Term must appear in the page title.</td></tr>
-          </tbody>
-        </table>
-        <h4>Specialized Operators</h4>
-        <table class="wiki-table">
-          <thead><tr><th>Operator</th><th>Description</th></tr></thead>
-          <tbody>
-            <tr><td><code>define:</code></td><td>Displays definitions.</td></tr>
-            <tr><td><code>imagesize:</code></td><td>Searches for images of a specific size.</td></tr>
-            <tr><td><code>feed:</code></td><td>Returns RSS or Atom feeds.</td></tr>
-            <tr><td><code>language:</code></td><td>Searches in a specific language.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
     <!-- Bottom Buttons -->
     <div class="bottom-buttons" style="text-align: center; margin-top: 24px;">
       <button type="button" id="wikiToggleBtn">📖 Wiki</button>
@@ -3503,6 +3405,104 @@
         </div>
         <p class="lang-info">Appuyez sur <kbd>ESC</kbd> pour fermer • Les réglages sont enregistrés dans ce navigateur</p>
       </div>
+    </div>
+  </div>
+
+  <!-- Google Wiki Popup -->
+  <div id="googleWikiPopup">
+    <button class="close-btn" id="closeGoogleWikiBtn">&times;</button>
+    <h3>Google Search Operators Wiki</h3>
+    <div class="checkbox-container" style="padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid #e0e0e0;">
+      <input type="checkbox" id="keepGoogleWikiOpenCheckbox" />
+      <label for="keepGoogleWikiOpenCheckbox">Keep wiki open</label>
+    </div>
+    <p>Search operators are special words and symbols to refine search results.</p>
+    <div style="max-height: 50vh; overflow-y: auto;">
+      <h4>Basic Operators</h4>
+      <table class="wiki-table">
+        <thead><tr><th>Operator</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>"phrase"</code></td><td>Searches for an exact phrase match.</td></tr>
+          <tr><td><code>OR</code> or <code>|</code></td><td>Returns results containing either term.</td></tr>
+          <tr><td><code>-term</code></td><td>Excludes results containing the term.</td></tr>
+          <tr><td><code>*</code></td><td>Wildcard for any word or phrase.</td></tr>
+          <tr><td><code>( )</code></td><td>Groups terms to control search logic.</td></tr>
+          <tr><td><code>in</code></td><td>Converts units or currencies.</td></tr>
+        </tbody>
+      </table>
+      <h4>Advanced Operators</h4>
+      <table class="wiki-table">
+        <thead><tr><th>Operator</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>site:</code></td><td>Restricts results to a specific site.</td></tr>
+          <tr><td><code>intitle:</code></td><td>Term must appear in the page title.</td></tr>
+          <tr><td><code>allintitle:</code></td><td>All terms must appear in the page title.</td></tr>
+          <tr><td><code>inurl:</code></td><td>Term must be in the page's URL.</td></tr>
+          <tr><td><code>allinurl:</code></td><td>All terms must be in the URL.</td></tr>
+          <tr><td><code>intext:</code></td><td>Term must be in the page body text.</td></tr>
+          <tr><td><code>allintext:</code></td><td>All terms must be in the body text.</td></tr>
+          <tr><td><code>filetype:</code></td><td>Limits results to specific file types.</td></tr>
+          <tr><td><code>related:</code></td><td>Finds sites similar to a given domain.</td></tr>
+        </tbody>
+      </table>
+      <h4>Specialized Operators</h4>
+      <table class="wiki-table">
+        <thead><tr><th>Operator</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>define:</code></td><td>Displays definitions.</td></tr>
+          <tr><td><code>source:</code></td><td>In Google News, filters by a specific outlet.</td></tr>
+          <tr><td><code>stocks:</code></td><td>Fetches stock info.</td></tr>
+          <tr><td><code>weather:</code></td><td>Shows weather for a location.</td></tr>
+          <tr><td><code>before:/after:</code></td><td>Filters results before/after a date (YYYY-MM-DD).</td></tr>
+          <tr><td><code>AROUND(n)</code></td><td>Finds terms within 'n' words of each other.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="wiki-footer" style="margin-top: 15px; padding-top: 10px; border-top: 1px solid #e0e0e0;">
+      <p>Operators can be combined. See <a href="https://support.google.com/websearch/answer/2466433" target="_blank" rel="noopener noreferrer">Google's official documentation</a>.</p>
+    </div>
+  </div>
+
+  <!-- Bing Wiki Popup -->
+  <div id="bingWikiPopup">
+    <button class="close-btn" id="closeBingWikiBtn">&times;</button>
+    <h3>Bing Search Operators Wiki</h3>
+    <div class="checkbox-container" style="padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid #e0e0e0;">
+      <input type="checkbox" id="keepBingWikiOpenCheckbox" />
+      <label for="keepBingWikiOpenCheckbox">Keep wiki open</label>
+    </div>
+    <p>Bing search operators for more precise outcomes.</p>
+    <div style="max-height: 50vh; overflow-y: auto;">
+      <h4>Basic Operators</h4>
+      <table class="wiki-table">
+        <thead><tr><th>Operator</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>"phrase"</code></td><td>Searches for an exact phrase match.</td></tr>
+          <tr><td><code>OR</code></td><td>Returns results containing either term.</td></tr>
+          <tr><td><code>NOT</code> or <code>-</code></td><td>Excludes results containing the term.</td></tr>
+        </tbody>
+      </table>
+      <h4>Advanced Operators</h4>
+      <table class="wiki-table">
+        <thead><tr><th>Operator</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>site:</code></td><td>Restricts results to a specific site.</td></tr>
+          <tr><td><code>filetype:</code></td><td>Limits results to specific file types.</td></tr>
+          <tr><td><code>inurl:</code></td><td>Term must be in the page's URL.</td></tr>
+          <tr><td><code>inbody:</code></td><td>Term must be in the page body text.</td></tr>
+          <tr><td><code>intitle:</code></td><td>Term must appear in the page title.</td></tr>
+        </tbody>
+      </table>
+      <h4>Specialized Operators</h4>
+      <table class="wiki-table">
+        <thead><tr><th>Operator</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>define:</code></td><td>Displays definitions.</td></tr>
+          <tr><td><code>imagesize:</code></td><td>Searches for images of a specific size.</td></tr>
+          <tr><td><code>feed:</code></td><td>Returns RSS or Atom feeds.</td></tr>
+          <tr><td><code>language:</code></td><td>Searches in a specific language.</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
