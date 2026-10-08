@@ -12,6 +12,13 @@ Working journal of notable changes. Format adapted from [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added (Europe PMC filters)
+- **Filter panel for `euc:` Europe PMC**, built like the YouTube one: *Sort* (relevance / times cited / newest / oldest), *Free access & type* checkboxes (full text in Europe PMC, via Unpaywall, research articles, reviews, preprints, with reviewed and journal-published sub-filters, books), and *Date* (last 1 / 3 / 5 years computed from today, or a custom year range). Each filter adds an `AND (…)` clause using Europe PMC's own strings, byte-for-byte; boxes in one group are OR'd and groups are AND'd. A live preview line shows the exact query that will be sent. Ticking a preprint sub-filter ticks "Preprints", and typing a year selects the custom range. Verified: all 17 example URLs from the request reproduce exactly, plus a combined case.
+- **Europe PMC favicon.** DuckDuckGo's icon service returns 404 for europepmc.org, so the chip showed a blank fallback. The official logo is now self-hosted as `missing favicons/europepmc.org-favicon.png` (64×64), like the other self-hosted icons.
+
+### Fixed (Google / Bing wiki popups)
+- **"📖 Google Wiki" and "📖 Bing Wiki" did nothing when clicked.** Two stacked bugs. (1) Each popup carried an inline `style="display: none;"`, and inline styles beat the stylesheet's `#googleWikiPopup.show { display: block }`, so adding `.show` never revealed it (only the dim overlay appeared). (2) Behind that, both popups sat *inside* `.search-container` (`position: relative; z-index: 20`), a stacking context that capped their `z-index: 2000` at 20, below the page-level overlay (1999), so even a visible popup couldn't be clicked. Removed the inline style and moved both popups to `<body>` level next to `#filetypesPopup`, which already worked this way. Verified in headless Chromium at desktop and phone width: opens, is the topmost element, the "keep open" checkbox works, and it closes via ✕, Escape and overlay click.
+
 ### Added (engines — issues #49, #47, #35)
 - **🎓 Academic:** `euc:` **Europe PMC** (`!epmc`, `!europepmc`) and `cosus:` **Consensus** (`!consensus`). Consensus needs the query twice (`/search/<q>/new/?q=<q>`), so it gets one line in the URL builder next to `gpat:`/`cybl:`.
 - **⚕️ Medical:** `caskanat:` **CASK Anatomy Terms** (Google `site:anatomicalterms.info`), `embfr:` **EBM France**, `fr-sante:` **Santé.fr**, `reco:` **RecoMédicales** (Google `site:recomedicales.fr`), each with bangs (`!caskanat`, `!ebmfr`, `!santefr`, `!reco`). Prefixes are exactly as requested in the issues.

@@ -45,6 +45,12 @@ This document provides a detailed overview of all search engines integrated into
 ### Europe PMC (`euc:`)
 - **URL**: `https://europepmc.org/search?query=`
 - **Notes**: Bangs `!epmc`, `!europepmc`. PubMed + PMC + preprints + EU grants, with full text.
+- **Filters panel** (shown when `euc:` is selected). Each ticked filter adds an `AND (…)` clause, using Europe PMC's own syntax:
+  - *Sort*: relevance · times cited (`sortBy=CITED+desc`) · newest (`FIRST_PDATE_D+desc`) · oldest (`FIRST_PDATE_D+asc`)
+  - *Free access*: full text in Europe PMC `(HAS_FT:Y)` · via Unpaywall `((HAS_FREE_FULLTEXT:Y NOT HAS_FT:Y))` · both `((HAS_FREE_FULLTEXT:Y) OR HAS_FT:Y)`
+  - *Type* (OR'd together): research `((SRC:MED OR SRC:PMC OR SRC:AGR OR SRC:CBA) NOT (PUB_TYPE:"Review"))` · reviews `PUB_TYPE:REVIEW` · preprints `SRC:PPR`, narrowed to reviewed `HAS_VERSION_EVALUATIONS:Y` and/or journal-published `HAS_PUBLISHED_VERSION:Y` · books `HAS_BOOK:Y`
+  - *Date*: last 1 / 3 / 5 years, computed from today `(FIRST_PDATE:[YYYY-MM TO YYYY-MM])`, or a custom year range `(FIRST_PDATE:[1900 TO 2000])`
+  - A preview line shows the exact query that will be sent.
 
 ### Consensus (`cosus:`)
 - **URL**: `https://consensus.app/search/QUERY/new/?q=QUERY`
