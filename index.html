@@ -3223,6 +3223,8 @@
         <div class="radio-group" id="group2">
           <label><input type="radio" name="searchEngine" value="scholar:">Google Scholar</label>
           <label><input type="radio" name="searchEngine" value="pubmed:">PubMed</label>
+          <label><input type="radio" name="searchEngine" value="euc:">Europe PMC</label>
+          <label><input type="radio" name="searchEngine" value="cosus:">Consensus</label>
           <label><input type="radio" name="searchEngine" value="arxiv:">arXiv</label>
           <label><input type="radio" name="searchEngine" value="gpat:">Google Patents</label>
           <label><input type="radio" name="searchEngine" value="these2.0:">These2.0</label>
@@ -3260,6 +3262,10 @@
           <label><input type="radio" name="searchEngine" value="nih:">NIH</label>
           <label><input type="radio" name="searchEngine" value="drugs:">Drugs.com</label>
           <label><input type="radio" name="searchEngine" value="cdc:">CDC</label>
+          <label><input type="radio" name="searchEngine" value="caskanat:">CASK Anatomy Terms</label>
+          <label><input type="radio" name="searchEngine" value="embfr:">EBM France</label>
+          <label><input type="radio" name="searchEngine" value="fr-sante:">Santé.fr</label>
+          <label><input type="radio" name="searchEngine" value="reco:">RecoMédicales</label>
         </div>
       </div>
 
@@ -3755,6 +3761,8 @@
       'gai:':        { name: 'Google AI Mode',               url: 'https://www.google.com/search?udm=50&q=',                                                       domain: 'google.com', cat: 'ai', chip: 'Google AI' },
       'scholar:':    { name: 'Google Scholar',               url: 'https://scholar.google.com/scholar?q=',                                                         domain: 'google.com', cat: 'academic' },
       'pubmed:':     { name: 'PubMed',                       url: 'https://pubmed.ncbi.nlm.nih.gov/?term=',                                                        domain: 'ncbi.nlm.nih.gov', cat: 'academic' },
+      'euc:':        { name: 'Europe PMC',                   url: 'https://europepmc.org/search?query=',                                                           domain: 'europepmc.org', cat: 'academic' },
+      'cosus:':      { name: 'Consensus',                    url: 'https://consensus.app/search/',                                                                 domain: 'consensus.app', cat: 'academic' },
       'arxiv:':      { name: 'arXiv',                        url: 'https://arxiv.org/search/?query=',                                                              domain: 'arxiv.org', cat: 'academic' },
       'gpat:':       { name: 'Google Patents',               url: 'https://patents.google.com/',                                                                   domain: 'patents.google.com', favicon: 'https://raw.githubusercontent.com/achma-learning/searchAIO/refs/heads/main/missing%20favicons/patents.google.com-favicon.ico', cat: 'academic' },
       'these2.0:':   { name: 'These2.0',                    url: 'https://thesefmpm.vercel.app/search?page=1&search=',                                            domain: 'thesefmpm.vercel.app', cat: 'academic' },
@@ -3796,6 +3804,10 @@
       'nih:':        { name: 'NIH',                          url: 'https://search.usa.gov/search?utf8=%E2%9C%93&affiliate=nih&query=',                            domain: 'nih.gov', favicon: 'https://icons.duckduckgo.com/ip3/nlm.nih.gov.ico', cat: 'medical' },
       'drugs:':      { name: 'Drugs.com',                    url: 'https://www.drugs.com/search.php?searchterm=',                                                 domain: 'drugs.com', cat: 'medical' },
       'cdc:':        { name: 'CDC',                          url: 'https://search.cdc.gov/search/?query=',                                                        domain: 'cdc.gov', cat: 'medical' },
+      'caskanat:':   { name: 'CASK Anatomy Terms',           url: 'https://www.google.com/search?q=site:anatomicalterms.info+',                                    domain: 'anatomicalterms.info', plusEncoding: true, cat: 'medical', chip: 'CASK Anatomy' },
+      'embfr:':      { name: 'EBM France',                   url: 'https://www.ebmfrance.net/guides?search=',                                                      domain: 'ebmfrance.net', cat: 'medical' },
+      'fr-sante:':   { name: 'Santé.fr',                     url: 'https://www.sante.fr/recherche/s-informer/',                                                    domain: 'sante.fr', cat: 'medical' },
+      'reco:':       { name: 'RecoMédicales',                url: 'https://www.google.com/search?q=site:recomedicales.fr+',                                        domain: 'recomedicales.fr', plusEncoding: true, cat: 'medical' },
       'wolf:':       { name: 'Wolfram Alpha',                url: 'https://www.wolframalpha.com/input?i=',                                                        domain: 'wolframalpha.com', cat: 'ai' },
       'chatgpt:':    { name: 'ChatGPT',                       url: 'https://chatgpt.com/?prompt=',                                                                 domain: 'chatgpt.com', plusEncoding: true, cat: 'ai' },
       'claude:':     { name: 'Claude AI 📋',                 url: 'https://claude.ai/new?q=',                                                                     domain: 'claude.ai', promptBased: true, cat: 'ai' },
@@ -3831,6 +3843,8 @@
       // 🎓 Academic
       '!sc': 'scholar:',  '!scholar': 'scholar:',
       '!pm': 'pubmed:',   '!pubmed': 'pubmed:',
+      '!epmc': 'euc:',    '!europepmc': 'euc:',
+      '!consensus': 'cosus:',
       '!ax': 'arxiv:',    '!arxiv': 'arxiv:',
       '!pat': 'gpat:',    '!gpat': 'gpat:',
       '!rg': 'rgate:',    '!rgate': 'rgate:',
@@ -3859,6 +3873,10 @@
       '!drugs': 'drugs:',
       '!nejm': 'nejm:',   '!nej': 'nejm:',
       '!omd': 'openmd:',
+      '!caskanat': 'caskanat:', '!anatterms': 'caskanat:',
+      '!ebmfr': 'embfr:', '!ebmfrance': 'embfr:',
+      '!santefr': 'fr-sante:',
+      '!reco': 'reco:',   '!recomed': 'reco:',
       // 🤖 AI / Advanced
       '!gpt': 'chatgpt:', '!chatgpt': 'chatgpt:',
       '!cl': 'claude:',   '!claude': 'claude:',
@@ -4840,6 +4858,7 @@
       else if (prefix === 'wiki:')     finalUrl = finalEngine.url + encodedQuery + '&title=Special%3ASearch&fulltext=1';
       else if (prefix === 'bdbk:')     finalUrl = finalEngine.url + encodeURIComponent(query) + '?fromModule=lemma_search-box';
       else if (prefix === 'cybl:')     finalUrl = finalEngine.url + encodedQuery + '&page=1';
+      else if (prefix === 'cosus:')    finalUrl = finalEngine.url + encodedQuery + '/new/?q=' + encodedQuery;
       else                             finalUrl = finalEngine.url + encodedQuery;
 
       // Google Translate wrapper
@@ -5663,8 +5682,8 @@
 
     const engineCategories = {
       general:  ['g:', 'yt:', 'brave:', 'ddg:', 'yan:', 'bing:', 'bd:', 'gplus:', 'wiki:', 'bdbk:', 'grokw:', 'ww:'],
-      academic: ['scholar:', 'pubmed:', 'arxiv:', 'gpat:', 'these2.0:', 'cismef-th:', 'these-ma:', 'these-fr:', 'rgate:', 'ndltd:', 'proinserm:', 'bdedu:', 'cybl:'],
-      medical:  ['cismef:', 'msps:', 'ammps:', 'ammps-lm:', 'ammps-rmmg:', 'ammps-lvl:', 'ammps-p:', 'ammps-gs:', 'has:', 'vidal:', 'mesh:', 'lissa:', 'anm:', 'hetop:', 'nejm:', 'rp:', 'utd:', 'coch:', 'medscape:', 'openmd:', 'dd:', 'webmd:', 'nih:', 'drugs:', 'cdc:', 'cismef-bp:', 'cismef-edu:', 'cismef-edn:', 'cismef-pat:'],
+      academic: ['scholar:', 'pubmed:', 'euc:', 'cosus:', 'arxiv:', 'gpat:', 'these2.0:', 'cismef-th:', 'these-ma:', 'these-fr:', 'rgate:', 'ndltd:', 'proinserm:', 'bdedu:', 'cybl:'],
+      medical:  ['cismef:', 'msps:', 'ammps:', 'ammps-lm:', 'ammps-rmmg:', 'ammps-lvl:', 'ammps-p:', 'ammps-gs:', 'has:', 'vidal:', 'mesh:', 'lissa:', 'anm:', 'hetop:', 'nejm:', 'rp:', 'utd:', 'coch:', 'medscape:', 'openmd:', 'dd:', 'webmd:', 'nih:', 'drugs:', 'cdc:', 'caskanat:', 'embfr:', 'fr-sante:', 'reco:', 'cismef-bp:', 'cismef-edu:', 'cismef-edn:', 'cismef-pat:'],
       ai:       ['wolf:', 'chatgpt:', 'claude:', 'gemini:', 'gai:', 'perplexity:', 'copilot:', 'cbd:', 'ernie:', 'duckai:', 'alphaf:']
     };
 
