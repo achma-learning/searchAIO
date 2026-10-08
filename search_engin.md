@@ -42,6 +42,14 @@ This document provides a detailed overview of all search engines integrated into
 ### PubMed (`pubmed:`)
 - **URL**: `https://pubmed.ncbi.nlm.nih.gov/?term=`
 
+### Europe PMC (`euc:`)
+- **URL**: `https://europepmc.org/search?query=`
+- **Notes**: Bangs `!epmc`, `!europepmc`. PubMed + PMC + preprints + EU grants, with full text.
+
+### Consensus (`cosus:`)
+- **URL**: `https://consensus.app/search/QUERY/new/?q=QUERY`
+- **Notes**: Bang `!consensus`. AI answers grounded in peer-reviewed papers; the query is placed in both the path and `?q=`.
+
 ### arXiv (`arxiv:`)
 - **URL**: `https://arxiv.org/search/?query=`
 
@@ -137,6 +145,22 @@ This document provides a detailed overview of all search engines integrated into
 
 ### CDC (`cdc:`)
 - **URL**: `https://search.cdc.gov/search/?query=`
+
+### CASK Anatomy Terms (`caskanat:`)
+- **URL**: `https://www.google.com/search?q=site:anatomicalterms.info+`
+- **Notes**: Google `site:` search. Bangs `!caskanat`, `!anatterms`.
+
+### EBM France (`embfr:`)
+- **URL**: `https://www.ebmfrance.net/guides?search=`
+- **Notes**: Bangs `!ebmfr`, `!ebmfrance`.
+
+### Santé.fr (`fr-sante:`)
+- **URL**: `https://www.sante.fr/recherche/s-informer/`
+- **Notes**: Bang `!santefr`.
+
+### RecoMédicales (`reco:`)
+- **URL**: `https://www.google.com/search?q=site:recomedicales.fr+`
+- **Notes**: Google `site:` search. Bangs `!reco`, `!recomed`.
 
 ---
 

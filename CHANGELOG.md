@@ -12,6 +12,11 @@ Working journal of notable changes. Format adapted from [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added (engines — issues #49, #47, #35)
+- **🎓 Academic:** `euc:` **Europe PMC** (`!epmc`, `!europepmc`) and `cosus:` **Consensus** (`!consensus`). Consensus needs the query twice (`/search/<q>/new/?q=<q>`), so it gets one line in the URL builder next to `gpat:`/`cybl:`.
+- **⚕️ Medical:** `caskanat:` **CASK Anatomy Terms** (Google `site:anatomicalterms.info`), `embfr:` **EBM France**, `fr-sante:` **Santé.fr**, `reco:` **RecoMédicales** (Google `site:recomedicales.fr`), each with bangs (`!caskanat`, `!ebmfr`, `!santefr`, `!reco`). Prefixes are exactly as requested in the issues.
+- Engine count 65 → 71. Verified in headless Chromium through the real submit handler (prefix and `!bang` forms); validator and `?selftest` pass.
+
 ### Changed (engine registry — one source of truth)
 - **The engine-picker chip grid is now generated from `searchEngines`.** The wiki panel used to carry 54 hand-written `<div class="wiki-chip" data-prefix=… data-cat=… data-name=…>` elements — a second copy of the registry that had already drifted: **11 engines existed in the registry and in `categoryMap` but had no chip at all** (`wiki:`, `bdbk:`, `grokw:`, `ww:`, `cybl:`, and all six AMMPS prefixes), so the only way to reach them was to know the prefix by heart. A new `renderEngineChips()` builds all 65 chips from the registry at init, into the same four `.wiki-section` containers with the same markup and classes — the CSS, the category tabs and the filter are untouched. Adding an engine to `searchEngines` now surfaces it in the picker with no second edit.
 - **`cat` on the engine replaces the `categoryMap` lookup table.** Every engine declares `cat: 'general'|'academic'|'medical'|'ai'` (new `ENGINE_CATEGORIES` constant holds the four buckets and their emoji). This deletes the duplicated 4-array `categoryMap` that lived *inside* `updateSearchSource()` — and with it a linear scan over ~65 prefixes that ran on **every keystroke**; the category is now a property read. Optional `chip:` gives a shorter grid label where the full `name` is too long (e.g. `msps:` → "Min. Santé MA"), so the registry keeps the real name for the source label while the chip stays compact.
